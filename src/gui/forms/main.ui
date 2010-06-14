@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>mainWindow</class>
+ <widget class="QMainWindow" name="mainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>704</width>
+    <height>479</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Chemecher 4</string>
+  </property>
+  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>704</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="action_New_Mechanism"/>
+    <addaction name="action_Load_Mechanism"/>
+    <addaction name="action_Save_Mechanism"/>
+    <addaction name="actionSave_Mech_As"/>
+    <addaction name="separator"/>
+    <addaction name="action_Import"/>
+    <addaction name="separator"/>
+    <addaction name="actionE_xit"/>
+   </widget>
+   <widget class="QMenu" name="menu_Tools">
+    <property name="title">
+     <string>&amp;Tools</string>
+    </property>
+    <addaction name="actionFormatting_Wizard"/>
+    <addaction name="actionPreferences"/>
+   </widget>
+   <widget class="QMenu" name="menu_Help">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="actionAbout_CheMecher"/>
+   </widget>
+   <widget class="QMenu" name="menu_Steps">
+    <property name="title">
+     <string>&amp;Steps</string>
+    </property>
+    <addaction name="action_Show_All"/>
+    <addaction name="action_Hide_All"/>
+    <addaction name="separator"/>
+    <addaction name="actionStepNone"/>
+   </widget>
+   <widget class="QMenu" name="menuS_pecies">
+    <property name="title">
+     <string>S&amp;pecies</string>
+    </property>
+    <addaction name="action_Show_All_2"/>
+    <addaction name="action_Hide_All_2"/>
+    <addaction name="separator"/>
+    <addaction name="actionCpdNone"/>
+   </widget>
+   <widget class="QMenu" name="menuS_imulation">
+    <property name="title">
+     <string>S&amp;imulation</string>
+    </property>
+    <addaction name="action_Launch_Simulator"/>
+    <addaction name="separator"/>
+    <addaction name="action_Edit_Simulation_Data"/>
+    <addaction name="actionPreferences_2"/>
+   </widget>
+   <addaction name="menu_File"/>
+   <addaction name="menu_Steps"/>
+   <addaction name="menuS_pecies"/>
+   <addaction name="menuS_imulation"/>
+   <addaction name="menu_Tools"/>
+   <addaction name="menu_Help"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QDockWidget" name="dockWidget">
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Item Management</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QVBoxLayout" name="verticalLayout_3">
+     <property name="margin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QSplitter" name="splitter">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <widget class="QFrame" name="frame_2">
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <property name="spacing">
+          <number>2</number>
+         </property>
+         <property name="margin">
+          <number>5</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Species:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QListWidget" name="lstSpecies"/>
+         </item>
+         <item>
+          <widget class="QFrame" name="frame_4">
+           <property name="frameShape">
+            <enum>QFrame::NoFrame</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <property name="spacing">
+             <number>2</number>
+            </property>
+            <property name="margin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QPushButton" name="pushAddCpd">
+              <property name="text">
+               <string>Add Specie...</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushRemoveCpd">
+              <property name="text">
+               <string>Remove Specie</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QFrame" name="frame">
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <property name="spacing">
+          <number>2</number>
+         </property>
+         <property name="margin">
+          <number>5</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Elementary Steps:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QListWidget" name="lstSteps"/>
+         </item>
+         <item>
+          <widget class="QFrame" name="frame_3">
+           <property name="frameShape">
+            <enum>QFrame::NoFrame</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <property name="spacing">
+             <number>2</number>
+            </property>
+            <property name="margin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QPushButton" name="pushAddStep">
+              <property name="text">
+               <string>Add Step...</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushRemoveStep">
+              <property name="text">
+               <string>Remove Step</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <action name="action_New_Mechanism">
+   <property name="text">
+    <string>&amp;New Mech...</string>
+   </property>
+  </action>
+  <action name="action_Load_Mechanism">
+   <property name="text">
+    <string>&amp;Load Mech...</string>
+   </property>
+  </action>
+  <action name="action_Save_Mechanism">
+   <property name="text">
+    <string>&amp;Save Mech</string>
+   </property>
+  </action>
+  <action name="action_Import">
+   <property name="text">
+    <string>&amp;Import...</string>
+   </property>
+  </action>
+  <action name="actionSave_Mech_As">
+   <property name="text">
+    <string>Save Mech &amp;As...</string>
+   </property>
+  </action>
+  <action name="actionE_xit">
+   <property name="text">
+    <string>E&amp;xit</string>
+   </property>
+  </action>
+  <action name="action_Show_All">
+   <property name="text">
+    <string>&amp;Show All</string>
+   </property>
+  </action>
+  <action name="action_Hide_All">
+   <property name="text">
+    <string>&amp;Hide All</string>
+   </property>
+  </action>
+  <action name="actionStepNone">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&lt;none open&gt;</string>
+   </property>
+  </action>
+  <action name="action_Show_All_2">
+   <property name="text">
+    <string>&amp;Show All</string>
+   </property>
+  </action>
+  <action name="action_Hide_All_2">
+   <property name="text">
+    <string>&amp;Hide All</string>
+   </property>
+  </action>
+  <action name="actionCpdNone">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&lt;none open&gt;</string>
+   </property>
+  </action>
+  <action name="actionFormatting_Wizard">
+   <property name="text">
+    <string>Formatting Wizard...</string>
+   </property>
+  </action>
+  <action name="actionPreferences">
+   <property name="text">
+    <string>Preferences</string>
+   </property>
+  </action>
+  <action name="actionAbout_CheMecher">
+   <property name="text">
+    <string>About CheMecher</string>
+   </property>
+  </action>
+  <action name="action_Launch_Simulator">
+   <property name="text">
+    <string>&amp;Launch Simulator...</string>
+   </property>
+  </action>
+  <action name="action_Edit_Simulation_Data">
+   <property name="text">
+    <string>&amp;Edit Simulation Data...</string>
+   </property>
+  </action>
+  <action name="actionPreferences_2">
+   <property name="text">
+    <string>Preferences...</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
