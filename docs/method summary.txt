@@ -1,0 +1,64 @@
+Public Class frmMain
+    Dim Mix As Mixture, Mixpr As Mixture
+    Dim mechName As String, instName As String, outName As String, logName As String
+    Dim CalcStep As Decimal, MaxTime As Integer, RptStep As Decimal, Transition As Integer
+    Dim GateBand As Decimal, AutoStep As Boolean, ShiftTest As Integer, MaxReduce As Integer
+    Dim StepFactor As Single, sOrder As String, Method As String, MaxOrder As Integer
+    Dim Cancel As Boolean = False, ovrflo As Boolean = False
+
+    Private Sub nuBeginSim_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles nuBeginSim.Click
+    Private Sub nuLoadMech_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles nuLoadMech.Click
+    Private Sub nuLoadInst_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles nuLoadInst.Click
+    Private Function GetLine(ByRef f As Scripting.TextStream) As String
+    Private Sub DrawMech()
+    Private Sub DrawInst()
+    Private Sub PrintData(ByVal file As Scripting.TextStream)
+    Private Sub DrawOutfile()
+    Private Sub DeclareConstants(ByVal ord As Integer, ByVal meth As Integer)
+    Private Sub nuClear_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles nuClear.Click
+
+Public Class cpd
+    Public Keys(0) As String
+    Private astoi(0) As Integer
+    Private isempty as Boolean = True
+    Private aName As String
+    Private aState As String
+    Private aOrdConc(3) As Decimal
+    Private afConc As Decimal
+    Private asolThresh As Decimal
+    Private aSharp As Decimal
+    Private aRate(3) As Decimal
+
+    Public Property Name() As String
+    Public Property State() As String
+    Public ReadOnly Property Key() As String
+    Public Property Conc(ByVal i As Integer) As Decimal
+    Public Property fConc() As Decimal
+    Public Property Rate(ByVal i As Integer) As Decimal
+    Public Property Thresh() As Decimal
+    Public Sub AddStep(ByVal key As String, ByVal stoi As Integer)
+    Public Property Stoi(ByVal key As String) As Integer
+    
+
+Module Globals
+    Public Const pi As Decimal = 3.14159265359
+    Public a(4, 3) As Decimal, b(4) As Decimal
+    Public Const DateFormat As String = "yyyyMMdd.HHmm"
+    Public Const ColSize As Integer = 15
+    Public Const Version As Double = 3.02
+    
+Public Class Mixture
+    Public ChemSet As Collection
+    Public StepSet As Collection
+    Private atime As Decimal
+
+    Public Property Time() As Decimal
+    Public Sub New()
+	
+Public Class RxnStep
+    Public Reactants As ColArray, Products As ColArray
+    Private nReactant As Integer, nProduct As Integer
+    Private aname As String
+    Private akplus As Decimal, akmins As Decimal
+    Private arplus(3) As Decimal, armins(3) As Decimal
+

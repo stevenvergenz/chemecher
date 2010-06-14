@@ -1,0 +1,83 @@
+Solution File Contents:
+
+Calcstep:
+How often CheMecher recalculates the concentrations. The smaller the calcstep, the more accurate the simulation, and the longer it takes to run.
+Recommended values from .01 to .001 units time.
+
+Reportstep:
+How often CheMecher prints the concentrations to the output file.
+Recommended value is .1 units time.
+
+Maxtime:
+How long the simulation will run in time units.
+
+Order:
+What order of approximation CheMecher will use to calculate the concentrations. Ranges from first order (1) to fourth order (4). Higher orders take longer to run but are theoretically more accurate.
+
+Method:
+One of several methods of approximation for each order. They are listed below, along with their keyphrases.
+
+	1st Order
+	-Euler's Method (euler)
+	
+	2nd Order
+	-Modified Euler's Method (modified euler)
+	-Heun's Method (heun)
+	-Ralston's Method (ralston)
+	
+	3rd Order
+	-Runge-Kutta Method (runge-kutta)
+	
+	4th Order
+	-Runge Method (runge)
+	-Kutta Method (kutta)
+	-Gill Method (gill)
+
+
+
+Transition:
+Used to determine the behavior of the rate of HETEROGENEOUS species at low concentration. When a species' concentration drops below its "thresh", threshold value, its rate will taper off proportional to its concentration, essentially slowing a steep drop in concentration.
+
+A value of "atan" in this field will cause the rate of a specie to be supressed mildly just below the "thresh" concentration, then more so as the concentration of the species continues to drop. The rate will fade to zero as the concentration approaches zero. The steepness of the correction curve can be adjusted by using the specie's "sharp" value. The transition becomes linear as the sharp value approaches 0.
+Recommended "sharp" value between 2 and 5.
+
+A value of "linear" will taper the rate directly proportionally to how far below the "thresh" concentration the specie's current concentration is. For example, if a specie's concentration is half of its "thresh" value, that specie's rate is half of what it would be without the transition.
+
+A value of "none" will not apply a transition to a heterogeneous specie. Its rate will be calculated at its full value until the specie's concentration is zero. If a mechanism has heterogeneous species that approach zero, this setting is not recommended, as negative concentrations may occur.
+
+
+
+Autostep:
+This is a group of interrelated items. It is composed of Autostep, Gateband, Shifttest, Maxreduce, and Stepfactor. In all, it changes the calculation step mid-simulation to allow for more accurate calculation in sensitive areas, e.g. when a species concentration drops below its "thresh" value. A simple yes or no will do in this part. The other autostepping fields are unused if this is anything but "yes".
+
+Gateband:
+When a species reaches a concentration of its "thresh" value times the Gateband, the Autostep will activate.
+
+Shifttest:
+After shifttest number of calculation steps, the autostep will enlarge the calculation step one level, up to a maximum of the original calcstep.
+
+Maxreduce:
+The number of times autostep will refine the calcstep. When this number is reached, the autostep will not engage.
+
+Stepfactor:
+The factor by which the autostep refines/enlarges the calcstep. A stepfactor of two will cause the autostep to halve the calcstep every time it refines it.
+
+
+
+
+Mech File Contents:
+
+'comments available by using the apostrophe character
+4 'number of species to be defined
+'name state tHigh sharpVal
+A (.) 0 0
+B (.) 0 0
+C (.) 0 0
+D (.) 0 0
+
+3 'number of steps
+'step then k values
+'reac1+reac2+reac3>prod1+prod2+prod3 k+ k-
+A(.)>B(.) 15 .15
+B(.)>C(.) 15 .15
+C(.)>D(.) 15 .15

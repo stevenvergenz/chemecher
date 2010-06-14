@@ -1,0 +1,15 @@
+1st Order
+-Euler's Method (euler)
+
+2nd Order
+-Modified Euler's Method (modified euler)
+-Heun's Method (heun)
+-Ralston's Method (ralston)
+
+3rd Order
+-Runge-Kutta Method (runge-kutta)
+
+4th Order
+-Runge Method (runge)
+-Kutta Method (kutta)
+-Gill Method (gill)

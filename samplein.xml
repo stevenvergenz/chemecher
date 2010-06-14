@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Mechanism name="Sample Mechanism">
+	<Description>This mechanism is used to describe the input format.</Description>
+	<OutputHint>sampleout.$(datetime).txt</OutputHint>
+	
+	<SpeciesList>
+		<Specie>
+			<ShortName>A</ShortName>
+			<LongName>Nutrient A</LongName>
+			<State>(.)</State>
+			<InitialConcentration>100</InitialConcentration>
+			<Sharpness/><? Not necessary if empty like this ?>
+			<Threshold/><? As above, see below ?>
+		</Specie>
+		<Specie>
+			<ShortName>B</ShortName>
+			<LongName>Intermediate B</LongName>
+			<State>(.)</State>
+			<InitialConcentration>10</InitialConcentration>
+			<? Notice that the sharp and thresh values are omitted, this is fine ?>
+		</Specie>
+		<Specie>
+			<ShortName>C</ShortName>
+			<LongName>Precipitate C</LongName>
+			<State>(*)</State>
+			<InitialConcentration>0</InitialConcentration>
+			<Sharpness>.85</Sharpness>
+			<Theshold>.01</Threshold>
+		</Specie>
+	</SpeciesList>
+
+	<StepList>
+		<Step>
+			<Name>Consumption</Name>
+			
+</Mechanism>
