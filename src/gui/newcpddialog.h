@@ -2,7 +2,7 @@
 #define NEWCPDDIALOG_H
 
 #include <QDialog>
-#include "ui_newcpd.h"
+#include "ui_newcpddialog.h"
 #include "mix.h"
 
 class NewCpdDialog : public QDialog {
@@ -19,7 +19,7 @@ public slots:
     void accept();
 
 private:
-    Ui::newCpdDialog ui;
+    Ui::NewCpdDialog ui;
 };
 
 #endif // NEWCPDDIALOG_H
