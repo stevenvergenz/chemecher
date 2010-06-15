@@ -3,8 +3,8 @@
 NewCpdDialog::NewCpdDialog(QWidget *parent) : QDialog(parent)
 {
     ui.setupUi(this);
-    ui.txtNewName->selectAll();
-    ui.txtNewName->setFocus();
+    //ui.txtNewName->selectAll();
+    //ui.txtNewName->setFocus();
 }
 
 void NewCpdDialog::changeEvent(QEvent *e)
@@ -20,7 +20,7 @@ void NewCpdDialog::changeEvent(QEvent *e)
 }
 
 //overloaded accept() function to validate input
-void NewCpdDialog::accept()
+/*void NewCpdDialog::accept()
 {
 	const QString states[6] = {"(.)", "(*)", "(aq)", "(s)", "(l)", "(g)"};
 	const QString newName = ui.txtNewName->text() + states[ui.comboNewState->currentIndex()];
@@ -49,3 +49,4 @@ QString NewCpdDialog::getName(){
 int NewCpdDialog::getState(){
 	return ui.comboNewState->currentIndex();
 }
+*/

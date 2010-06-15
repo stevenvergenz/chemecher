@@ -23,7 +23,7 @@ HEADERS += src/core/cpd.h \
 FORMS += src/gui/forms/cpd.ui \
     src/gui/forms/main.ui \
     src/gui/forms/step.ui \
-    src/gui/forms/newcpd.ui
+    src/gui/forms/newcpddialog.ui
 SOURCES += src/chemecher.cpp \
     src/core/cpd.cpp \
     src/core/mix.cpp \
