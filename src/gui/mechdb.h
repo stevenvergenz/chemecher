@@ -15,7 +15,7 @@ class MechDB : public QDialog {
     Q_OBJECT
 public:
 	typedef enum{save,load} dlgtype_t;
-
+	
 	MechDB(dlgtype_t _dlgtype, QWidget *parent = 0);
     ~MechDB();
 

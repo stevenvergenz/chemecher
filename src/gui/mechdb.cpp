@@ -40,9 +40,10 @@ void MechDB::sqlConfig()
 	
 	if(!ok) return;
 	
-	//db.setHostname( config->ui->hostname );
-	
-	connect( config->ui->hostname, SIGNAL(textChanged()), &db, SLOT(setHostname(QString)));
+	// set values
+	db.setHostname( config->getHostname() );
+	db.setUsername( config->getUsername() );
+	db.setPassword( config->getPassword() );
 }
 
 void MechDB::updateInfo()

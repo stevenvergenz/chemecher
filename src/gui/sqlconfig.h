@@ -2,6 +2,7 @@
 #define SQLCONFIG_H
 
 #include <QDialog>
+#include <QString>
 
 #include "mechdb.h"
 #include "mix.h"
@@ -18,8 +19,11 @@ class SqlConfig : public QDialog {
 public:
     SqlConfig(QWidget *parent = 0);
     ~SqlConfig();
-
-	friend class MechDB;
+	
+	QString getHostname();
+	QString getUsername();
+	QString getPassword();
+	
 protected:
     void changeEvent(QEvent *e);
 

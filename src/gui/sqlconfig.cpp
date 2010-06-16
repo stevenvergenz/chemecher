@@ -11,6 +11,14 @@ SqlConfig::SqlConfig(QWidget *parent) :
 	connect( ui->password, SIGNAL(textChanged(QString)), &db, SLOT(setPassword(QString)));
 }
 
+// info getters
+QString SqlConfig::getHostname()
+{return ui->hostname->text();}
+QString SqlConfig::getUsername()
+{return ui->username->text();}
+QString SqlConfig::getPassword()
+{return ui->password->text();}
+
 SqlConfig::~SqlConfig()
 {
     delete ui;
