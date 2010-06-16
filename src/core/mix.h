@@ -7,6 +7,7 @@
 
 #include "step.h"
 #include "cpd.h"
+#include "dbhandler.h"
 
 namespace Mix
 {
@@ -22,6 +23,9 @@ namespace Mix
 	extern double timeStep, reportStep;
 	extern int initialTime, maxTime;
 	extern int debugStart, debugEnd;
+
+	// sql data
+	extern DBHandler db;
 
 	//accuracy data
 	extern double precision;

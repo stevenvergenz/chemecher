@@ -20,9 +20,9 @@ void NewCpdDialog::changeEvent(QEvent *e)
 }
 
 //overloaded accept() function to validate input
-/*void NewCpdDialog::accept()
+void NewCpdDialog::accept()
 {
-	const QString states[6] = {"(.)", "(*)", "(aq)", "(s)", "(l)", "(g)"};
+	/*const QString states[6] = {"(.)", "(*)", "(aq)", "(s)", "(l)", "(g)"};
 	const QString newName = ui.txtNewName->text() + states[ui.comboNewState->currentIndex()];
 
 	//ensure that the combination is unique by checking existing
@@ -36,17 +36,19 @@ void NewCpdDialog::changeEvent(QEvent *e)
 			ui.comboNewState->setCurrentIndex(0);
 			return;
 		}
-	}
+	}*/
 
 	//the new name/state pair is unique, accept
 	QDialog::accept();
 }
 
 QString NewCpdDialog::getName(){
-	return ui.txtNewName->text();
+	//return ui.txtNewName->text();
+	return "";
 }
 
 int NewCpdDialog::getState(){
-	return ui.comboNewState->currentIndex();
+	//return ui.comboNewState->currentIndex();
+	return 0;
 }
-*/
+

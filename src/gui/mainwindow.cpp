@@ -27,11 +27,34 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	/***************** connect signals and slots *****************/
 	/*************************************************************/
 	connect(ui.pushAddCpd,	SIGNAL(clicked()),
-		this,		SLOT(addNewCpd())
+			this,			SLOT(addNewCpd())
 	);
 	connect(ui.lstSpecies,	SIGNAL(itemDoubleClicked(QListWidgetItem*)),
-		this,		SLOT(showCpdWindow(QListWidgetItem*))
+			this,			SLOT(showCpdWindow(QListWidgetItem*))
 	);
+	connect(ui.actSaveMechDb, SIGNAL(triggered()),
+			this,			SLOT(saveMechDb()));
+	connect(ui.actLoadMechDb, SIGNAL(triggered()),
+			this,			SLOT(loadMechDb()));
+	connect(ui.actExit, SIGNAL(triggered()), qApp, SLOT(quit()));
+}
+
+void MainWindow::saveMechDb()
+{
+	// run the dialog box
+	MechDB* dialog = new MechDB(MechDB::save, this);
+	int rtn = dialog->exec();
+
+	if(rtn == 0) return;
+
+}
+void MainWindow::loadMechDb()
+{
+	// run the dialog box
+	MechDB* dialog = new MechDB(MechDB::load, this);
+	int rtn = dialog->exec();
+
+	if(rtn == 0) return;
 }
 
 void MainWindow::addNewCpd()
