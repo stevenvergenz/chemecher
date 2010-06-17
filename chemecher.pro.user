@@ -78,16 +78,16 @@
   <valuemap type="QVariantMap">
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList">
-    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-HuLebaHXzI,guid=2e77e9f7666a099339d3a0e64c1846b1</value>
+    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-nynzD2w2GS,guid=094e667c59533c4f0cabd8034c18e1ff</value>
     <value type="QString">DEFAULTS_PATH=/usr/share/gconf/gnome.default.path</value>
     <value type="QString">DESKTOP_SESSION=gnome</value>
-    <value type="QString">DISPLAY=:1.0</value>
+    <value type="QString">DISPLAY=:3.0</value>
     <value type="QString">GDMSESSION=gnome</value>
     <value type="QString">GDM_KEYBOARD_LAYOUT=us</value>
     <value type="QString">GDM_LANG=en_US.UTF-8</value>
     <value type="QString">GNOME_DESKTOP_SESSION_ID=this-is-deprecated</value>
-    <value type="QString">GNOME_KEYRING_CONTROL=/tmp/keyring-yXTyqK</value>
-    <value type="QString">GNOME_KEYRING_PID=1501</value>
+    <value type="QString">GNOME_KEYRING_CONTROL=/tmp/keyring-BinPvd</value>
+    <value type="QString">GNOME_KEYRING_PID=4634</value>
     <value type="QString">GTK_MODULES=canberra-gtk-module</value>
     <value type="QString">HOME=/home/tim</value>
     <value type="QString">LANG=en_US.UTF-8</value>
@@ -98,17 +98,17 @@
     <value type="QString">PATH=/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games</value>
     <value type="QString">PWD=/home/tim</value>
     <value type="QString">QTDIR=/usr/share/qt4</value>
-    <value type="QString">SESSION_MANAGER=local/rvergenz-desktop:@/tmp/.ICE-unix/1519,unix/rvergenz-desktop:/tmp/.ICE-unix/1519</value>
+    <value type="QString">SESSION_MANAGER=local/rvergenz-desktop:@/tmp/.ICE-unix/4652,unix/rvergenz-desktop:/tmp/.ICE-unix/4652</value>
     <value type="QString">SHELL=/bin/bash</value>
     <value type="QString">SPEECHD_PORT=7561</value>
-    <value type="QString">SSH_AGENT_PID=1553</value>
-    <value type="QString">SSH_AUTH_SOCK=/tmp/keyring-yXTyqK/ssh</value>
+    <value type="QString">SSH_AGENT_PID=4686</value>
+    <value type="QString">SSH_AUTH_SOCK=/tmp/keyring-BinPvd/ssh</value>
     <value type="QString">USER=tim</value>
     <value type="QString">USERNAME=tim</value>
-    <value type="QString">XAUTHORITY=/var/run/gdm/auth-for-tim-bW5QdJ/database</value>
+    <value type="QString">XAUTHORITY=/var/run/gdm/auth-for-tim-qIn3W9/database</value>
     <value type="QString">XDG_CONFIG_DIRS=/etc/xdg/xdg-gnome:/etc/xdg</value>
     <value type="QString">XDG_DATA_DIRS=/usr/share/gnome:/usr/local/share/:/usr/share/</value>
-    <value type="QString">XDG_SESSION_COOKIE=50747c19ef49b36bdd465b224c14983d-1276659377.680032-1288518552</value>
+    <value type="QString">XDG_SESSION_COOKIE=50747c19ef49b36bdd465b224c14983d-1276699135.222110-1690597065</value>
    </valuelist>
    <valuelist key="abstractProcess.arguments" type="QVariantList">
     <value type="QString">/home/tim/programming/sql-branch/chemecher.pro</value>
@@ -127,16 +127,16 @@
   <valuemap type="QVariantMap">
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList">
-    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-HuLebaHXzI,guid=2e77e9f7666a099339d3a0e64c1846b1</value>
+    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-nynzD2w2GS,guid=094e667c59533c4f0cabd8034c18e1ff</value>
     <value type="QString">DEFAULTS_PATH=/usr/share/gconf/gnome.default.path</value>
     <value type="QString">DESKTOP_SESSION=gnome</value>
-    <value type="QString">DISPLAY=:1.0</value>
+    <value type="QString">DISPLAY=:3.0</value>
     <value type="QString">GDMSESSION=gnome</value>
     <value type="QString">GDM_KEYBOARD_LAYOUT=us</value>
     <value type="QString">GDM_LANG=en_US.UTF-8</value>
     <value type="QString">GNOME_DESKTOP_SESSION_ID=this-is-deprecated</value>
-    <value type="QString">GNOME_KEYRING_CONTROL=/tmp/keyring-yXTyqK</value>
-    <value type="QString">GNOME_KEYRING_PID=1501</value>
+    <value type="QString">GNOME_KEYRING_CONTROL=/tmp/keyring-BinPvd</value>
+    <value type="QString">GNOME_KEYRING_PID=4634</value>
     <value type="QString">GTK_MODULES=canberra-gtk-module</value>
     <value type="QString">HOME=/home/tim</value>
     <value type="QString">LANG=en_US.UTF-8</value>
@@ -147,17 +147,17 @@
     <value type="QString">PATH=/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games</value>
     <value type="QString">PWD=/home/tim</value>
     <value type="QString">QTDIR=/usr/share/qt4</value>
-    <value type="QString">SESSION_MANAGER=local/rvergenz-desktop:@/tmp/.ICE-unix/1519,unix/rvergenz-desktop:/tmp/.ICE-unix/1519</value>
+    <value type="QString">SESSION_MANAGER=local/rvergenz-desktop:@/tmp/.ICE-unix/4652,unix/rvergenz-desktop:/tmp/.ICE-unix/4652</value>
     <value type="QString">SHELL=/bin/bash</value>
     <value type="QString">SPEECHD_PORT=7561</value>
-    <value type="QString">SSH_AGENT_PID=1553</value>
-    <value type="QString">SSH_AUTH_SOCK=/tmp/keyring-yXTyqK/ssh</value>
+    <value type="QString">SSH_AGENT_PID=4686</value>
+    <value type="QString">SSH_AUTH_SOCK=/tmp/keyring-BinPvd/ssh</value>
     <value type="QString">USER=tim</value>
     <value type="QString">USERNAME=tim</value>
-    <value type="QString">XAUTHORITY=/var/run/gdm/auth-for-tim-bW5QdJ/database</value>
+    <value type="QString">XAUTHORITY=/var/run/gdm/auth-for-tim-qIn3W9/database</value>
     <value type="QString">XDG_CONFIG_DIRS=/etc/xdg/xdg-gnome:/etc/xdg</value>
     <value type="QString">XDG_DATA_DIRS=/usr/share/gnome:/usr/local/share/:/usr/share/</value>
-    <value type="QString">XDG_SESSION_COOKIE=50747c19ef49b36bdd465b224c14983d-1276659377.680032-1288518552</value>
+    <value type="QString">XDG_SESSION_COOKIE=50747c19ef49b36bdd465b224c14983d-1276699135.222110-1690597065</value>
    </valuelist>
    <value key="abstractProcess.IgnoreReturnValue" type="bool">false</value>
    <valuelist key="abstractProcess.arguments" type="QVariantList">
@@ -173,16 +173,16 @@
   <valuemap type="QVariantMap">
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList">
-    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-HuLebaHXzI,guid=2e77e9f7666a099339d3a0e64c1846b1</value>
+    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-nynzD2w2GS,guid=094e667c59533c4f0cabd8034c18e1ff</value>
     <value type="QString">DEFAULTS_PATH=/usr/share/gconf/gnome.default.path</value>
     <value type="QString">DESKTOP_SESSION=gnome</value>
-    <value type="QString">DISPLAY=:1.0</value>
+    <value type="QString">DISPLAY=:3.0</value>
     <value type="QString">GDMSESSION=gnome</value>
     <value type="QString">GDM_KEYBOARD_LAYOUT=us</value>
     <value type="QString">GDM_LANG=en_US.UTF-8</value>
     <value type="QString">GNOME_DESKTOP_SESSION_ID=this-is-deprecated</value>
-    <value type="QString">GNOME_KEYRING_CONTROL=/tmp/keyring-yXTyqK</value>
-    <value type="QString">GNOME_KEYRING_PID=1501</value>
+    <value type="QString">GNOME_KEYRING_CONTROL=/tmp/keyring-BinPvd</value>
+    <value type="QString">GNOME_KEYRING_PID=4634</value>
     <value type="QString">GTK_MODULES=canberra-gtk-module</value>
     <value type="QString">HOME=/home/tim</value>
     <value type="QString">LANG=en_US.UTF-8</value>
@@ -193,17 +193,17 @@
     <value type="QString">PATH=/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games</value>
     <value type="QString">PWD=/home/tim</value>
     <value type="QString">QTDIR=/usr/share/qt4</value>
-    <value type="QString">SESSION_MANAGER=local/rvergenz-desktop:@/tmp/.ICE-unix/1519,unix/rvergenz-desktop:/tmp/.ICE-unix/1519</value>
+    <value type="QString">SESSION_MANAGER=local/rvergenz-desktop:@/tmp/.ICE-unix/4652,unix/rvergenz-desktop:/tmp/.ICE-unix/4652</value>
     <value type="QString">SHELL=/bin/bash</value>
     <value type="QString">SPEECHD_PORT=7561</value>
-    <value type="QString">SSH_AGENT_PID=1553</value>
-    <value type="QString">SSH_AUTH_SOCK=/tmp/keyring-yXTyqK/ssh</value>
+    <value type="QString">SSH_AGENT_PID=4686</value>
+    <value type="QString">SSH_AUTH_SOCK=/tmp/keyring-BinPvd/ssh</value>
     <value type="QString">USER=tim</value>
     <value type="QString">USERNAME=tim</value>
-    <value type="QString">XAUTHORITY=/var/run/gdm/auth-for-tim-bW5QdJ/database</value>
+    <value type="QString">XAUTHORITY=/var/run/gdm/auth-for-tim-qIn3W9/database</value>
     <value type="QString">XDG_CONFIG_DIRS=/etc/xdg/xdg-gnome:/etc/xdg</value>
     <value type="QString">XDG_DATA_DIRS=/usr/share/gnome:/usr/local/share/:/usr/share/</value>
-    <value type="QString">XDG_SESSION_COOKIE=50747c19ef49b36bdd465b224c14983d-1276659377.680032-1288518552</value>
+    <value type="QString">XDG_SESSION_COOKIE=50747c19ef49b36bdd465b224c14983d-1276699135.222110-1690597065</value>
    </valuelist>
    <value key="abstractProcess.IgnoreReturnValue" type="bool">true</value>
    <valuelist key="abstractProcess.arguments" type="QVariantList">

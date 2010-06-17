@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QString>
+#include <QErrorMessage>
 
 class MechDB;
 

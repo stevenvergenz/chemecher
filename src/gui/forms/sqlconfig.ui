@@ -6,9 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>262</width>
-    <height>173</height>
+    <width>261</width>
+    <height>164</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>261</width>
+    <height>164</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>448</width>
+    <height>164</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>SQL Configuration</string>
@@ -69,7 +81,7 @@
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
    </item>

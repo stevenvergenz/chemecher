@@ -27,6 +27,10 @@ public:
 protected:
     void changeEvent(QEvent *e);
 
+public slots:
+	void apply();
+	void changed();
+	
 private:
     Ui::SqlConfig *ui;
 };

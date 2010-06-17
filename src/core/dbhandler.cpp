@@ -1,26 +1,20 @@
 #include "dbhandler.h"
 
-DBHandler::DBHandler() :QObject() {
-	db = QSqlDatabase::addDatabase("QMYSQL");
-	db.setHostName("localhost");
-	db.setDatabaseName("chemecher");
-	db.setUserName("root");
-	db.setPassword("vergenz");
+DBHandler::DBHandler() : QObject() {
+	QSqlDatabase::QSqlDatabase();
+	QSqlDatabase::addDatabase("QMYSQL" );
+	QSqlDatabase::setHostName("localhost");
+	qDebug() << "hostname: " + QSqlDatabase::hostName();
+	setDatabaseName("chemecher");
+	setUserName("root");
+	setPassword("vergenz");
 }
 
-bool DBHandler::connectToServer() {
-	bool ok = db.open();
+bool DBHandler::open() {
+	bool ok = QSqlDatabase::open();
 	if(ok) emit connectionStatus("Connection succeeded.");
 	else emit connectionStatus("Connection failed.");
 	return ok;
-}
-bool DBHandler::isConnected() {
-	return db.isOpen();
-}
-
-void DBHandler::disconnectFromServer()
-{
-	db.close();
 }
 
 /*
@@ -47,8 +41,8 @@ void DBHandler::disconnectFromServer()
 // loads the mechanism from the database into Mix namespace
 bool DBHandler::load_mech(QString mechname)
 {
-	QSqlQuery query;
-	query.exec("SELECT * FROM mechs WHERE MechName=" + mechname + ";");
+	//QSqlQuery query;
+	//query.exec("SELECT * FROM mechs WHERE MechName=" + mechname + ";");
 	//if
 	return false;
 }
@@ -64,8 +58,9 @@ bool DBHandler::save_mech(QString mechname)
 QStringList DBHandler::mech_list()
 {
 	QStringList ret;
-	ret += "A";
-	ret += "B";
+	ret += "Abcdlkfjsdaf";
+	ret += "Badfjjf  jasdjfk";
+	ret += "Csdfjjkbje";
 	return ret;
 }
 
@@ -76,13 +71,13 @@ bool DBHandler::mech_exists(QString mechname)
 }
 
 // getters/setters
-QString DBHandler::getHostname() {return db.hostName();}
-void DBHandler::setHostname(QString h) {db.setHostName(h); emit hostnameChanged(h);}
-QString DBHandler::getDB() {return db.databaseName();}
-void DBHandler::setDB(QString d) {db.setDatabaseName(d); emit dbChanged(d);}
-QString DBHandler::getUsername() {return db.userName();}
-void DBHandler::setUsername(QString u) {db.setUserName(u); emit usernameChanged(u);}
-QString DBHandler::getPassword() {return db.password();}
-void DBHandler::setPassword(QString p) {db.setPassword(p); emit passwordChanged(p);}
-int DBHandler::getPort() {return db.port();}
-void DBHandler::setPort(int p) {db.setPort(p); emit portChanged(p);}
+QString DBHandler::getHostname() {return QSqlDatabase::hostName();}
+void DBHandler::setHostname(QString h) {QSqlDatabase::setHostName(h); emit hostnameChanged(h);}
+QString DBHandler::getDB() {return QSqlDatabase::databaseName();}
+void DBHandler::setDB(QString d) {QSqlDatabase::setDatabaseName(d); emit dbChanged(d);}
+QString DBHandler::getUsername() {return QSqlDatabase::userName();}
+void DBHandler::setUsername(QString u) {QSqlDatabase::setUserName(u); emit usernameChanged(u);}
+QString DBHandler::getPassword() {return QSqlDatabase::password();}
+void DBHandler::setPassword(QString p) {QSqlDatabase::setPassword(p); emit passwordChanged(p);}
+int DBHandler::getPort() {return QSqlDatabase::port();}
+void DBHandler::setPort(int p) {QSqlDatabase::setPort(p); emit portChanged(p);}
