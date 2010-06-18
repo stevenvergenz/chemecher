@@ -16,34 +16,40 @@ SqlConfig::SqlConfig(QWidget *parent) :
 			 this, SLOT(changed()) );
 	connect( ui->password, SIGNAL(textChanged(QString)),
 			 this, SLOT(changed()) );
+	connect( ui->hostname, SIGNAL(returnPressed()),
+			 this, SLOT(apply()) );
+	connect( ui->username, SIGNAL(returnPressed()),
+			 this, SLOT(apply()) );
+	connect( ui->password, SIGNAL(returnPressed()),
+			 this, SLOT(apply()) );
 			
-	ui->hostname->setText(db->getHostname());
-	ui->username->setText(db->getUsername());
-	ui->password->setText(db->getPassword());	
+	ui->hostname->setText(db.getHostName());
+	ui->username->setText(db.getUserName());
+	ui->password->setText(db.getPassword());	
 }
 
 void SqlConfig::apply()
 {
-	db->setHostName(ui->hostname->text());
-	db->setUserName(ui->username->text());
-	db->setPassword(ui->password->text());
+	db.setHostName(ui->hostname->text());
+	db.setUserName(ui->username->text());
+	db.setPassword(ui->password->text());
 	changed();
 }
 
 void SqlConfig::changed()
 {
-	if( ui->hostname->text()==db->hostName() &&
-		ui->username->text()==db->userName() &&
-		ui->password->text()==db->password() )
+	if( getHostName()==db.getHostName() &&
+		getUserName()==db.getUserName() &&
+		getPassword()==db.getPassword() )
 		ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(false);
 	else
 		ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(true);
 }
 
 // info getters
-QString SqlConfig::getHostname()
+QString SqlConfig::getHostName()
 {return ui->hostname->text();}
-QString SqlConfig::getUsername()
+QString SqlConfig::getUserName()
 {return ui->username->text();}
 QString SqlConfig::getPassword()
 {return ui->password->text();}

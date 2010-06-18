@@ -81,10 +81,7 @@
      <property name="lineWidth">
       <number>0</number>
      </property>
-     <layout class="QFormLayout" name="formLayout">
-      <property name="fieldGrowthPolicy">
-       <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-      </property>
+     <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
        <widget class="QLabel" name="label_2">
         <property name="text">
@@ -92,22 +89,46 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0" colspan="2">
-       <widget class="QListWidget" name="mechlist"/>
+      <item row="0" column="2" colspan="2">
+       <widget class="QPushButton" name="refresh">
+        <property name="text">
+         <string>&amp;Refresh</string>
+        </property>
+       </widget>
       </item>
-      <item row="2" column="0">
+      <item row="2" column="0" colspan="4">
+       <widget class="QListWidget" name="mechlist">
+        <property name="sortingEnabled">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
          <string>Mech name:</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
+      <item row="3" column="1" colspan="3">
        <widget class="QLineEdit" name="mechname">
         <property name="readOnly">
          <bool>false</bool>
         </property>
        </widget>
+      </item>
+      <item row="0" column="1">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </widget>
@@ -158,8 +179,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>346</x>
-     <y>329</y>
+     <x>311</x>
+     <y>362</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -174,8 +195,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>346</x>
-     <y>335</y>
+     <x>311</x>
+     <y>362</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>
@@ -194,8 +215,8 @@
      <y>93</y>
     </hint>
     <hint type="destinationlabel">
-     <x>193</x>
-     <y>254</y>
+     <x>304</x>
+     <y>309</y>
     </hint>
    </hints>
   </connection>
@@ -206,8 +227,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>221</x>
-     <y>253</y>
+     <x>311</x>
+     <y>309</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>

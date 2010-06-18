@@ -25,7 +25,7 @@ namespace Mix
 	extern int debugStart, debugEnd;
 
 	// sql data
-	extern DBHandler* db;
+	extern DBHandler db;
 
 	//accuracy data
 	extern double precision;

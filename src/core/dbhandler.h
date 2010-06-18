@@ -5,53 +5,54 @@
 #include <QStringList>
 #include <QSqlDatabase>
 #include <QSqlQuery>
+#include <QVariant>
 #include <QDebug>
 
 class DBHandler;
 
 #include "mix.h"
 
-class DBHandler : public QObject, public QSqlDatabase
+class DBHandler : public QObject
 {
 Q_OBJECT
 public:
 	DBHandler();
+	
+    QSqlDatabase sqldb;
 
     // returns a list of the mechanism names
-	QStringList mech_list();
+	QStringList mechList();
     // checks if mechanism exists
-    bool mech_exists(QString mechname);
-	
-	QString getHostname();
-	QString getDB();
-	QString getUsername();
-	QString getPassword();
+    bool mechExists(QString mechname);
+
+    QString getHostName();
+    QString getDatabase();
+    QString getUserName();
+    QString getPassword();
 	int getPort();
-	
+
 signals:
     void connectionStatus(QString s);
-	
-    void hostnameChanged(QString h);
-    void dbChanged(QString d);
-    void usernameChanged(QString u);
+
+    void hostNameChanged(QString h);
+    void databaseChanged(QString d);
+    void userNameChanged(QString u);
     void passwordChanged(QString p);
 	void portChanged(int p);
 
 public slots:
-	
-	bool open();
-	
-	void setHostname(QString h);
-	void setDB(QString d);
-	void setUsername(QString u);
-	void setPassword(QString p);
+
+    void setHostName(QString h);
+    void setDatabase(QString d);
+    void setUserName(QString u);
+    void setPassword(QString p);
 	void setPort(int p);
-	
+
     // loads the mechanism from the database into Mix namespace
-	bool load_mech(QString mechname);
+	bool loadMech(QString mechname);
     // saves the data in the Mix namespace to the database as <mechname>
     // if already exists, overwrites
-	bool save_mech(QString mechname);
+	bool saveMech(QString mechname);
 
 };
 

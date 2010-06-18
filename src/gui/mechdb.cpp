@@ -10,10 +10,7 @@ MechDB::MechDB(dlgtype_t _dlgtype, QWidget *parent) :
 	ui->setupUi(this);
 
 	// set the title as appropriate
-	this->setWindowTitle((dlgtype==save ? tr("Save Mech to") : tr("Load Mech from")) + tr(" DB.."));
-
-	// add the current list of mechanisms to the listbox
-	ui->mechlist->addItems(Mix::db->mech_list());
+	this->setWindowTitle((dlgtype==save ? "Save Mech to" : "Load Mech from") + tr(" DB..."));
 
 	// set the name box to read-only if loading
 	if( dlgtype==load )
@@ -22,14 +19,18 @@ MechDB::MechDB(dlgtype_t _dlgtype, QWidget *parent) :
 		ui->mechname->setReadOnly(false);
 
 	// connect sql information
+	
 	updateInfo();
-	QObject::connect( db, SIGNAL(hostnameChanged(QString)), this, SLOT(updateInfo()));
-	QObject::connect( db, SIGNAL(dbChanged(QString)), this, SLOT(updateInfo()));
-	QObject::connect( db, SIGNAL(usernameChanged(QString)), this, SLOT(updateInfo()));
-	QObject::connect( db, SIGNAL(portChanged(int)), this, SLOT(updateInfo()));
-	QObject::connect( db, SIGNAL(connectionStatus(QString)), this, SLOT(updateInfo()));
+	connect( &db, SIGNAL(hostNameChanged(QString)), this, SLOT(updateInfo()));
+	connect( &db, SIGNAL(databaseChanged(QString)), this, SLOT(updateInfo()));
+	connect( &db, SIGNAL(userNameChanged(QString)), this, SLOT(updateInfo()));
+	connect( &db, SIGNAL(portChanged(int)), this, SLOT(updateInfo()));
+	connect( &db, SIGNAL(connectionStatus(QString)), this, SLOT(updateInfo()));
 
 	connect( ui->configure, SIGNAL(clicked()), this, SLOT(sqlConfig()));
+	
+	connect( ui->mechname, SIGNAL(textChanged(QString)), this, SLOT(updateList()) );
+	connect( ui->refresh, SIGNAL(clicked()), this, SLOT(refreshList()) );
 }
 
 void MechDB::sqlConfig()
@@ -38,27 +39,34 @@ void MechDB::sqlConfig()
 	bool ok = config->exec();
 	
 	if(!ok) return;
-	
-	// set values
-	/*db->setHostName( config->getHostname() );
-	db->setUserName( config->getUsername() );
-	db->setPassword( config->getPassword() );*/
-	
-	/*db->connectToServer();
-	if( !db->isConnected() ) {
-		QErrorMessage* msg = new QErrorMessage(this);
-		msg->showMessage("Could not connect to server.");
-	}*/
-	updateInfo();
 }
 
 void MechDB::updateInfo()
 {
-	bool con = db->isOpen();
-	ui->lblInfo->setText( db->userName() + "@" + db->hostName() );
-	ui->lblInfo->setEnabled(con);
-	ui->frameMechs->setEnabled(con);
-	ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(con);
+	bool con = db.sqldb.open();
+	ui->lblInfo->setText( db.getUserName() + "@" + db.getHostName() );
+	ui->lblInfo->setEnabled( con );
+	ui->frameMechs->setEnabled( con );
+	ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled( con );
+	
+	refreshList();
+}
+
+void MechDB::refreshList()
+{
+	ui->mechlist->clear();
+	// add the current list of mechanisms to the listbox
+	ui->mechlist->addItems(db.mechList());
+}
+
+void MechDB::updateList()
+{
+	// search for text in mechname within mechlist
+	QList<QListWidgetItem*> list = ui->mechlist->findItems(ui->mechname->text(), Qt::MatchFixedString|Qt::MatchCaseSensitive);
+	if( !list.isEmpty() )
+		ui->mechlist->setCurrentItem(list.first());
+	else
+		ui->mechlist->setCurrentRow(-1);
 }
 
 MechDB::~MechDB()

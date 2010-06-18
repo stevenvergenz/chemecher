@@ -20,8 +20,8 @@ public:
     SqlConfig(QWidget *parent = 0);
     ~SqlConfig();
 	
-	QString getHostname();
-	QString getUsername();
+	QString getHostName();
+	QString getUserName();
 	QString getPassword();
 	
 protected:

@@ -20,7 +20,7 @@ namespace Mix {
 	//accuracy data
 	double precision=.00001;
 
-	DBHandler* db = new DBHandler();
+	DBHandler db;
 
 	void initialize()
 	{

@@ -3,7 +3,6 @@
 
 #include <QDialog>
 #include <QString>
-#include <QErrorMessage>
 
 class MechDB;
 
@@ -22,6 +21,8 @@ public:
 
 public slots:
 	void updateInfo();
+	void refreshList();
+	void updateList();
 	void sqlConfig();
 
 protected:
