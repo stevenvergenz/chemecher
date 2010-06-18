@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QString>
+#include <QDebug>
 
 class MechDB;
 
@@ -18,8 +19,10 @@ public:
 	
 	MechDB(dlgtype_t _dlgtype, QWidget *parent = 0);
     ~MechDB();
-
+	
 public slots:
+	void accept();
+	
 	void updateInfo();
 	void refreshList();
 	void updateList();

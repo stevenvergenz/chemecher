@@ -10,40 +10,65 @@ DBHandler::DBHandler() :QObject() {
 	sqldb.setPassword("vergenz");
 }
 
-/*
-	//general mix information
-	extern QList<Step*> StepList;
-	extern QList<Cpd*> CpdList;
-
-	//current mix identifiers
-	extern QString mechName;
-	extern QFile fileName;
-
-	//time data
-	extern double timeStep, reportStep;
-	extern int initialTime, maxTime;
-	extern int debugStart, debugEnd;
-
-	// sql data
-	extern DBHandler db;
-
-	//accuracy data
-	extern double precision;
-*/
-
 // loads the mechanism from the database into Mix namespace
 bool DBHandler::loadMech(QString mechname)
 {
 	sqldb.open();
-	QSqlQuery query("SELECT * FROM mechs WHERE MechName=" + mechname + ";", sqldb);
 	
-	return false;
+	QSqlQuery query;
+	if( !query.exec("SELECT * FROM mechs WHERE MechName=" + mechname + ";") )
+		return false;
+	if( !query.next() )
+		return false;
+	
+	// load the main mech info
+	mechName   = mechname;
+	mechDesc   = query.value(1).toString();
+	timeStep   = query.value(3).toDouble();
+	reportStep = query.value(2).toDouble();
+	startTime  = query.value(4).toDouble();
+	endTime    = query.value(5).toDouble();
+	debugStart = query.value(6).toInt();
+	debugEnd   = query.value(7).toInt();
+	precision  = query.value(8).toDouble();
+	
+	/*
++------------+----------------------------------------+------+-----+---------+-------+
+| Field      | Type                                   | Null | Key | Default | Extra |
++------------+----------------------------------------+------+-----+---------+-------+
+| MechName   | char(20)                               | NO   | PRI | NULL    |       |
+| CpdID      | int(11)                                | NO   | PRI | NULL    |       |
+| ShortName  | char(2)                                | NO   |     | NULL    |       |
+| LongName   | char(30)                               | NO   |     | NULL    |       |
+| State      | enum('homo','hetero','aq','s','l','g') | NO   |     | NULL    |       |
+| Transition | enum('linear','atan')                  | YES  |     | NULL    |       |
+| InitConc   | double                                 | NO   |     | NULL    |       |
++------------+----------------------------------------+------+-----+---------+-------+
+	  */
+	
+	if( !query.exec("SELECT * FROM compounds WHERE MechName=" + mechname + ";") )
+		return false;
+	while( query.next() ) {
+		Cpd *newcpd = new Cpd();
+		newcpd->setShortName(   query.value(2).toString() );
+		newcpd->setLongName(    query.value(3).toString() );
+		newcpd->setState(       query.value(4).toInt()    );
+		newcpd->setTransition(  query.value(5).toInt()    );
+		newcpd->setInitialConc( query.value(6).toDouble() );
+		
+	}
+	
+	sqldb.close();
+	return true;
 }
 
 // saves the data in the Mix namespace to the database as <mechname>
 // if already exists, overwrites
 bool DBHandler::saveMech(QString mechname)
 {
+	//if( sqldb.driver()->hasFeature(QSqlDriver::Transactions) )
+	//	qDebug() << "Has transactions! :D";
+	
 	return false;
 }
 

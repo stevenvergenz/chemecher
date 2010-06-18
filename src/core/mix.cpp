@@ -10,6 +10,7 @@ namespace Mix {
 
 	//current mix identifiers
 	QString mechName = "";
+	QString mechDesc = "";
 	QFile fileName;
 
 	//time data

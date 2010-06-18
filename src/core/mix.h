@@ -17,11 +17,12 @@ namespace Mix
 
 	//current mix identifiers
 	extern QString mechName;
+	extern QString mechDesc;
 	extern QFile fileName;
 
 	//time data
 	extern double timeStep, reportStep;
-	extern int initialTime, maxTime;
+	extern double startTime, endTime;
 	extern int debugStart, debugEnd;
 
 	// sql data

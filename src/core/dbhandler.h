@@ -5,12 +5,15 @@
 #include <QStringList>
 #include <QSqlDatabase>
 #include <QSqlQuery>
+#include <QSqlDriver>
 #include <QVariant>
 #include <QDebug>
 
 class DBHandler;
 
 #include "mix.h"
+#include "cpd.h"
+#include "step.h"
 
 class DBHandler : public QObject
 {

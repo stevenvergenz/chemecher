@@ -33,6 +33,17 @@ MechDB::MechDB(dlgtype_t _dlgtype, QWidget *parent) :
 	connect( ui->refresh, SIGNAL(clicked()), this, SLOT(refreshList()) );
 }
 
+void MechDB::accept()
+{
+	if( dlgtype==save )
+		db.saveMech(ui->mechname->text());
+	else
+		db.loadMech(ui->mechname->text());
+	qDebug() << "Got here! :D";
+	
+	QDialog::accept();
+}
+
 void MechDB::sqlConfig()
 {
 	SqlConfig* config = new SqlConfig(this);
