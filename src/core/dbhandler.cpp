@@ -75,8 +75,9 @@ bool DBHandler::saveMech(QString mechname)
 // returns a list of the mechanism names
 QStringList DBHandler::mechList()
 {
-	sqldb.open();
 	QStringList ret;
+        if( !sqldb.open() )
+            return ret;
 	QSqlQuery query("SELECT MechName FROM mechs;", sqldb);
 	while(query.next()) {
 		QString name = query.value(0).toString();
