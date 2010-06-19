@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	windowlist.append( mdi->addSubWindow( tempcpd ) );
 	*/
 
-	setWindowState( windowState() | Qt::WindowMaximized );
+	//setWindowState( windowState() | Qt::WindowMaximized );
 
 	ui.lstSteps->setStatusTip("Put your steps here");
 
@@ -43,18 +43,13 @@ void MainWindow::saveMechDb()
 {
 	// run the dialog box
 	MechDB* dialog = new MechDB(MechDB::save, this);
-	int rtn = dialog->exec();
-
-	if(rtn == 0) return;
-
+	dialog->exec();
 }
 void MainWindow::loadMechDb()
 {
 	// run the dialog box
 	MechDB* dialog = new MechDB(MechDB::load, this);
-	int rtn = dialog->exec();
-
-	if(rtn == 0) return;
+	dialog->exec();
 }
 
 void MainWindow::addNewCpd()

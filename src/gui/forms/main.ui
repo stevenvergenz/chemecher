@@ -76,8 +76,7 @@
     </property>
     <addaction name="action_Launch_Simulator"/>
     <addaction name="separator"/>
-    <addaction name="action_Edit_Simulation_Data"/>
-    <addaction name="actionPreferences_2"/>
+    <addaction name="editSimData"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Steps"/>
@@ -312,9 +311,9 @@
     <string>&amp;Launch Simulator...</string>
    </property>
   </action>
-  <action name="action_Edit_Simulation_Data">
+  <action name="editSimData">
    <property name="text">
-    <string>&amp;Edit Simulation Data...</string>
+    <string>&amp;Edit Simulation Parameters...</string>
    </property>
   </action>
   <action name="actionPreferences_2">

@@ -6,6 +6,7 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlDriver>
+#include <QSqlError>
 #include <QVariant>
 #include <QDebug>
 
@@ -20,6 +21,7 @@ class DBHandler : public QObject
 Q_OBJECT
 public:
 	DBHandler();
+	~DBHandler();
 	
     QSqlDatabase sqldb;
 
@@ -27,6 +29,9 @@ public:
 	QStringList mechList();
     // checks if mechanism exists
     bool mechExists(QString mechname);
+	// deletes mechanism from database
+	//     <trans> = whether or not to use an sql transaction
+	bool dropMech(QString mechname, bool trans=true);
 
     QString getHostName();
     QString getDatabase();

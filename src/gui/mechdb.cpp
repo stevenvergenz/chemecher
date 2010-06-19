@@ -18,56 +18,76 @@ MechDB::MechDB(dlgtype_t _dlgtype, QWidget *parent) :
 	else
 		ui->mechname->setReadOnly(false);
 
-	// connect sql information
-	
+	// connect sql information	
 	updateInfo();
 	connect( &db, SIGNAL(hostNameChanged(QString)), this, SLOT(updateInfo()));
 	connect( &db, SIGNAL(databaseChanged(QString)), this, SLOT(updateInfo()));
 	connect( &db, SIGNAL(userNameChanged(QString)), this, SLOT(updateInfo()));
+	connect( &db, SIGNAL(passwordChanged(QString)), this, SLOT(updateInfo()));
 	connect( &db, SIGNAL(portChanged(int)), this, SLOT(updateInfo()));
 	connect( &db, SIGNAL(connectionStatus(QString)), this, SLOT(updateInfo()));
 
+	// connect the buttons
 	connect( ui->configure, SIGNAL(clicked()), this, SLOT(sqlConfig()));
-	
 	connect( ui->mechname, SIGNAL(textChanged(QString)), this, SLOT(updateList()) );
-	connect( ui->refresh, SIGNAL(clicked()), this, SLOT(refreshList()) );
+	connect( ui->refresh, SIGNAL(clicked()), this, SLOT(updateInfo()) );
 }
 
+// overloaded to determine the operation
 void MechDB::accept()
 {
 	if( dlgtype==save )
 		db.saveMech(ui->mechname->text());
 	else
 		db.loadMech(ui->mechname->text());
-	qDebug() << "Got here! :D";
-	
 	QDialog::accept();
 }
 
 void MechDB::sqlConfig()
 {
 	SqlConfig* config = new SqlConfig(this);
-	bool ok = config->exec();
-	
-	if(!ok) return;
+	config->exec();
 }
 
 void MechDB::updateInfo()
 {
 	bool con = db.sqldb.open();
-	ui->lblInfo->setText( db.getUserName() + "@" + db.getHostName() );
-	ui->lblInfo->setEnabled( con );
-	ui->frameMechs->setEnabled( con );
-	ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled( con );
 	
-	refreshList();
-}
-
-void MechDB::refreshList()
-{
+	// set the info box
+	ui->lblInfo->setText( db.getUserName() + "@" + db.getHostName() );
+	
+	// enable/disable the form according to whether a connection could be established
+	ui->infmech     ->setEnabled( con );
+	ui->infmechname ->setEnabled( con );
+	ui->mechname    ->setEnabled( con );
+	ui->mechlist    ->setEnabled( con );
+	ui->buttonBox->button(QDialogButtonBox::Ok)
+			        ->setEnabled( con );
+	
+	// set listbox settings
+	ui->mechlist->setSortingEnabled( con );
+	ui->mechlist->setSelectionMode(
+			(con ? QAbstractItemView::SingleSelection : QAbstractItemView::NoSelection ) );
 	ui->mechlist->clear();
-	// add the current list of mechanisms to the listbox
-	ui->mechlist->addItems(db.mechList());
+	
+	// get list of mechanisms
+	if( con ) {
+		ui->mechlist->addItems(db.mechList());
+		ui->mechlist->setEnabled(true);
+		if( ui->mechlist->count()==0 ) {
+			ui->mechlist->addItem("No mechanisms to display.");
+			ui->mechlist->setEnabled(false);
+		}
+	}
+	// give the error information
+	else {
+		ui->mechlist->addItem("Could not connect to database.");
+		ui->mechlist->addItem("Please ensure server exists and has");
+		ui->mechlist->addItem("   database `chemecher`.");
+		ui->mechlist->addItem("If database is not configured, run");
+		ui->mechlist->addItem("   mysql < configdb.sql");
+	}
+	
 }
 
 void MechDB::updateList()

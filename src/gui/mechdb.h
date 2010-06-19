@@ -24,7 +24,6 @@ public slots:
 	void accept();
 	
 	void updateInfo();
-	void refreshList();
 	void updateList();
 	void sqlConfig();
 
