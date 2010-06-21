@@ -12,6 +12,8 @@
 #include <QMdiArea>
 #include <QMdiSubWindow>
 #include <QList>
+#include <QUrl>
+#include <QFileDialog>
 
 #include "stepwindow.h"
 #include "cpdwindow.h"
@@ -32,6 +34,9 @@ public slots:
 	void showCpdWindow(QListWidgetItem*);
 	void saveMechDb();
 	void loadMechDb();
+	void testSaveLoad();
+	void setConstantDir(QFileDialog *indlg=0, QString setdir="");
+	
 
 signals:
 

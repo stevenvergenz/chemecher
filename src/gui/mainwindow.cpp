@@ -37,6 +37,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect(ui.actLoadMechDb, SIGNAL(triggered()),
 			this,			SLOT(loadMechDb()));
 	connect(ui.actExit, SIGNAL(triggered()), qApp, SLOT(quit()));
+	connect(ui.actSave, SIGNAL(triggered()),
+			this, SLOT(testSaveLoad()));
 }
 
 void MainWindow::saveMechDb()
@@ -98,4 +100,26 @@ void MainWindow::showCpdWindow(QListWidgetItem* item)
 	newCpdWindow->showNormal();
 	newCpdWindow->raise();
 	newCpdWindow->setFocus();
+}
+
+void MainWindow::testSaveLoad()
+{
+	qApp->beep();
+	QFileDialog dlg(this, "Open Mech from DB...", "/home", "Any file (*.*)");
+	dlg.setSidebarUrls(QList<QUrl>());
+	setConstantDir(&dlg, "/home");
+	dlg.exec();
+}
+
+void MainWindow::setConstantDir(QFileDialog *indlg, QString setdir)
+{
+	static QFileDialog *dlg;
+	static QString constdir;
+	if( indlg!=0 && setdir!=0 ) {
+		dlg = indlg;
+		constdir = setdir;
+		dlg->connect(dlg, SIGNAL(directoryEntered(QString)), this, SLOT(setConstantDir()));
+	}
+	
+	dlg->setDirectory(constdir);
 }

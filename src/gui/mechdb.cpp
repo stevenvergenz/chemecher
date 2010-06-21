@@ -18,6 +18,8 @@ MechDB::MechDB(dlgtype_t _dlgtype, QWidget *parent) :
 	else
 		ui->mechname->setReadOnly(false);
 
+	ui->buttonBox->addButton(ui->configure, QDialogButtonBox::ActionRole);
+	
 	// connect sql information	
 	updateInfo();
 	connect( &db, SIGNAL(hostNameChanged(QString)), this, SLOT(updateInfo()));

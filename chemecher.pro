@@ -23,13 +23,15 @@ HEADERS += src/core/cpd.h \
     src/gui/newcpddialog.h \
     src/gui/mechdb.h \
     src/core/dbhandler.h \
-    src/gui/sqlconfig.h
+    src/gui/sqlconfig.h \
+    src/gui/simparams.h
 FORMS += src/gui/forms/cpd.ui \
     src/gui/forms/main.ui \
     src/gui/forms/step.ui \
     src/gui/forms/newcpddialog.ui \
     src/gui/forms/mechdb.ui \
-	src/gui/forms/sqlconfig.ui
+    src/gui/forms/sqlconfig.ui \
+    src/gui/forms/simparams.ui
 SOURCES += src/chemecher.cpp \
     src/core/cpd.cpp \
     src/core/mix.cpp \
@@ -40,4 +42,5 @@ SOURCES += src/chemecher.cpp \
     src/gui/newcpddialog.cpp \
     src/gui/mechdb.cpp \
     src/core/dbhandler.cpp \
-    src/gui/sqlconfig.cpp
+    src/gui/sqlconfig.cpp \
+    src/gui/simparams.cpp
