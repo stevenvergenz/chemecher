@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	windowlist.append( mdi->addSubWindow( tempcpd ) );
 	*/
 
-	setWindowState( windowState() | Qt::WindowMaximized );
+	//setWindowState( windowState() | Qt::WindowMaximized );
 
 	ui.lstSteps->setStatusTip("Put your steps here");
 
@@ -27,11 +27,31 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	/***************** connect signals and slots *****************/
 	/*************************************************************/
 	connect(ui.pushAddCpd,	SIGNAL(clicked()),
-		this,		SLOT(addNewCpd())
+			this,			SLOT(addNewCpd())
 	);
 	connect(ui.lstSpecies,	SIGNAL(itemDoubleClicked(QListWidgetItem*)),
-		this,		SLOT(showCpdWindow(QListWidgetItem*))
+			this,			SLOT(showCpdWindow(QListWidgetItem*))
 	);
+	connect(ui.actSaveMechDb, SIGNAL(triggered()),
+			this,			SLOT(saveMechDb()));
+	connect(ui.actLoadMechDb, SIGNAL(triggered()),
+			this,			SLOT(loadMechDb()));
+	connect(ui.actExit, SIGNAL(triggered()), qApp, SLOT(quit()));
+	connect(ui.actSave, SIGNAL(triggered()),
+			this, SLOT(testSaveLoad()));
+}
+
+void MainWindow::saveMechDb()
+{
+	// run the dialog box
+	MechDB* dialog = new MechDB(MechDB::save, this);
+	dialog->exec();
+}
+void MainWindow::loadMechDb()
+{
+	// run the dialog box
+	MechDB* dialog = new MechDB(MechDB::load, this);
+	dialog->exec();
 }
 
 void MainWindow::addNewCpd()
@@ -80,4 +100,26 @@ void MainWindow::showCpdWindow(QListWidgetItem* item)
 	newCpdWindow->showNormal();
 	newCpdWindow->raise();
 	newCpdWindow->setFocus();
+}
+
+void MainWindow::testSaveLoad()
+{
+	qApp->beep();
+	QFileDialog dlg(this, "Open Mech from DB...", "/home", "Any file (*.*)");
+	dlg.setSidebarUrls(QList<QUrl>());
+	setConstantDir(&dlg, "/home");
+	dlg.exec();
+}
+
+void MainWindow::setConstantDir(QFileDialog *indlg, QString setdir)
+{
+	static QFileDialog *dlg;
+	static QString constdir;
+	if( indlg!=0 && setdir!=0 ) {
+		dlg = indlg;
+		constdir = setdir;
+		dlg->connect(dlg, SIGNAL(directoryEntered(QString)), this, SLOT(setConstantDir()));
+	}
+	
+	dlg->setDirectory(constdir);
 }

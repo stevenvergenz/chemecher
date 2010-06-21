@@ -29,12 +29,15 @@
     </property>
     <addaction name="action_New_Mechanism"/>
     <addaction name="action_Load_Mechanism"/>
-    <addaction name="action_Save_Mechanism"/>
-    <addaction name="actionSave_Mech_As"/>
+    <addaction name="actSave"/>
+    <addaction name="actionSave_Mech_As_2"/>
+    <addaction name="separator"/>
+    <addaction name="actSaveMechDb"/>
+    <addaction name="actLoadMechDb"/>
     <addaction name="separator"/>
     <addaction name="action_Import"/>
     <addaction name="separator"/>
-    <addaction name="actionE_xit"/>
+    <addaction name="actExit"/>
    </widget>
    <widget class="QMenu" name="menu_Tools">
     <property name="title">
@@ -73,8 +76,7 @@
     </property>
     <addaction name="action_Launch_Simulator"/>
     <addaction name="separator"/>
-    <addaction name="action_Edit_Simulation_Data"/>
-    <addaction name="actionPreferences_2"/>
+    <addaction name="editSimParams"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Steps"/>
@@ -85,6 +87,9 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="dockWidget">
+   <property name="features">
+    <set>QDockWidget::NoDockWidgetFeatures</set>
+   </property>
    <property name="allowedAreas">
     <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
    </property>
@@ -235,7 +240,7 @@
     <string>&amp;Load Mech...</string>
    </property>
   </action>
-  <action name="action_Save_Mechanism">
+  <action name="actSave">
    <property name="text">
     <string>&amp;Save Mech</string>
    </property>
@@ -245,12 +250,7 @@
     <string>&amp;Import...</string>
    </property>
   </action>
-  <action name="actionSave_Mech_As">
-   <property name="text">
-    <string>Save Mech &amp;As...</string>
-   </property>
-  </action>
-  <action name="actionE_xit">
+  <action name="actExit">
    <property name="text">
     <string>E&amp;xit</string>
    </property>
@@ -311,14 +311,34 @@
     <string>&amp;Launch Simulator...</string>
    </property>
   </action>
-  <action name="action_Edit_Simulation_Data">
+  <action name="editSimParams">
    <property name="text">
-    <string>&amp;Edit Simulation Data...</string>
+    <string>&amp;Edit Simulation Parameters...</string>
    </property>
   </action>
   <action name="actionPreferences_2">
    <property name="text">
     <string>Preferences...</string>
+   </property>
+  </action>
+  <action name="actionAsdlfk">
+   <property name="text">
+    <string>asdlfk</string>
+   </property>
+  </action>
+  <action name="actSaveMechDb">
+   <property name="text">
+    <string>Save Mech to &amp;DB...</string>
+   </property>
+  </action>
+  <action name="actLoadMechDb">
+   <property name="text">
+    <string>Load Mech from D&amp;B...</string>
+   </property>
+  </action>
+  <action name="actionSave_Mech_As_2">
+   <property name="text">
+    <string>Save Mech &amp;As...</string>
    </property>
   </action>
  </widget>

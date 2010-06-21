@@ -10,6 +10,7 @@ namespace Mix {
 
 	//current mix identifiers
 	QString mechName = "";
+	QString mechDesc = "";
 	QFile fileName;
 
 	//time data
@@ -20,6 +21,7 @@ namespace Mix {
 	//accuracy data
 	double precision=.00001;
 
+	DBHandler db;
 
 	void initialize()
 	{

@@ -51,3 +51,4 @@ int NewCpdDialog::getState(){
 	//return ui.comboNewState->currentIndex();
 	return 0;
 }
+

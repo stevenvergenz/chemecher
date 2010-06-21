@@ -15,36 +15,9 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+DROP DATABASE IF EXISTS `chemecher`;
 CREATE DATABASE IF NOT EXISTS `chemecher`;
 USE `chemecher`;
-
---
--- Table structure for table `compounds`
---
-
-DROP TABLE IF EXISTS `compounds`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `compounds` (
-  `MechID` int(11) NOT NULL,
-  `CpdID` int(11) NOT NULL,
-  `ShortName` char(2) NOT NULL,
-  `LongName` char(30) NOT NULL,
-  `State` enum('homo','hetero','aq','s','l','g') NOT NULL,
-  `Transition` enum('linear','atan') DEFAULT NULL,
-  `InitConc` double NOT NULL,
-  PRIMARY KEY (`MechID`,`CpdID`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `compounds`
---
-
-LOCK TABLES `compounds` WRITE;
-/*!40000 ALTER TABLE `compounds` DISABLE KEYS */;
-/*!40000 ALTER TABLE `compounds` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `mechs`
@@ -54,16 +27,16 @@ DROP TABLE IF EXISTS `mechs`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mechs` (
-  `MechID` int(11) NOT NULL,
-  `MechName` char(50) NOT NULL,
-  `ReportStep` double NOT NULL,
+  `MechName` char(20) NOT NULL,
+  `MechDesc` char(100),
   `TimeStep` double NOT NULL,
-  `InitTime` int(11) NOT NULL,
-  `MaxTime` int(11) NOT NULL,
+  `ReportStep` double NOT NULL,
+  `StartTime` double NOT NULL,
+  `EndTime` double NOT NULL,
   `DebugStart` int(11) NOT NULL,
   `DebugEnd` int(11) NOT NULL,
   `Precis` double NOT NULL,
-  PRIMARY KEY (`MechID`)
+  PRIMARY KEY (`MechName`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -77,6 +50,34 @@ LOCK TABLES `mechs` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `cpds`
+--
+
+DROP TABLE IF EXISTS `cpds`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `cpds` (
+  `MechName` char(20) NOT NULL,
+  `CpdID` int(11) NOT NULL,
+  `ShortName` char(5) NOT NULL,
+  `LongName` char(30) NOT NULL,
+  `State` enum('homo','hetero','aq','s','l','g') NOT NULL,
+  `Transition` enum('linear','atan') DEFAULT NULL,
+  `InitConc` double NOT NULL,
+  PRIMARY KEY (`MechName`,`CpdID`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `cpds`
+--
+
+LOCK TABLES `cpds` WRITE;
+/*!40000 ALTER TABLE `cpds` DISABLE KEYS */;
+/*!40000 ALTER TABLE `cpds` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `steps`
 --
 
@@ -84,7 +85,7 @@ DROP TABLE IF EXISTS `steps`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `steps` (
-  `MechID` int(11) NOT NULL,
+  `MechName` char(20) NOT NULL,
   `StepID` int(11) NOT NULL,
   `StepName` char(30) NOT NULL,
   `Kplus` double NOT NULL,
@@ -95,7 +96,7 @@ CREATE TABLE `steps` (
   `Prod1ID` int(11) NOT NULL,
   `Prod2ID` int(11) DEFAULT NULL,
   `Prod3ID` int(11) DEFAULT NULL,
-  PRIMARY KEY (`MechID`,`StepID`)
+  PRIMARY KEY (`MechName`,`StepID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
