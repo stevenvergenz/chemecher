@@ -1,0 +1,19 @@
+'all eleven values must be listed even if autostep is "no".
+'eleven can be in any order, and blank lines and capitalization doesn't matter.
+calcstep=.01
+reportstep=.01
+maxtime=100
+order=4          'must be between 1 and 4
+method=runge     'must be one of the eight methods from CheMecher 2
+transition=atan  'must be either "atan", "linear", or "none"
+
+autostep=yes     'must be "yes" to enable autostepping
+gateband=1
+shifttest=20
+maxreduce=10
+stepfactor=2
+
+'initial concentrations
+'non-listed species are initialized at 0
+A(.) 200
+B(.) 100
