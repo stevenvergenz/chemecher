@@ -8,8 +8,6 @@
 #include "mix.h"
 #include "dbhandler.h"
 
-using namespace Mix;
-
 namespace Ui {
     class SqlConfig;
 }

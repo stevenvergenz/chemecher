@@ -5,38 +5,59 @@
 #include <QString>
 #include <QFile>
 
+class Mix;
+
 #include "step.h"
 #include "cpd.h"
 #include "dbhandler.h"
 
-namespace Mix
+class Mix : public QObject
 {
-	//general mix information
-	extern QList<Step*> StepList;
-	extern QList<Cpd*> CpdList;
+Q_OBJECT
+public:
+	// members
+	QList<Step*> StepList;
+	QStringList stepNameList();
+	void addStep(Step *step);
+	void removeStep(Step *step);
+	
+	QList<Cpd*> CpdList;
 	QStringList cpdIdList();
-
-	//current mix identifiers
-	extern QString mechName;
-	extern QString mechDesc;
-	extern QFile fileName;
-
-	//time data
-	extern double timeStep, reportStep;
-	extern double startTime, endTime;
-	extern int debugStart, debugEnd;
-
-	// sql data
-	extern DBHandler db;
-
-	//accuracy data
-	extern double precision;
-
+	void addCpd(Cpd *cpd);
+	void removeCpd(Cpd *cpd);
+	
+	
 	void initialize();
-
 	void calculateRKF();
 	void calculateLegacy();
+	
 
-}
+	//current mix identifiers
+	QString mechName;
+	QString mechDesc;
+	QFile fileName;
+
+	//time data
+	double timeStep, reportStep;
+	double startTime, endTime;
+	int debugStart, debugEnd;
+
+	// sql data
+	DBHandler *db;
+
+	//accuracy data
+	double precision;
+	
+signals:
+	void addedStep(Step *step);
+	void removedStep(Step *step);
+	void addedCpd(Cpd *cpd);
+	void removedCpd(Cpd *cpd);
+	
+public slots:
+	
+};
+
+extern Mix *mix;
 
 #endif // MIX_H

@@ -131,7 +131,11 @@
           </widget>
          </item>
          <item>
-          <widget class="QListWidget" name="lstCpds"/>
+          <widget class="QListWidget" name="lstCpds">
+           <property name="sortingEnabled">
+            <bool>false</bool>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QFrame" name="frame_4">
@@ -189,7 +193,11 @@
           </widget>
          </item>
          <item>
-          <widget class="QListWidget" name="lstSteps"/>
+          <widget class="QListWidget" name="lstSteps">
+           <property name="sortingEnabled">
+            <bool>false</bool>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QFrame" name="frame_3">

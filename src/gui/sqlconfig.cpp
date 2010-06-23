@@ -23,24 +23,24 @@ SqlConfig::SqlConfig(QWidget *parent) :
 	connect( ui->password, SIGNAL(returnPressed()),
 			 this, SLOT(apply()) );
 			
-	ui->hostname->setText(db.getHostName());
-	ui->username->setText(db.getUserName());
-	ui->password->setText(db.getPassword());	
+	ui->hostname->setText(mix->db->getHostName());
+	ui->username->setText(mix->db->getUserName());
+	ui->password->setText(mix->db->getPassword());	
 }
 
 void SqlConfig::apply()
 {
-	db.setHostName(ui->hostname->text());
-	db.setUserName(ui->username->text());
-	db.setPassword(ui->password->text());
+	mix->db->setHostName(ui->hostname->text());
+	mix->db->setUserName(ui->username->text());
+	mix->db->setPassword(ui->password->text());
 	changed();
 }
 
 void SqlConfig::changed()
 {
-	if( getHostName()==db.getHostName() &&
-		getUserName()==db.getUserName() &&
-		getPassword()==db.getPassword() )
+	if( getHostName()==mix->db->getHostName() &&
+		getUserName()==mix->db->getUserName() &&
+		getPassword()==mix->db->getPassword() )
 		ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(false);
 	else
 		ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(true);

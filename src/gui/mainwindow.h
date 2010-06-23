@@ -15,6 +15,8 @@
 #include <QUrl>
 #include <QFileDialog>
 
+class MainWindow;
+
 #include "stepwindow.h"
 #include "cpdwindow.h"
 #include "newcpddialog.h"
@@ -31,9 +33,13 @@ public:
 	MainWindow(QWidget* parent = 0);
 
 public slots:
+	
 	// cpd editing stuff
 	void addCpd();
 	void editCpdWindow(QListWidgetItem*);
+	
+	void updateCpdList();
+	void updateStepList();
 	
 	// saving/loading
 	void saveMechDb();

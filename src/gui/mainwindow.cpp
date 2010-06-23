@@ -28,6 +28,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	
 	// cpd and step
 	connect(ui.pushAddCpd, SIGNAL(clicked()), this, SLOT(addCpd()));
+	connect(mix, SIGNAL(addedCpd(Cpd*)), this, SLOT(updateCpdList()));
+	connect(mix, SIGNAL(addedStep(Step*)), this, SLOT(updateStepList()));
 	connect(ui.lstCpds, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
 			this, SLOT(editCpdWindow(QListWidgetItem*)));
 	
@@ -38,7 +40,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	
 	// exit
 	connect(ui.actExit, SIGNAL(triggered()), qApp, SLOT(quit()));
-	connect(qApp, SIGNAL(aboutToQuit()), &db, SLOT(closeDb()));
+	connect(qApp, SIGNAL(aboutToQuit()), mix->db, SLOT(closeDb()));
 }
 
 // saving/loading ////
@@ -65,14 +67,14 @@ void MainWindow::loadMechDb()
 
 void MainWindow::addCpd()
 {
-	CpdWindow* win = new CpdWindow(new Cpd(), 0, true);
+	CpdWindow* win = new CpdWindow(new Cpd(), this, 0, true);
 	mdi->addSubWindow(win);
 	win->show();
 	qDebug() << ":D";
 	return;
 	
 	//populate the fields and validate
-	NewCpdDialog* dialog = new NewCpdDialog(this);
+	/*NewCpdDialog* dialog = new NewCpdDialog(this);
 	int rtn = dialog->exec();
 
 	//if the add was rejected/canceled, return
@@ -84,17 +86,17 @@ void MainWindow::addCpd()
 	newcpd->setState( dialog->getState() );
 
 	//add to the list
-	Mix::CpdList.append( newcpd );
+	mix->CpdList.append( newcpd );
 	ui.lstCpds->addItem( newcpd->toString() );
 	CpdWindow* tempcpd = new CpdWindow(newcpd);
 	mdi->addSubWindow( tempcpd );
-	tempcpd->show();
+	tempcpd->show();*/
 }
 
 void MainWindow::editCpdWindow(QListWidgetItem* item)
 {
 	//get the cpd
-	Cpd* cpd = Mix::CpdList.at(
+	Cpd* cpd = mix->CpdList.at(
 			item->listWidget()->row(item) );
 
 	//see if it already has a window open
@@ -110,11 +112,26 @@ void MainWindow::editCpdWindow(QListWidgetItem* item)
 	}
 
 	//the window was not found, create a new one
-	CpdWindow* newCpdWindow = new CpdWindow(cpd);
+	CpdWindow* newCpdWindow = new CpdWindow(cpd, this);
 	mdi->addSubWindow( newCpdWindow );
 	newCpdWindow->showNormal();
 	newCpdWindow->raise();
 	newCpdWindow->setFocus();
+}
+
+void MainWindow::updateCpdList()
+{
+	ui.lstCpds->clear();
+	QListIterator<QString> i(mix->cpdIdList());
+	for(;i.hasNext();i.next())
+		ui.lstCpds->addItem(i.peekNext());
+}
+void MainWindow::updateStepList()
+{
+	ui.lstSteps->clear();
+	QListIterator<QString> i(mix->stepNameList());
+	for(;i.hasNext();i.next())
+		ui.lstSteps->addItem(i.peekNext());
 }
 
 //

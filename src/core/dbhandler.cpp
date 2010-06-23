@@ -1,7 +1,5 @@
 #include "dbhandler.h"
 
-using namespace Mix;
-
 DBHandler::DBHandler() :QObject()
 {
 	sqldb = QSqlDatabase::addDatabase("QMYSQL");
@@ -27,15 +25,15 @@ bool DBHandler::loadMech(QString mechname)
 		return false;
 	if( !query.next() )
 		return false;
-	mechName   = mechname;
-	mechDesc   = query.value(1).toString();
-	timeStep   = query.value(2).toDouble();
-	reportStep = query.value(3).toDouble();
-	startTime  = query.value(4).toDouble();
-	endTime    = query.value(5).toDouble();
-	debugStart = query.value(6).toInt();
-	debugEnd   = query.value(7).toInt();
-	precision  = query.value(8).toDouble();
+	mix->mechName   = mechname;
+	mix->mechDesc   = query.value(1).toString();
+	mix->timeStep   = query.value(2).toDouble();
+	mix->reportStep = query.value(3).toDouble();
+	mix->startTime  = query.value(4).toDouble();
+	mix->endTime    = query.value(5).toDouble();
+	mix->debugStart = query.value(6).toInt();
+	mix->debugEnd   = query.value(7).toInt();
+	mix->precision  = query.value(8).toDouble();
 	
 	// retrieve and add the compounds
 	if( !query.exec("SELECT * FROM cpds WHERE MechName='" + mechname + "';") )
@@ -47,7 +45,7 @@ bool DBHandler::loadMech(QString mechname)
 		newcpd->setState(       query.value(4).toInt()    );
 		newcpd->setTransition(  query.value(5).toInt()    );
 		newcpd->setInitialConc( query.value(6).toDouble() );
-		CpdList.append(newcpd);
+		mix->CpdList.append(newcpd);
 	}
 	
 	// retrieve and add the steps
@@ -80,14 +78,14 @@ bool DBHandler::saveMech(QString mechname)
 			"StartTime,EndTime,DebugStart,DebugEnd,Precis) "
 			"VALUES (?,?,?,?,?,?,?,?,?);");
 	query.addBindValue( mechname   );
-	query.addBindValue( mechDesc   );
-	query.addBindValue( timeStep   );
-	query.addBindValue( reportStep );
-	query.addBindValue( startTime  );
-	query.addBindValue( endTime    );
-	query.addBindValue( debugStart );
-	query.addBindValue( debugEnd   );
-	query.addBindValue( precision  );
+	query.addBindValue( mix->mechDesc   );
+	query.addBindValue( mix->timeStep   );
+	query.addBindValue( mix->reportStep );
+	query.addBindValue( mix->startTime  );
+	query.addBindValue( mix->endTime    );
+	query.addBindValue( mix->debugStart );
+	query.addBindValue( mix->debugEnd   );
+	query.addBindValue( mix->precision  );
 	if( !query.exec() )
 		return false;
 	
@@ -112,7 +110,7 @@ bool DBHandler::saveMech(QString mechname)
 			return false;
 	
 	// change the name, since it acts like `save as`
-	mechName = mechname;
+	mix->mechName = mechname;
 	
 	return true;
 }

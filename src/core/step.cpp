@@ -42,3 +42,6 @@ void Step::setKPlus(QString k){ kplus = k.toDouble(); emit kPlusChanged(kplus);}
 double Step::kMinus(){ return kminus; }
 void Step::setKMinus(double k){ kminus = k; emit kMinusChanged(kminus);}
 void Step::setKMinus(QString k){ kminus = k.toDouble(); emit kMinusChanged(kminus);}
+
+QString Step::toString()
+{return stepname;}

@@ -1,66 +1,18 @@
 #include "mainwindow.h"
 
-CpdWindow::CpdWindow(Cpd* base, QWidget* parent, bool isnew) : QFrame(parent), baseCpd(base)
+CpdWindow::CpdWindow(Cpd* base, MainWindow *main, QWidget* parent, bool isnew) : QFrame(parent), mainparent(main), baseCpd(base)
 {
 	ui.setupUi(this);
-
+	bottomEnabled = false;
+	
+	this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	this->setGeometry(this->geometry().x(), this->geometry().y(), 261, 337);
+	
 	// connect short name and state
 	connect( ui.txtShortName, SIGNAL(textEdited(QString)),
-			 baseCpd,         SLOT(setShortName(QString)) );
+			 this,            SLOT(checkValidationState()) );
 	connect( ui.comboState,	  SIGNAL(currentIndexChanged(int)),
-			 baseCpd,         SLOT(setState(int)) );
-	
-	// if the compound is being added
-	if( isnew ) {
-		
-		// hide the unvalidated fields
-		ui.frm1->setVisible(false);
-		ui.frm2->setVisible(false);
-		ui.frm3->setVisible(false);
-		
-		this->setWindowTitle("New specie");
-		
-		connect( ui.pushAdd, SIGNAL(clicked()),
-				 this,       SLOT(validateAndAdd()) );
-		
-	}
-	else
-		setUpBottomHalf();
-	
-	//set up the formatting replacements
-
-	setStatusTip("Put your species here");
-	
-}
-
-// makes sure name/state combo is valid, adds cpd
-void CpdWindow::validateAndAdd()
-{
-	// if name/state combo does not yet exist
-	if( !Mix::cpdIdList().contains(baseCpd->toString()) ) {
-		// add the compound
-		Mix::CpdList.append(baseCpd);
-		
-		// show the pertinent fields
-		ui.frm1->setVisible(true);
-		ui.frm2->setVisible(true);
-		ui.frm3->setVisible(true);
-		
-		setUpBottomHalf();
-	}
-}
-
-void CpdWindow::setUpBottomHalf()
-{
-	// initialize all the fields to the appropriate values
-	ui.txtShortName->setText( baseCpd->shortName() );
-	ui.comboState->setCurrentIndex( (int)baseCpd->state() );
-	//ui.txtLongName->setText( baseCpd->longName() );
-	ui.comboTrans->setCurrentIndex( (int)baseCpd->transition() );
-	ui.spinThresh->setValue( baseCpd->threshold() );
-	ui.spinSharp->setValue( baseCpd->sharpness() );
-	ui.spinConc->setValue( baseCpd->initialConc() );
-	setWindowTitle( baseCpd->toString() );
+			 this,            SLOT(checkValidationState()) );
 	
 	// connect the various widgets to modify the appropriate fields in base
 	//connect( ui.txtLongName, SIGNAL(textEdited(QString)),
@@ -79,7 +31,101 @@ void CpdWindow::setUpBottomHalf()
 			 this,          SLOT(updateForm()) );
 	connect( ui.comboTrans, SIGNAL(currentIndexChanged(int)),
 			 this,          SLOT(updateForm()) );
+	
+	// if the compound is being added
+	if( isnew ) {
+		this->setWindowTitle("New specie");
+		connect( ui.pushValidate, SIGNAL(clicked()),
+				 this,            SLOT(validate()) );
+	}
+	else
+		enableBottom();
+
+	checkValidationState();
 	updateForm();
+	
+	//set up the formatting replacements
+	setStatusTip("Put your species here");
+	
+}
+
+// makes sure name/state combo is valid, adds cpd
+void CpdWindow::validate()
+{
+	QString name = ui.txtShortName->text();
+	int state = ui.comboState->currentIndex();
+	
+	if( name.length()==0 ) {
+		QMessageBox::critical(this, "Error", "Name must not be empty!", QMessageBox::Ok);
+		ui.txtShortName->setFocus();
+		return;
+	}
+	
+	// if name/state combo does not yet exist
+	if( !mix->cpdIdList().contains(name+Cpd::STATES[state]) ) {
+		
+		baseCpd->setShortName(name);
+		baseCpd->setState(state);
+		if( !mix->CpdList.contains(baseCpd) ) {
+			// add the compound
+			mix->addCpd(baseCpd);
+		}
+		
+		this->mainparent->updateCpdList();
+		
+		ui.pushValidate->setEnabled(false);
+		enableBottom();
+		ui.spinConc->setFocus();
+		
+		setWindowTitle( baseCpd->toString() );
+	}
+	else {
+		QMessageBox::critical(this, "Error", "Name/State combination must be unique!", QMessageBox::Ok);
+		ui.txtShortName->setText(baseCpd->shortName());
+		ui.comboState->setCurrentIndex((int)baseCpd->state());
+		ui.txtShortName->setFocus();
+		ui.txtShortName->setSelection(0, name.length());
+	}
+}
+
+void CpdWindow::checkValidationState()
+{
+	if( ui.txtShortName->text()=="" || ui.txtShortName->text()!=baseCpd->shortName()
+		|| ui.comboState->currentIndex()!=(int)baseCpd->state() ) {
+		disableBottom();
+		ui.pushValidate->setEnabled(true);
+	}
+	else {
+		enableBottom();
+		ui.pushValidate->setEnabled(false);
+	}
+}
+
+void CpdWindow::enableBottom()
+{
+	ui.frm1->setEnabled(true);
+	ui.frm2->setEnabled(true);
+	ui.frm3->setEnabled(true);
+	bottomEnabled = true;
+	
+	// initialize all the fields to the appropriate values
+	/*ui.txtShortName->setText( baseCpd->shortName() );
+	ui.comboState->setCurrentIndex( (int)baseCpd->state() );
+	//ui.txtLongName->setText( baseCpd->longName() );
+	ui.comboTrans->setCurrentIndex( (int)baseCpd->transition() );
+	ui.spinThresh->setValue( baseCpd->threshold() );
+	ui.spinSharp->setValue( baseCpd->sharpness() );
+	ui.spinConc->setValue( baseCpd->initialConc() );*/
+	
+	updateForm();
+}
+
+void CpdWindow::disableBottom()
+{
+	ui.frm1->setEnabled(false);
+	ui.frm2->setEnabled(false);
+	ui.frm3->setEnabled(false);
+	bottomEnabled = false;
 }
 
 // updates the transition, thresh, and sharp rows

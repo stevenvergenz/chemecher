@@ -34,12 +34,12 @@ StepWindow::StepWindow(Step* step, QWidget* parent) : QFrame(parent), baseStep(s
 
 void StepWindow::updateReagentBoxes()
 {
-	//pull the new list of species from Mix::CpdList
+	//pull the new list of species from mix->CpdList
 	QStringList cpdNameList;
 	cpdNameList << "";
-	int size = Mix::CpdList.size();
+	int size = mix->CpdList.size();
 	for( int i=0; i<size; i++ ){
-		cpdNameList << Mix::CpdList[i]->shortName();
+		cpdNameList << mix->CpdList[i]->shortName();
 	}
 
 	//find the strings of the current indexes

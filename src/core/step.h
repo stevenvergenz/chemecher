@@ -16,6 +16,8 @@ public:
 	double kMinus();
 
 	Cpd* getReagent(int n);
+	
+	QString toString();
 
 public slots:
 	void setName(QString n);

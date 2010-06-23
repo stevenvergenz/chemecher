@@ -2,22 +2,29 @@
 #define _CPDWINDOW_H
 
 #include <QFrame>
+#include <QMessageBox>
 
 #include "ui_cpd.h"
 #include "cpd.h"
+#include "mainwindow.h"
 
 class CpdWindow : public QFrame
 {
 	Q_OBJECT
 
 public:
-	CpdWindow(Cpd* base, QWidget* parent = 0, bool isnew=false );
+	CpdWindow(Cpd* base, MainWindow *main, QWidget* parent = 0, bool isnew=false );
 	Cpd* base(){ return baseCpd; }
+	
+	MainWindow *mainparent;
 
 public slots:
 	// for new cpds
-	void validateAndAdd();
-	void setUpBottomHalf();
+	void validate();
+	void checkValidationState();
+	
+	void enableBottom();
+	void disableBottom();
 	
 	// for existing cpds
 	void updateForm();
@@ -31,6 +38,7 @@ private slots:
 private:
 	Ui::cpdWindow ui;
 	Cpd* baseCpd;
+	bool bottomEnabled;
 
 };
 

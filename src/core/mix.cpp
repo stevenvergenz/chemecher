@@ -1,48 +1,51 @@
 #include "mix.h"
 
-using namespace Mix;
+Mix *mix = new Mix();
 
-namespace Mix {
+QStringList Mix::cpdIdList() {
+	QStringList ret;
+	QListIterator<Cpd*> i(CpdList);
+	for( ; i.hasNext(); i.next() )
+		ret.append(i.peekNext()->toString());
+	return ret;
+}
+void Mix::addCpd(Cpd *cpd) {
+	CpdList.append(cpd);
+	emit addedCpd(cpd);
+}
+void Mix::removeCpd(Cpd *cpd)
+{
+	
+}
 
-	//general mix information
-	QList<Step*> StepList;
-	QList<Cpd*> CpdList;
-	QStringList cpdIdList() {
-		QStringList ret;
-		QListIterator<Cpd*> i(CpdList);
-		for( ; i.hasNext(); i.next() )
-			ret.append(i.peekNext()->toString());
-		return ret;
-	}
+QStringList Mix::stepNameList() {
+	QStringList ret;
+	QListIterator<Step*> i(StepList);
+	for( ; i.hasNext(); i.next() )
+		ret.append(i.peekNext()->name());
+	return ret;
+	
+}
+void Mix::addStep(Step *step) {
+	StepList.append(step);
+	emit addedStep(step);
+}
+void Mix::removeStep(Step *step)
+{
+	
+}
 
-	//current mix identifiers
-	QString mechName = "";
-	QString mechDesc = "";
-	QFile fileName;
+void Mix::initialize()
+{
 
-	//time data
-	double timeStep=.01, reportStep=.1;
-	double startTime=0, endTime=100;
-	int debugStart=-1, debugEnd=-1;
+}
 
-	//accuracy data
-	double precision=.00001;
+void Mix::calculateRKF()
+{
 
-	DBHandler db;
+}
 
-	void initialize()
-	{
-
-	}
-
-	void calculateRKF()
-	{
-
-	}
-
-	void calculateLegacy()
-	{
-
-	}
+void Mix::calculateLegacy()
+{
 
 }

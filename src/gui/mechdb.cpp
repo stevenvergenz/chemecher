@@ -1,7 +1,5 @@
 #include "mechdb.h"
 
-using namespace Mix;
-
 MechDB::MechDB(dlgtype_t _dlgtype, QWidget *parent) :
     QDialog(parent),
 	ui(new Ui::mechdb),
@@ -22,12 +20,12 @@ MechDB::MechDB(dlgtype_t _dlgtype, QWidget *parent) :
 	
 	// connect sql information	
 	updateInfo();
-	connect( &db, SIGNAL(hostNameChanged(QString)), this, SLOT(updateInfo()));
-	connect( &db, SIGNAL(databaseChanged(QString)), this, SLOT(updateInfo()));
-	connect( &db, SIGNAL(userNameChanged(QString)), this, SLOT(updateInfo()));
-	connect( &db, SIGNAL(passwordChanged(QString)), this, SLOT(updateInfo()));
-	connect( &db, SIGNAL(portChanged(int)), this, SLOT(updateInfo()));
-	connect( &db, SIGNAL(connectionStatus(QString)), this, SLOT(updateInfo()));
+	connect( mix->db, SIGNAL(hostNameChanged(QString)), this, SLOT(updateInfo()));
+	connect( mix->db, SIGNAL(databaseChanged(QString)), this, SLOT(updateInfo()));
+	connect( mix->db, SIGNAL(userNameChanged(QString)), this, SLOT(updateInfo()));
+	connect( mix->db, SIGNAL(passwordChanged(QString)), this, SLOT(updateInfo()));
+	connect( mix->db, SIGNAL(portChanged(int)), this, SLOT(updateInfo()));
+	connect( mix->db, SIGNAL(connectionStatus(QString)), this, SLOT(updateInfo()));
 
 	// connect the buttons
 	connect( ui->configure, SIGNAL(clicked()), this, SLOT(sqlConfig()));
@@ -39,9 +37,9 @@ MechDB::MechDB(dlgtype_t _dlgtype, QWidget *parent) :
 void MechDB::accept()
 {
 	if( dlgtype==save )
-		db.saveMech(ui->mechname->text());
+		mix->db->saveMech(ui->mechname->text());
 	else
-		db.loadMech(ui->mechname->text());
+		mix->db->loadMech(ui->mechname->text());
 	QDialog::accept();
 }
 
@@ -53,10 +51,10 @@ void MechDB::sqlConfig()
 
 void MechDB::updateInfo()
 {
-	bool con = db.sqldb.open();
+	bool con = mix->db->sqldb.open();
 	
 	// set the info box
-	ui->lblInfo->setText( db.getUserName() + "@" + db.getHostName() );
+	ui->lblInfo->setText( mix->db->getUserName() + "@" + mix->db->getHostName() );
 	
 	// enable/disable the form according to whether a connection could be established
 	ui->infmech     ->setEnabled( con );
@@ -74,7 +72,7 @@ void MechDB::updateInfo()
 	
 	// get list of mechanisms
 	if( con ) {
-		ui->mechlist->addItems(db.mechList());
+		ui->mechlist->addItems(mix->db->mechList());
 		ui->mechlist->setEnabled(true);
 		if( ui->mechlist->count()==0 ) {
 			ui->mechlist->addItem("No mechanisms to display.");
