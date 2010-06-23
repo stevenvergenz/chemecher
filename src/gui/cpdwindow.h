@@ -4,7 +4,7 @@
 #include <QFrame>
 #include <QMessageBox>
 
-#include "ui_cpd.h"
+#include "ui_cpdwindow.h"
 #include "cpd.h"
 #include "mainwindow.h"
 

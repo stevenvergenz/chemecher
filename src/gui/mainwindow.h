@@ -23,7 +23,7 @@ class MainWindow;
 #include "mechdb.h"
 #include "mix.h"
 
-#include "ui_main.h"
+#include "ui_mainwindow.h"
 
 class MainWindow : public QMainWindow
 {

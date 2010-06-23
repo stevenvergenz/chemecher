@@ -11,7 +11,7 @@
 #include <QFrame>
 #include <QStringList>
 
-#include "ui_step.h"
+#include "ui_stepwindow.h"
 #include "step.h"
 #include "mix.h"
 
