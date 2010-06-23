@@ -13,6 +13,8 @@ CpdWindow::CpdWindow(Cpd* base, MainWindow *main, QWidget* parent, bool isnew) :
 			 this,            SLOT(checkValidationState()) );
 	connect( ui.comboState,	  SIGNAL(currentIndexChanged(int)),
 			 this,            SLOT(checkValidationState()) );
+	connect( ui.pushValidate, SIGNAL(clicked()),
+			 this,            SLOT(validate()) );
 	
 	// connect the various widgets to modify the appropriate fields in base
 	//connect( ui.txtLongName, SIGNAL(textEdited(QString)),
@@ -33,13 +35,18 @@ CpdWindow::CpdWindow(Cpd* base, MainWindow *main, QWidget* parent, bool isnew) :
 			 this,          SLOT(updateForm()) );
 	
 	// if the compound is being added
-	if( isnew ) {
+	if( isnew )
 		this->setWindowTitle("New specie");
-		connect( ui.pushValidate, SIGNAL(clicked()),
-				 this,            SLOT(validate()) );
+	else {
+		this->setWindowTitle(baseCpd->toString());
+		ui.txtShortName->setText(baseCpd->shortName());
+		ui.comboState->setCurrentIndex((int)baseCpd->state());
+		ui.spinConc->setValue(baseCpd->initialConc());
+		ui.comboTrans->setCurrentIndex((int)baseCpd->transition());
+		ui.spinThresh->setValue(baseCpd->threshold());
+		ui.spinSharp->setValue(baseCpd->sharpness());
+		ui.txtLongName->setText(baseCpd->longName());
 	}
-	else
-		enableBottom();
 
 	checkValidationState();
 	updateForm();
@@ -73,8 +80,7 @@ void CpdWindow::validate()
 		
 		this->mainparent->updateCpdList();
 		
-		ui.pushValidate->setEnabled(false);
-		enableBottom();
+		checkValidationState();
 		ui.spinConc->setFocus();
 		
 		setWindowTitle( baseCpd->toString() );
@@ -85,6 +91,7 @@ void CpdWindow::validate()
 		ui.comboState->setCurrentIndex((int)baseCpd->state());
 		ui.txtShortName->setFocus();
 		ui.txtShortName->setSelection(0, name.length());
+		checkValidationState();
 	}
 }
 

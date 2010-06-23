@@ -19,7 +19,6 @@ class MainWindow;
 
 #include "stepwindow.h"
 #include "cpdwindow.h"
-#include "newcpddialog.h"
 #include "mechdb.h"
 #include "mix.h"
 
@@ -37,6 +36,9 @@ public slots:
 	// cpd editing stuff
 	void addCpd();
 	void editCpdWindow(QListWidgetItem*);
+	void removeCpd();
+	void moveCpdUp();
+	void moveCpdDown();
 	
 	void updateCpdList();
 	void updateStepList();

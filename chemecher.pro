@@ -20,7 +20,6 @@ HEADERS += src/core/cpd.h \
     src/gui/cpdwindow.h \
     src/gui/mainwindow.h \
     src/gui/stepwindow.h \
-    src/gui/newcpddialog.h \
     src/gui/mechdb.h \
     src/core/dbhandler.h \
     src/gui/sqlconfig.h \
@@ -28,7 +27,6 @@ HEADERS += src/core/cpd.h \
 FORMS += src/gui/cpdwindow.ui \
     src/gui/mainwindow.ui \
     src/gui/stepwindow.ui \
-    src/gui/newcpddialog.ui \
     src/gui/mechdb.ui \
     src/gui/sqlconfig.ui \
     src/gui/simparams.ui
@@ -39,7 +37,6 @@ SOURCES += src/chemecher.cpp \
     src/gui/cpdwindow.cpp \
     src/gui/mainwindow.cpp \
     src/gui/stepwindow.cpp \
-    src/gui/newcpddialog.cpp \
     src/gui/mechdb.cpp \
     src/core/dbhandler.cpp \
     src/gui/sqlconfig.cpp \

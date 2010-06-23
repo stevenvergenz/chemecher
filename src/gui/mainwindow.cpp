@@ -26,13 +26,17 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	// SIGNALS/SLOTS //
 	///////////////////
 	
-	// cpd and step
-	connect(ui.pushAddCpd, SIGNAL(clicked()), this, SLOT(addCpd()));
+	// cpd
+	connect(ui.pushAddCpd,    SIGNAL(clicked()), this, SLOT(addCpd()));
+	connect(ui.pushRemoveCpd, SIGNAL(clicked()), this, SLOT(removeCpd()));
 	connect(mix, SIGNAL(addedCpd(Cpd*)), this, SLOT(updateCpdList()));
-	connect(mix, SIGNAL(addedStep(Step*)), this, SLOT(updateStepList()));
 	connect(ui.lstCpds, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
 			this, SLOT(editCpdWindow(QListWidgetItem*)));
+	connect(ui.pushMoveCpdUp,   SIGNAL(clicked()), this, SLOT(moveCpdUp()));
+	connect(ui.pushMoveCpdDown, SIGNAL(clicked()), this, SLOT(moveCpdDown()));
 	
+	// step
+	connect(mix, SIGNAL(addedStep(Step*)), this, SLOT(updateStepList()));
 	
 	// saving/loading
 	connect(ui.actSaveMechDb, SIGNAL(triggered()), this, SLOT(saveMechDb()));
@@ -41,26 +45,13 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	// exit
 	connect(ui.actExit, SIGNAL(triggered()), qApp, SLOT(quit()));
 	connect(qApp, SIGNAL(aboutToQuit()), mix->db, SLOT(closeDb()));
+	
+	mix->addCpd(new Cpd("A", Cpd::HOMO));
+	mix->addCpd(new Cpd("Z", Cpd::HOMO));
+	mix->addCpd(new Cpd("X", Cpd::HOMO));
+	//updateCpdList();
+	
 }
-
-// saving/loading ////
-//
-
-void MainWindow::saveMechDb()
-{
-	// run the dialog box
-	MechDB* dialog = new MechDB(MechDB::save, this);
-	dialog->exec();
-}
-void MainWindow::loadMechDb()
-{
-	// run the dialog box
-	MechDB* dialog = new MechDB(MechDB::load, this);
-	dialog->exec();
-}
-
-//
-////////////////////////////////
 
 // compound editing workings ////
 //
@@ -70,27 +61,24 @@ void MainWindow::addCpd()
 	CpdWindow* win = new CpdWindow(new Cpd(), this, 0, true);
 	mdi->addSubWindow(win);
 	win->show();
-	qDebug() << ":D";
-	return;
+}
+
+void MainWindow::removeCpd()
+{
+	Cpd *cpd = mix->getCpdById(ui.lstCpds->item(ui.lstCpds->currentRow())->text());
+	mix->removeCpd(cpd);
+	delete cpd;
+	updateCpdList();
 	
-	//populate the fields and validate
-	/*NewCpdDialog* dialog = new NewCpdDialog(this);
-	int rtn = dialog->exec();
-
-	//if the add was rejected/canceled, return
-	if(rtn == 0) return;
-
-	//populate the new cpd object
-	Cpd* newcpd = new Cpd();
-	newcpd->setShortName( dialog->getName() );
-	newcpd->setState( dialog->getState() );
-
-	//add to the list
-	mix->CpdList.append( newcpd );
-	ui.lstCpds->addItem( newcpd->toString() );
-	CpdWindow* tempcpd = new CpdWindow(newcpd);
-	mdi->addSubWindow( tempcpd );
-	tempcpd->show();*/
+	QList<QMdiSubWindow*> windowlist = mdi->subWindowList(QMdiArea::ActivationHistoryOrder);
+	for(int i=0; i<windowlist.size(); i++)
+	{
+		if( windowlist[i]->windowTitle() == cpd->toString() ){
+			mdi->removeSubWindow(windowlist[i]);
+			delete windowlist[i];
+			return;
+		}
+	}
 }
 
 void MainWindow::editCpdWindow(QListWidgetItem* item)
@@ -98,7 +86,10 @@ void MainWindow::editCpdWindow(QListWidgetItem* item)
 	//get the cpd
 	Cpd* cpd = mix->CpdList.at(
 			item->listWidget()->row(item) );
-
+	
+	qDebug() << item->listWidget()->row(item);
+	qDebug() << cpd->toString();
+	
 	//see if it already has a window open
 	QList<QMdiSubWindow*> windowlist = mdi->subWindowList(QMdiArea::ActivationHistoryOrder);
 	for(int i=0; i<windowlist.size(); i++)
@@ -119,6 +110,33 @@ void MainWindow::editCpdWindow(QListWidgetItem* item)
 	newCpdWindow->setFocus();
 }
 
+void MainWindow::moveCpdUp()
+{
+	QListWidget *list = ui.lstCpds;
+	int cur = list->currentRow();
+	if( cur < 1 )
+		return;
+	Cpd *temp;
+	temp = mix->CpdList[cur];
+	mix->CpdList[cur] = mix->CpdList[cur-1];
+	mix->CpdList[cur-1] = temp;
+	updateCpdList();
+	list->setCurrentRow(cur-1);
+}
+void MainWindow::moveCpdDown()
+{
+	QListWidget *list = ui.lstCpds;
+	int cur = list->currentRow();
+	if( cur==-1 || cur==list->count()-1 )
+		return;
+	Cpd *temp;
+	temp = mix->CpdList[cur];
+	mix->CpdList[cur] = mix->CpdList[cur+1];
+	mix->CpdList[cur+1] = temp;
+	updateCpdList();
+	list->setCurrentRow(cur+1);
+}
+
 void MainWindow::updateCpdList()
 {
 	ui.lstCpds->clear();
@@ -132,6 +150,25 @@ void MainWindow::updateStepList()
 	QListIterator<QString> i(mix->stepNameList());
 	for(;i.hasNext();i.next())
 		ui.lstSteps->addItem(i.peekNext());
+}
+
+//
+////////////////////////////////
+
+// saving/loading ////
+//
+
+void MainWindow::saveMechDb()
+{
+	// run the dialog box
+	MechDB* dialog = new MechDB(MechDB::save, this);
+	dialog->exec();
+}
+void MainWindow::loadMechDb()
+{
+	// run the dialog box
+	MechDB* dialog = new MechDB(MechDB::load, this);
+	dialog->exec();
 }
 
 //

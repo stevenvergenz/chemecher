@@ -16,16 +16,16 @@ class Mix : public QObject
 Q_OBJECT
 public:
 	// members
-	QList<Step*> StepList;
-	QStringList stepNameList();
-	void addStep(Step *step);
-	void removeStep(Step *step);
-	
 	QList<Cpd*> CpdList;
 	QStringList cpdIdList();
 	void addCpd(Cpd *cpd);
 	void removeCpd(Cpd *cpd);
+	Cpd* getCpdById(QString id);
 	
+	QList<Step*> StepList;
+	QStringList stepNameList();
+	void addStep(Step *step);
+	void removeStep(Step *step);
 	
 	void initialize();
 	void calculateRKF();

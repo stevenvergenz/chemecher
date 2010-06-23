@@ -4,9 +4,8 @@ Mix *mix = new Mix();
 
 QStringList Mix::cpdIdList() {
 	QStringList ret;
-	QListIterator<Cpd*> i(CpdList);
-	for( ; i.hasNext(); i.next() )
-		ret.append(i.peekNext()->toString());
+	for( int i=0; i<CpdList.size(); i++ )
+		ret.append(CpdList[i]->toString());
 	return ret;
 }
 void Mix::addCpd(Cpd *cpd) {
@@ -15,16 +14,24 @@ void Mix::addCpd(Cpd *cpd) {
 }
 void Mix::removeCpd(Cpd *cpd)
 {
-	
+	CpdList.removeOne(cpd);
+	emit removedCpd(cpd);
+}
+Cpd* Mix::getCpdById(QString id)
+{
+	Cpd *ret = 0;
+	for( int i=0; i<CpdList.size(); i++ ) {
+		if( CpdList[i]->toString() == id )
+			ret = CpdList[i];
+	}
+	return ret;
 }
 
 QStringList Mix::stepNameList() {
 	QStringList ret;
-	QListIterator<Step*> i(StepList);
-	for( ; i.hasNext(); i.next() )
-		ret.append(i.peekNext()->name());
+	for( int i=0; i<StepList.size(); i++ )
+		ret.append(StepList[i]->toString());
 	return ret;
-	
 }
 void Mix::addStep(Step *step) {
 	StepList.append(step);
