@@ -1,10 +1,3 @@
-/*
- * Main Window
- * This window houses the primary components of CheMecher v4
- * Created by Steven Vergenz
- * On April 3, 2010
- */
-
 #ifndef _CPDWINDOW_H
 #define _CPDWINDOW_H
 
@@ -18,12 +11,16 @@ class CpdWindow : public QFrame
 	Q_OBJECT
 
 public:
-	CpdWindow(Cpd* base, QWidget* parent = 0);
+	CpdWindow(Cpd* base, QWidget* parent = 0, bool isnew=false );
 	Cpd* base(){ return baseCpd; }
 
 public slots:
-	void hideOnHomo(int newstate);
-	void hideOnTrans(int newtrans);
+	// for new cpds
+	void validateAndAdd();
+	void setUpBottomHalf();
+	
+	// for existing cpds
+	void updateForm();
 
 signals:
 

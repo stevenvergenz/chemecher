@@ -179,3 +179,6 @@ QString DBHandler::getPassword() {return sqldb.password();}
 void DBHandler::setPassword(QString p) {sqldb.setPassword(p); emit passwordChanged(p);}
 int DBHandler::getPort() {return sqldb.port();}
 void DBHandler::setPort(int p) {sqldb.setPort(p); emit portChanged(p);}
+
+void DBHandler::closeDb()
+{sqldb.close();}

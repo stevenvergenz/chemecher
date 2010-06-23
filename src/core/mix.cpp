@@ -7,6 +7,13 @@ namespace Mix {
 	//general mix information
 	QList<Step*> StepList;
 	QList<Cpd*> CpdList;
+	QStringList cpdIdList() {
+		QStringList ret;
+		QListIterator<Cpd*> i(CpdList);
+		for( ; i.hasNext(); i.next() )
+			ret.append(i.peekNext()->toString());
+		return ret;
+	}
 
 	//current mix identifiers
 	QString mechName = "";

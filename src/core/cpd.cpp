@@ -3,6 +3,8 @@
 //handle the mutual inclusion
 #include "step.h"
 
+const QString Cpd::STATES[6] = {"(.)","(*)","(aq)","(s)","(l)", "(g)"};
+
 Cpd::Cpd() : QObject(), shortname(""), longname(""), cpd_state(Cpd::HOMO),
 	thresh(0), sharp(0), trans(NONE), conc(0), saved_conc(0)
 {
@@ -98,8 +100,8 @@ void Cpd::removeAsProduct(Step* step)
 }
 
 QString Cpd::toString(){
-	QString states[6] = {"(.)","(*)","(aq)","(s)","(l)", "(g)"};
-	return shortname + states[(int)cpd_state];
+	//QString states[6] = {"(.)","(*)","(aq)","(s)","(l)", "(g)"};
+	return shortname + STATES[(int)cpd_state];
 }
 
 /********************** Getters and Setters *********************/

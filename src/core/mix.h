@@ -14,6 +14,7 @@ namespace Mix
 	//general mix information
 	extern QList<Step*> StepList;
 	extern QList<Cpd*> CpdList;
+	QStringList cpdIdList();
 
 	//current mix identifiers
 	extern QString mechName;

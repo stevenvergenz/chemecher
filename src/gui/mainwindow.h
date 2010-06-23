@@ -19,6 +19,7 @@
 #include "cpdwindow.h"
 #include "newcpddialog.h"
 #include "mechdb.h"
+#include "mix.h"
 
 #include "ui_main.h"
 
@@ -30,13 +31,13 @@ public:
 	MainWindow(QWidget* parent = 0);
 
 public slots:
-	void addNewCpd();
-	void showCpdWindow(QListWidgetItem*);
+	// cpd editing stuff
+	void addCpd();
+	void editCpdWindow(QListWidgetItem*);
+	
+	// saving/loading
 	void saveMechDb();
 	void loadMechDb();
-	void testSaveLoad();
-	void setConstantDir(QFileDialog *indlg=0, QString setdir="");
-	
 
 signals:
 

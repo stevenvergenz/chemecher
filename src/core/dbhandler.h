@@ -49,7 +49,8 @@ signals:
 	void portChanged(int p);
 
 public slots:
-
+	void closeDb();
+	
     void setHostName(QString h);
     void setDatabase(QString d);
     void setUserName(QString u);

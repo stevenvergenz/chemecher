@@ -15,31 +15,34 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	StepWindow* tempstep = new StepWindow(astep);
 	CpdWindow* tempcpd = new CpdWindow(acpd);
 
-	windowlist.append( mdi->addSubWindow( tempstep ) );
-	windowlist.append( mdi->addSubWindow( tempcpd ) );
-	*/
+	mdi->addSubWindow( tempstep );
+	mdi->addSubWindow( tempcpd );*/
 
 	//setWindowState( windowState() | Qt::WindowMaximized );
 
 	ui.lstSteps->setStatusTip("Put your steps here");
-
-	/*************************************************************/
-	/***************** connect signals and slots *****************/
-	/*************************************************************/
-	connect(ui.pushAddCpd,	SIGNAL(clicked()),
-			this,			SLOT(addNewCpd())
-	);
-	connect(ui.lstSpecies,	SIGNAL(itemDoubleClicked(QListWidgetItem*)),
-			this,			SLOT(showCpdWindow(QListWidgetItem*))
-	);
-	connect(ui.actSaveMechDb, SIGNAL(triggered()),
-			this,			SLOT(saveMechDb()));
-	connect(ui.actLoadMechDb, SIGNAL(triggered()),
-			this,			SLOT(loadMechDb()));
+	
+	///////////////////
+	// SIGNALS/SLOTS //
+	///////////////////
+	
+	// cpd and step
+	connect(ui.pushAddCpd, SIGNAL(clicked()), this, SLOT(addCpd()));
+	connect(ui.lstCpds, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
+			this, SLOT(editCpdWindow(QListWidgetItem*)));
+	
+	
+	// saving/loading
+	connect(ui.actSaveMechDb, SIGNAL(triggered()), this, SLOT(saveMechDb()));
+	connect(ui.actLoadMechDb, SIGNAL(triggered()), this, SLOT(loadMechDb()));
+	
+	// exit
 	connect(ui.actExit, SIGNAL(triggered()), qApp, SLOT(quit()));
-	connect(ui.actSave, SIGNAL(triggered()),
-			this, SLOT(testSaveLoad()));
+	connect(qApp, SIGNAL(aboutToQuit()), &db, SLOT(closeDb()));
 }
+
+// saving/loading ////
+//
 
 void MainWindow::saveMechDb()
 {
@@ -54,8 +57,20 @@ void MainWindow::loadMechDb()
 	dialog->exec();
 }
 
-void MainWindow::addNewCpd()
+//
+////////////////////////////////
+
+// compound editing workings ////
+//
+
+void MainWindow::addCpd()
 {
+	CpdWindow* win = new CpdWindow(new Cpd(), 0, true);
+	mdi->addSubWindow(win);
+	win->show();
+	qDebug() << ":D";
+	return;
+	
 	//populate the fields and validate
 	NewCpdDialog* dialog = new NewCpdDialog(this);
 	int rtn = dialog->exec();
@@ -70,13 +85,13 @@ void MainWindow::addNewCpd()
 
 	//add to the list
 	Mix::CpdList.append( newcpd );
-	ui.lstSpecies->addItem( newcpd->toString() );
+	ui.lstCpds->addItem( newcpd->toString() );
 	CpdWindow* tempcpd = new CpdWindow(newcpd);
 	mdi->addSubWindow( tempcpd );
 	tempcpd->show();
 }
 
-void MainWindow::showCpdWindow(QListWidgetItem* item)
+void MainWindow::editCpdWindow(QListWidgetItem* item)
 {
 	//get the cpd
 	Cpd* cpd = Mix::CpdList.at(
@@ -102,24 +117,5 @@ void MainWindow::showCpdWindow(QListWidgetItem* item)
 	newCpdWindow->setFocus();
 }
 
-void MainWindow::testSaveLoad()
-{
-	qApp->beep();
-	QFileDialog dlg(this, "Open Mech from DB...", "/home", "Any file (*.*)");
-	dlg.setSidebarUrls(QList<QUrl>());
-	setConstantDir(&dlg, "/home");
-	dlg.exec();
-}
-
-void MainWindow::setConstantDir(QFileDialog *indlg, QString setdir)
-{
-	static QFileDialog *dlg;
-	static QString constdir;
-	if( indlg!=0 && setdir!=0 ) {
-		dlg = indlg;
-		constdir = setdir;
-		dlg->connect(dlg, SIGNAL(directoryEntered(QString)), this, SLOT(setConstantDir()));
-	}
-	
-	dlg->setDirectory(constdir);
-}
+//
+////////////////////////////////

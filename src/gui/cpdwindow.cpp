@@ -1,95 +1,130 @@
 #include "mainwindow.h"
 
-CpdWindow::CpdWindow(Cpd* base, QWidget* parent) : QFrame(parent), baseCpd(base)
+CpdWindow::CpdWindow(Cpd* base, QWidget* parent, bool isnew) : QFrame(parent), baseCpd(base)
 {
 	ui.setupUi(this);
 
-	//initialize all the fields to the appropriate values
-	//ui.txtLongName->setText( base->longName() );
-	ui.txtShortName->setText( base->shortName() );
-	ui.comboState->setCurrentIndex( (int)base->state() );
-	ui.comboTrans->setCurrentIndex( (int)base->transition() );
-	ui.spinThresh->setValue( base->threshold() );
-	ui.spinSharp->setValue( base->sharpness() );
-	ui.spinConc->setValue( base->initialConc() );
-	setWindowTitle( base->toString() );
-
-	//hide unused fields
-	hideOnHomo((int)base->state());
-
-	//connect the various widgets to modify the appropriate fields in base
-	/*connect( ui.txtLongName, SIGNAL(textEdited(QString)),
-		 baseCpd,	 SLOT(setLongName(QString))
-	);*/
-	connect( ui.txtShortName,SIGNAL(textEdited(QString)),
-		 baseCpd,	 SLOT(setShortName(QString))
-	);
-	connect( ui.comboState,	 SIGNAL(currentIndexChanged(int)),
-		 baseCpd,	 SLOT(setState(int))
-	);
-	connect( ui.comboTrans,	 SIGNAL(currentIndexChanged(int)),
-		 baseCpd,	 SLOT(setTransition(int))
-	);
-	connect( ui.spinThresh,	 SIGNAL(valueChanged(double)),
-		 baseCpd,	 SLOT(setThreshold(double))
-	);
-	connect( ui.spinSharp,	 SIGNAL(valueChanged(double)),
-		 baseCpd,	 SLOT(setSharpness(double))
-	);
-	connect( ui.spinConc,	 SIGNAL(valueChanged(double)),
-		 baseCpd,	 SLOT(setInitialConc(double))
-	);
-
-	//set it up to hide unused fields when the combos are changed
-	connect( ui.comboState,	 SIGNAL(currentIndexChanged(int)),
-		 this,		 SLOT(hideOnHomo(int))
-	);
-	connect( ui.comboTrans,	 SIGNAL(currentIndexChanged(int)),
-		 this,		 SLOT(hideOnTrans(int))
-	);
-
-	//set up the formatting replacements
-
-
-	setStatusTip("Put your species here");
-}
-
-void CpdWindow::hideOnHomo(int newstate)
-{
-	Cpd::State state = (Cpd::State)newstate;
-
-	//hide unneeded fields based on the state
-	if(state == Cpd::HOMO || state == Cpd::AQ || state == Cpd::G)
-	{
-		ui.lblTrans->setVisible(false);
-		ui.comboTrans->setVisible(false);
+	// connect short name and state
+	connect( ui.txtShortName, SIGNAL(textEdited(QString)),
+			 baseCpd,         SLOT(setShortName(QString)) );
+	connect( ui.comboState,	  SIGNAL(currentIndexChanged(int)),
+			 baseCpd,         SLOT(setState(int)) );
+	
+	// if the compound is being added
+	if( isnew ) {
+		
+		// hide the unvalidated fields
+		ui.frm1->setVisible(false);
+		ui.frm2->setVisible(false);
+		ui.frm3->setVisible(false);
+		
+		this->setWindowTitle("New specie");
+		
+		connect( ui.pushAdd, SIGNAL(clicked()),
+				 this,       SLOT(validateAndAdd()) );
+		
 	}
 	else
-	{
-		ui.lblTrans->setVisible(true);
-		ui.comboTrans->setVisible(true);
-	}
+		setUpBottomHalf();
+	
+	//set up the formatting replacements
 
-	hideOnTrans( ui.comboTrans->currentIndex());
+	setStatusTip("Put your species here");
+	
 }
 
-void CpdWindow::hideOnTrans(int newtrans)
+// makes sure name/state combo is valid, adds cpd
+void CpdWindow::validateAndAdd()
 {
-	//make sure it doesn't override state toggle
-	if( !ui.comboTrans->isVisible()) newtrans = 0;
+	// if name/state combo does not yet exist
+	if( !Mix::cpdIdList().contains(baseCpd->toString()) ) {
+		// add the compound
+		Mix::CpdList.append(baseCpd);
+		
+		// show the pertinent fields
+		ui.frm1->setVisible(true);
+		ui.frm2->setVisible(true);
+		ui.frm3->setVisible(true);
+		
+		setUpBottomHalf();
+	}
+}
 
-	//hide fields based on the transition
-	switch(newtrans){
-	case 0: ui.lblThresh->setVisible(false); ui.spinThresh->setVisible(false);
-		ui.lblSharp->setVisible(false); ui.spinSharp->setVisible(false);
-		break;
-	case 1: ui.lblThresh->setVisible(true); ui.spinThresh->setVisible(true);
-		ui.lblSharp->setVisible(false); ui.spinSharp->setVisible(false);
-		break;
-	case 2: ui.lblThresh->setVisible(true); ui.spinThresh->setVisible(true);
-		ui.lblSharp->setVisible(true); ui.spinSharp->setVisible(true);
-		break;
-	};
+void CpdWindow::setUpBottomHalf()
+{
+	// initialize all the fields to the appropriate values
+	ui.txtShortName->setText( baseCpd->shortName() );
+	ui.comboState->setCurrentIndex( (int)baseCpd->state() );
+	//ui.txtLongName->setText( baseCpd->longName() );
+	ui.comboTrans->setCurrentIndex( (int)baseCpd->transition() );
+	ui.spinThresh->setValue( baseCpd->threshold() );
+	ui.spinSharp->setValue( baseCpd->sharpness() );
+	ui.spinConc->setValue( baseCpd->initialConc() );
+	setWindowTitle( baseCpd->toString() );
+	
+	// connect the various widgets to modify the appropriate fields in base
+	//connect( ui.txtLongName, SIGNAL(textEdited(QString)),
+		 //baseCpd,	 SLOT(setLongName(QString)) );
+	connect( ui.comboTrans,   SIGNAL(currentIndexChanged(int)),
+			 baseCpd,         SLOT(setTransition(int)) );
+	connect( ui.spinThresh,   SIGNAL(valueChanged(double)),
+			 baseCpd,         SLOT(setThreshold(double)) );
+	connect( ui.spinSharp,    SIGNAL(valueChanged(double)),
+			 baseCpd,         SLOT(setSharpness(double)) );
+	connect( ui.spinConc,     SIGNAL(valueChanged(double)),
+			 baseCpd,         SLOT(setInitialConc(double)) );
+
+	//set it up to hide unused fields when the combos are changed
+	connect( ui.comboState, SIGNAL(currentIndexChanged(int)),
+			 this,          SLOT(updateForm()) );
+	connect( ui.comboTrans, SIGNAL(currentIndexChanged(int)),
+			 this,          SLOT(updateForm()) );
+	updateForm();
+}
+
+// updates the transition, thresh, and sharp rows
+void CpdWindow::updateForm()
+{
+	
+	// get current selections
+	Cpd::State state = (Cpd::State)ui.comboState->currentIndex();
+	int trans = ui.comboTrans->currentIndex();
+	//qDebug() << "State: " << state;
+	
+	// initialize the geometry variable to be changed
+	//QRect geom = this->geometry();
+	//qDebug() << "Start geometry: " << geom.width() << "x" << geom.height();
+	
+	// hide all fields first
+	ui.lblTrans   ->setEnabled(false);
+	ui.comboTrans ->setEnabled(false);
+	ui.lblThresh  ->setEnabled(false);
+	ui.spinThresh ->setEnabled(false);
+	ui.lblSharp   ->setEnabled(false);
+	ui.spinSharp  ->setEnabled(false);
+	
+	// re-show fields as necessary
+	if(state != Cpd::HOMO && state != Cpd::AQ && state != Cpd::G) {
+		
+		// show the trans combo box
+		ui.lblTrans   ->setEnabled(true);
+		ui.comboTrans ->setEnabled(true);
+		
+		switch(trans) {
+		case 0:
+			ui.comboTrans ->setCurrentIndex(0);
+			ui.spinThresh ->setValue(0);
+			ui.spinSharp  ->setValue(0);
+			break;
+		case 2: // show both sharp and thresh
+			ui.lblSharp   ->setEnabled(true);
+			ui.spinSharp  ->setEnabled(true);
+			// NO BREAK, moves to case 1
+		case 1: // show just thresh
+			ui.lblThresh  ->setEnabled(true);
+			ui.spinThresh ->setEnabled(true);
+		}
+	}
 }
 
 /*
