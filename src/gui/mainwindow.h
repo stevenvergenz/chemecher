@@ -52,7 +52,7 @@ signals:
 private:
 	Ui::mainWindow ui;
 	//QList<QMdiSubWindow*> windowlist;
-	QMdiArea* mdi;
+	//QMdiArea* mdi;
 
 };
 

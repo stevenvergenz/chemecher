@@ -32,13 +32,12 @@ public slots:
 signals:
 
 private slots:
-	void toHTML(); //changes long name field from editable text to markup
-	void toEditable(); //changes markup to editable
+	//void toHTML(); //changes long name field from editable text to markup
+	//void toEditable(); //changes markup to editable
 
 private:
 	Ui::cpdWindow ui;
 	Cpd* baseCpd;
-	bool bottomEnabled;
 
 };
 

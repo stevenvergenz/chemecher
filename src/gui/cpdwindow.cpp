@@ -3,10 +3,9 @@
 CpdWindow::CpdWindow(Cpd* base, MainWindow *main, QWidget* parent, bool isnew) : QFrame(parent), mainparent(main), baseCpd(base)
 {
 	ui.setupUi(this);
-	bottomEnabled = false;
 	
 	this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	this->setGeometry(this->geometry().x(), this->geometry().y(), 261, 337);
+	this->resize(261, 337);
 	
 	// connect short name and state
 	connect( ui.txtShortName, SIGNAL(textEdited(QString)),
@@ -17,8 +16,8 @@ CpdWindow::CpdWindow(Cpd* base, MainWindow *main, QWidget* parent, bool isnew) :
 			 this,            SLOT(validate()) );
 	
 	// connect the various widgets to modify the appropriate fields in base
-	//connect( ui.txtLongName, SIGNAL(textEdited(QString)),
-		 //baseCpd,	 SLOT(setLongName(QString)) );
+	connect( ui.txtLongName,  SIGNAL(textEdited(QString)),
+	         baseCpd,         SLOT(setLongName(QString)) );
 	connect( ui.comboTrans,   SIGNAL(currentIndexChanged(int)),
 			 baseCpd,         SLOT(setTransition(int)) );
 	connect( ui.spinThresh,   SIGNAL(valueChanged(double)),
@@ -50,9 +49,6 @@ CpdWindow::CpdWindow(Cpd* base, MainWindow *main, QWidget* parent, bool isnew) :
 
 	checkValidationState();
 	updateForm();
-	
-	//set up the formatting replacements
-	setStatusTip("Put your species here");
 	
 }
 
@@ -113,17 +109,6 @@ void CpdWindow::enableBottom()
 	ui.frm1->setEnabled(true);
 	ui.frm2->setEnabled(true);
 	ui.frm3->setEnabled(true);
-	bottomEnabled = true;
-	
-	// initialize all the fields to the appropriate values
-	/*ui.txtShortName->setText( baseCpd->shortName() );
-	ui.comboState->setCurrentIndex( (int)baseCpd->state() );
-	//ui.txtLongName->setText( baseCpd->longName() );
-	ui.comboTrans->setCurrentIndex( (int)baseCpd->transition() );
-	ui.spinThresh->setValue( baseCpd->threshold() );
-	ui.spinSharp->setValue( baseCpd->sharpness() );
-	ui.spinConc->setValue( baseCpd->initialConc() );*/
-	
 	updateForm();
 }
 
@@ -132,7 +117,6 @@ void CpdWindow::disableBottom()
 	ui.frm1->setEnabled(false);
 	ui.frm2->setEnabled(false);
 	ui.frm3->setEnabled(false);
-	bottomEnabled = false;
 }
 
 // updates the transition, thresh, and sharp rows
@@ -181,31 +165,6 @@ void CpdWindow::updateForm()
 }
 
 /*
-TO USE FOR FOCUS HANDLING:
-
-MainWindow::MainWindow(QWidget *parent) :
-QMainWindow(parent),ui(new Ui::MainWindow)
-{
-    ui->setupUi(this);
-    ui->comboBox->installEventFilter(this);
-    .
-    .
-    .
-}
-
-bool MainWindow::eventFilter(QObject *object, QEvent *event)
-{
-    if (event->type() == QEvent::FocusOut)
-    {
-	if (object == ui->comboBox)
-	{
-	    qWarning(object->objectName().toLatin1().data());
-	}
-    }
-    return false;
-}
-*/
-
 void CpdWindow::toHTML()
 {
 	/*
@@ -216,7 +175,7 @@ void CpdWindow::toHTML()
 	<p align="center" style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">
 	NH<span style=" vertical-align:sub;">4</span><span style=" vertical-align:super;">+</span></p>
 	</body></html>
-	*/
+	
 	QString script = ui.txtLongName->toHtml();
 
 	//insert the subscripts
@@ -236,3 +195,4 @@ void CpdWindow::toEditable()
 {
 
 }
+*/

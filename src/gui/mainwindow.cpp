@@ -5,9 +5,9 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	ui.setupUi(this);
 
 	//set up the mdi area
-	mdi = new QMdiArea();
-	mdi->setObjectName("mdi");
-	setCentralWidget(mdi);
+	//mdi = new QMdiArea();
+	//mdi->setObjectName("mdi");
+	setCentralWidget(ui.mdi);
 
 	/*Cpd* acpd = new Cpd("A", Cpd::AQ);
 	Step* astep = new Step();
@@ -59,7 +59,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 void MainWindow::addCpd()
 {
 	CpdWindow* win = new CpdWindow(new Cpd(), this, 0, true);
-	mdi->addSubWindow(win);
+	ui.mdi->addSubWindow(win);
+	win->resize(261, 337);
 	win->show();
 }
 
@@ -70,11 +71,11 @@ void MainWindow::removeCpd()
 	delete cpd;
 	updateCpdList();
 	
-	QList<QMdiSubWindow*> windowlist = mdi->subWindowList(QMdiArea::ActivationHistoryOrder);
+	QList<QMdiSubWindow*> windowlist = ui.mdi->subWindowList(QMdiArea::ActivationHistoryOrder);
 	for(int i=0; i<windowlist.size(); i++)
 	{
 		if( windowlist[i]->windowTitle() == cpd->toString() ){
-			mdi->removeSubWindow(windowlist[i]);
+			ui.mdi->removeSubWindow(windowlist[i]);
 			delete windowlist[i];
 			return;
 		}
@@ -91,7 +92,7 @@ void MainWindow::editCpdWindow(QListWidgetItem* item)
 	qDebug() << cpd->toString();
 	
 	//see if it already has a window open
-	QList<QMdiSubWindow*> windowlist = mdi->subWindowList(QMdiArea::ActivationHistoryOrder);
+	QList<QMdiSubWindow*> windowlist = ui.mdi->subWindowList(QMdiArea::ActivationHistoryOrder);
 	for(int i=0; i<windowlist.size(); i++)
 	{
 		if( windowlist[i]->windowTitle() == cpd->toString() ){
@@ -103,11 +104,13 @@ void MainWindow::editCpdWindow(QListWidgetItem* item)
 	}
 
 	//the window was not found, create a new one
-	CpdWindow* newCpdWindow = new CpdWindow(cpd, this);
-	mdi->addSubWindow( newCpdWindow );
-	newCpdWindow->showNormal();
-	newCpdWindow->raise();
-	newCpdWindow->setFocus();
+	CpdWindow* win = new CpdWindow(cpd, this);
+	ui.mdi->addSubWindow( win );
+	//QList<QMdiSubWindow*> windowlist = mdi->subWindowList(QMdiArea::ActivationHistoryOrder);
+	win->resize(261, 337);
+	win->showNormal();
+	win->raise();
+	win->setFocus();
 }
 
 void MainWindow::moveCpdUp()
