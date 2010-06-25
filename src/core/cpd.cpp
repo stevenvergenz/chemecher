@@ -1,8 +1,5 @@
 #include "cpd.h"
 
-//handle the mutual inclusion
-#include "step.h"
-
 const QString Cpd::STATES[6] = {"(.)","(*)","(aq)","(s)","(l)", "(g)"};
 
 Cpd::Cpd() : QObject(), shortname(""), longname(""), cpd_state(Cpd::HOMO),

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>704</width>
-    <height>479</height>
+    <width>709</width>
+    <height>523</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,8 +25,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>704</width>
-     <height>23</height>
+     <width>709</width>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -115,14 +115,14 @@
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
-       <widget class="QFrame" name="frame_2">
+       <widget class="QFrame" name="fraCpds">
         <property name="frameShape">
          <enum>QFrame::NoFrame</enum>
         </property>
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
         </property>
-        <layout class="QGridLayout" name="gridLayout">
+        <layout class="QGridLayout" name="cpdLayout">
          <property name="margin">
           <number>5</number>
          </property>
@@ -130,13 +130,6 @@
           <widget class="QLabel" name="label_2">
            <property name="text">
             <string>Species:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0" rowspan="2">
-          <widget class="QListWidget" name="lstCpds">
-           <property name="sortingEnabled">
-            <bool>false</bool>
            </property>
           </widget>
          </item>

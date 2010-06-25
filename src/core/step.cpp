@@ -1,17 +1,12 @@
 #include "step.h"
 
-//handle the mutual inclusion
-#include "cpd.h"
-
 Step::Step() : QObject(), stepname(""), kplus(0), kminus(0)
 {}
 
-/*          Get Reagents         */
 Cpd* Step::getReagent(int n){
 	return reagents[n-1];
 }
 
-/*          Set Reagents          */
 bool Step::setReagent(int n, Cpd* cpd)
 {
 	if( n>=1 && n <=5 ) //if valid index
@@ -44,4 +39,15 @@ void Step::setKMinus(double k){ kminus = k; emit kMinusChanged(kminus);}
 void Step::setKMinus(QString k){ kminus = k.toDouble(); emit kMinusChanged(kminus);}
 
 QString Step::toString()
-{return stepname;}
+{
+	QString ret = "";
+	for( int i=1; i<=3; i++ )
+		if( getReagent(i)!=0 )
+			ret += getReagent(i)->toString() + " + ";
+	ret = ret.left(ret.length()-2) + "⇌ ";
+	for( int i=4; i<=6; i++ )
+		if( getReagent(i)!=0 )
+			ret += getReagent(i)->toString() + " + ";
+	ret = ret.left(ret.length()-3);
+	return ret;
+}

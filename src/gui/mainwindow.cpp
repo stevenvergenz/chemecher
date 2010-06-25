@@ -3,24 +3,16 @@
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 {
 	ui.setupUi(this);
+	mdi = ui.mdi;
 
-	//set up the mdi area
-	//mdi = new QMdiArea();
-	//mdi->setObjectName("mdi");
+	// misc stuff
 	setCentralWidget(ui.mdi);
-
-	/*Cpd* acpd = new Cpd("A", Cpd::AQ);
-	Step* astep = new Step();
-
-	StepWindow* tempstep = new StepWindow(astep);
-	CpdWindow* tempcpd = new CpdWindow(acpd);
-
-	mdi->addSubWindow( tempstep );
-	mdi->addSubWindow( tempcpd );*/
-
-	//setWindowState( windowState() | Qt::WindowMaximized );
-
-	ui.lstSteps->setStatusTip("Put your steps here");
+	setWindowState( windowState() | Qt::WindowMaximized );
+	
+	// cpd list drag&drop stuff
+	lstCpds = new DragListWidget(ui.fraCpds);
+	ui.cpdLayout->addWidget(lstCpds, 1,0,2,2, Qt::AlignLeft);
+	//lstCpds->show();
 	
 	///////////////////
 	// SIGNALS/SLOTS //
@@ -30,12 +22,19 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect(ui.pushAddCpd,    SIGNAL(clicked()), this, SLOT(addCpd()));
 	connect(ui.pushRemoveCpd, SIGNAL(clicked()), this, SLOT(removeCpd()));
 	connect(mix, SIGNAL(addedCpd(Cpd*)), this, SLOT(updateCpdList()));
-	connect(ui.lstCpds, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
+	connect(lstCpds, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
 			this, SLOT(editCpdWindow(QListWidgetItem*)));
 	connect(ui.pushMoveCpdUp,   SIGNAL(clicked()), this, SLOT(moveCpdUp()));
 	connect(ui.pushMoveCpdDown, SIGNAL(clicked()), this, SLOT(moveCpdDown()));
 	
 	// step
+	connect(ui.pushAddStep,    SIGNAL(clicked()), this, SLOT(addStep()));
+	connect(ui.pushRemoveStep, SIGNAL(clicked()), this, SLOT(removeStep()));
+	connect(mix, SIGNAL(addedStep(Step*)), this, SLOT(updateStepList()));
+	connect(ui.lstSteps, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
+			this, SLOT(editStepWindow(QListWidgetItem*)));
+	connect(ui.pushMoveStepUp,   SIGNAL(clicked()), this, SLOT(moveStepUp()));
+	connect(ui.pushMoveStepDown, SIGNAL(clicked()), this, SLOT(moveStepDown()));
 	connect(mix, SIGNAL(addedStep(Step*)), this, SLOT(updateStepList()));
 	
 	// saving/loading
@@ -53,7 +52,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	
 }
 
-// compound editing workings ////
+// compound editing implementations ////
 //
 
 void MainWindow::addCpd()
@@ -63,10 +62,9 @@ void MainWindow::addCpd()
 	win->resize(261, 337);
 	win->show();
 }
-
 void MainWindow::removeCpd()
 {
-	Cpd *cpd = mix->getCpdById(ui.lstCpds->item(ui.lstCpds->currentRow())->text());
+	Cpd *cpd = mix->getCpdById(lstCpds->item(lstCpds->currentRow())->text());
 	mix->removeCpd(cpd);
 	delete cpd;
 	updateCpdList();
@@ -81,7 +79,6 @@ void MainWindow::removeCpd()
 		}
 	}
 }
-
 void MainWindow::editCpdWindow(QListWidgetItem* item)
 {
 	//get the cpd
@@ -112,10 +109,9 @@ void MainWindow::editCpdWindow(QListWidgetItem* item)
 	win->raise();
 	win->setFocus();
 }
-
 void MainWindow::moveCpdUp()
 {
-	QListWidget *list = ui.lstCpds;
+	QListWidget *list = lstCpds;
 	int cur = list->currentRow();
 	if( cur < 1 )
 		return;
@@ -128,7 +124,7 @@ void MainWindow::moveCpdUp()
 }
 void MainWindow::moveCpdDown()
 {
-	QListWidget *list = ui.lstCpds;
+	QListWidget *list = lstCpds;
 	int cur = list->currentRow();
 	if( cur==-1 || cur==list->count()-1 )
 		return;
@@ -139,13 +135,43 @@ void MainWindow::moveCpdDown()
 	updateCpdList();
 	list->setCurrentRow(cur+1);
 }
-
 void MainWindow::updateCpdList()
 {
-	ui.lstCpds->clear();
+	lstCpds->clear();
 	QListIterator<QString> i(mix->cpdIdList());
 	for(;i.hasNext();i.next())
-		ui.lstCpds->addItem(i.peekNext());
+		lstCpds->addItem(i.peekNext());
+}
+
+//
+////////////////////////////////
+
+// step editing implementations ////
+//
+
+void MainWindow::addStep()
+{
+	StepWindow* win = new StepWindow(new Step(), 0, 0, true);
+	//QMdiSubWindow *subwin = ui.mdi->addSubWindow(win);
+	//subwin->setAttribute(Qt::WA_DeleteOnClose);
+	//subwin->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	win->show();
+}
+void MainWindow::removeStep()
+{
+	
+}
+void MainWindow::editStepWindow(QListWidgetItem *)
+{
+	
+}
+void MainWindow::moveStepUp()
+{
+	
+}
+void MainWindow::moveStepDown()
+{
+	
 }
 void MainWindow::updateStepList()
 {
@@ -154,6 +180,7 @@ void MainWindow::updateStepList()
 	for(;i.hasNext();i.next())
 		ui.lstSteps->addItem(i.peekNext());
 }
+
 
 //
 ////////////////////////////////

@@ -8,32 +8,53 @@
 #ifndef _STEPWINDOW_H
 #define _STEPWINDOW_H
 
-#include <QFrame>
+#include <QWidget>
 #include <QStringList>
+#include <QDropEvent>
+#include <QDragEnterEvent>
+#include <QPaintEngine>
+#include <QComboBox>
 
 #include "ui_stepwindow.h"
 #include "step.h"
 #include "mix.h"
+#include "mainwindow.h"
 
-class StepWindow : public QFrame
+class StepWindow : public QWidget
 {
 	Q_OBJECT
 
 public:
-	StepWindow(Step* step, QWidget* parent = 0);
-
+	StepWindow(Step* base, MainWindow *main, QWidget* parent = 0, bool isnew=false);
+	
+	MainWindow *mainparent;
+	
+	typedef enum {Reactant, Product} ReagentType;
+	
 public slots:
-	void updateReagentBoxes();
-	void setBaseKPlus();
-	void setBaseKMinus();
-	void setWindowKPlus(double);
-	void setWindowKMinus(double);
+	void updateCpdLists();
+	
+	void addCpd( ReagentType t );
+	void addReac();
+	void addProd();
 
 signals:
 
+protected:
+	void dragEnterEvent(QDragEnterEvent *event);
+	void dropEvent(QDropEvent *event);
+	void dragMoveEvent(QDragMoveEvent *event);
+	
 private:
 	Ui::stepWindow ui;
 	Step* baseStep;
+	
+	QList<QComboBox*> lstComboReacs;
+	QList<QComboBox*> lstComboProds;
+	QList<QPushButton*> lstPushRemReacs;
+	QList<QPushButton*> lstPushRemProds;
+	QList<QLabel*> lstLblPlusReacs;
+	QList<QLabel*> lstLblPlusProds;
 
 };
 

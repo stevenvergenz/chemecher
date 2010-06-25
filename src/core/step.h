@@ -4,7 +4,9 @@
 #include <QObject>
 #include <QString>
 
-class Cpd;
+class Step;
+
+#include "cpd.h"
 
 class Step : public QObject
 {
@@ -14,6 +16,8 @@ public:
 	QString name();
 	double kPlus();
 	double kMinus();
+	
+	
 
 	Cpd* getReagent(int n);
 	

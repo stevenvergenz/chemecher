@@ -8,7 +8,7 @@
 #include "cpd.h"
 #include "mainwindow.h"
 
-class CpdWindow : public QFrame
+class CpdWindow : public QWidget
 {
 	Q_OBJECT
 

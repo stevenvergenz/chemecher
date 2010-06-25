@@ -21,6 +21,7 @@ class MainWindow;
 #include "cpdwindow.h"
 #include "mechdb.h"
 #include "mix.h"
+#include "draglistwidget.h"
 
 #include "ui_mainwindow.h"
 
@@ -30,6 +31,8 @@ class MainWindow : public QMainWindow
 
 public:
 	MainWindow(QWidget* parent = 0);
+	
+	QMdiArea* mdi;
 
 public slots:
 	
@@ -39,8 +42,14 @@ public slots:
 	void removeCpd();
 	void moveCpdUp();
 	void moveCpdDown();
-	
 	void updateCpdList();
+	
+	// step editing stuff
+	void addStep();
+	void editStepWindow(QListWidgetItem*);
+	void removeStep();
+	void moveStepUp();
+	void moveStepDown();
 	void updateStepList();
 	
 	// saving/loading
@@ -51,8 +60,8 @@ signals:
 
 private:
 	Ui::mainWindow ui;
+	DragListWidget *lstCpds;
 	//QList<QMdiSubWindow*> windowlist;
-	//QMdiArea* mdi;
 
 };
 

@@ -1,11 +1,8 @@
 #include "mainwindow.h"
 
-CpdWindow::CpdWindow(Cpd* base, MainWindow *main, QWidget* parent, bool isnew) : QFrame(parent), mainparent(main), baseCpd(base)
+CpdWindow::CpdWindow(Cpd* base, MainWindow *main, QWidget* parent, bool isnew) : QWidget(parent), mainparent(main), baseCpd(base)
 {
 	ui.setupUi(this);
-	
-	this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	this->resize(261, 337);
 	
 	// connect short name and state
 	connect( ui.txtShortName, SIGNAL(textEdited(QString)),
@@ -24,8 +21,6 @@ CpdWindow::CpdWindow(Cpd* base, MainWindow *main, QWidget* parent, bool isnew) :
 			 baseCpd,         SLOT(setThreshold(double)) );
 	connect( ui.spinSharp,    SIGNAL(valueChanged(double)),
 			 baseCpd,         SLOT(setSharpness(double)) );
-	connect( ui.spinConc,     SIGNAL(valueChanged(double)),
-			 baseCpd,         SLOT(setInitialConc(double)) );
 
 	//set it up to hide unused fields when the combos are changed
 	connect( ui.comboState, SIGNAL(currentIndexChanged(int)),
@@ -40,7 +35,6 @@ CpdWindow::CpdWindow(Cpd* base, MainWindow *main, QWidget* parent, bool isnew) :
 		this->setWindowTitle(baseCpd->toString());
 		ui.txtShortName->setText(baseCpd->shortName());
 		ui.comboState->setCurrentIndex((int)baseCpd->state());
-		ui.spinConc->setValue(baseCpd->initialConc());
 		ui.comboTrans->setCurrentIndex((int)baseCpd->transition());
 		ui.spinThresh->setValue(baseCpd->threshold());
 		ui.spinSharp->setValue(baseCpd->sharpness());
@@ -77,12 +71,12 @@ void CpdWindow::validate()
 		this->mainparent->updateCpdList();
 		
 		checkValidationState();
-		ui.spinConc->setFocus();
+		ui.txtLongName->setFocus();
 		
 		setWindowTitle( baseCpd->toString() );
 	}
 	else {
-		QMessageBox::critical(this, "Error", "Name/State combination must be unique!", QMessageBox::Ok);
+		QMessageBox::critical(this, "Error", "Name/state combination must be unique!", QMessageBox::Ok);
 		ui.txtShortName->setText(baseCpd->shortName());
 		ui.comboState->setCurrentIndex((int)baseCpd->state());
 		ui.txtShortName->setFocus();
@@ -108,7 +102,6 @@ void CpdWindow::enableBottom()
 {
 	ui.frm1->setEnabled(true);
 	ui.frm2->setEnabled(true);
-	ui.frm3->setEnabled(true);
 	updateForm();
 }
 
@@ -116,7 +109,6 @@ void CpdWindow::disableBottom()
 {
 	ui.frm1->setEnabled(false);
 	ui.frm2->setEnabled(false);
-	ui.frm3->setEnabled(false);
 }
 
 // updates the transition, thresh, and sharp rows
@@ -126,11 +118,6 @@ void CpdWindow::updateForm()
 	// get current selections
 	Cpd::State state = (Cpd::State)ui.comboState->currentIndex();
 	int trans = ui.comboTrans->currentIndex();
-	//qDebug() << "State: " << state;
-	
-	// initialize the geometry variable to be changed
-	//QRect geom = this->geometry();
-	//qDebug() << "Start geometry: " << geom.width() << "x" << geom.height();
 	
 	// hide all fields first
 	ui.lblTrans   ->setEnabled(false);
@@ -167,7 +154,6 @@ void CpdWindow::updateForm()
 /*
 void CpdWindow::toHTML()
 {
-	/*
 	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
 	<html><head><meta name="qrichtext" content="1" />
 	<style type="text/css">	p, li { white-space: pre-wrap; }</style></head>

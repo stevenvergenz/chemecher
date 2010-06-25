@@ -6,8 +6,9 @@
 #include <QList>
 #include <QVector>
 
-//forward declaration of Step
-class Step;
+class Cpd;
+
+#include "step.h"
 
 class Cpd : public QObject
 {

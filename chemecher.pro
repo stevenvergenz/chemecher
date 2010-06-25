@@ -23,7 +23,8 @@ HEADERS += src/core/cpd.h \
     src/gui/mechdb.h \
     src/core/dbhandler.h \
     src/gui/sqlconfig.h \
-    src/gui/simparams.h
+    src/gui/simparams.h \
+    src/gui/draglistwidget.h
 FORMS += src/gui/cpdwindow.ui \
     src/gui/mainwindow.ui \
     src/gui/stepwindow.ui \
@@ -40,4 +41,5 @@ SOURCES += src/chemecher.cpp \
     src/gui/mechdb.cpp \
     src/core/dbhandler.cpp \
     src/gui/sqlconfig.cpp \
-    src/gui/simparams.cpp
+    src/gui/simparams.cpp \
+    src/gui/draglistwidget.cpp

@@ -15,6 +15,7 @@ class Mix : public QObject
 {
 Q_OBJECT
 public:
+	
 	// members
 	QList<Cpd*> CpdList;
 	QStringList cpdIdList();
@@ -26,6 +27,7 @@ public:
 	QStringList stepNameList();
 	void addStep(Step *step);
 	void removeStep(Step *step);
+	Step* getStepByName(QString name);
 	
 	void initialize();
 	void calculateRKF();

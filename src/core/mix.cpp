@@ -39,8 +39,19 @@ void Mix::addStep(Step *step) {
 }
 void Mix::removeStep(Step *step)
 {
-	
+	StepList.removeOne(step);
+	emit removedStep(step);
 }
+Step* Mix::getStepByName(QString name)
+{
+	Step *ret = 0;
+	for( int i=0; i<StepList.size(); i++ ) {
+		if( StepList[i]->toString() == name )
+			ret = StepList[i];
+	}
+	return ret;
+}
+
 
 void Mix::initialize()
 {
