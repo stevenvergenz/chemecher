@@ -25,18 +25,29 @@ class StepWindow : public QWidget
 	Q_OBJECT
 
 public:
-	StepWindow(Step* base, MainWindow *main, QWidget* parent = 0, bool isnew=false);
+	StepWindow(Step* base, QWidget* parent = 0, bool isnew=false);
 	
-	MainWindow *mainparent;
+	typedef struct {
+		QList<QComboBox*>   lstCombos;
+		QList<QPushButton*> lstRems;
+		QList<QLabel*>      lstPlus;
+		QFrame*             frame;
+		QGridLayout*        layout;
+		QPushButton*        addButton;
+	} ReagentBox_t;
 	
-	typedef enum {Reactant, Product} ReagentType;
+	//typedef enum {Reactant, Product} ReagentType;
 	
 public slots:
 	void updateCpdLists();
 	
-	void addCpd( ReagentType t );
+	void addCpd( ReagentBox_t* r );
 	void addReac();
 	void addProd();
+	
+	void remCpd( ReagentBox_t* r, int i );
+	void remReac1(); void remReac2(); void remReac3();
+	void remProd1(); void remProd2(); void remProd3();
 
 signals:
 
@@ -48,13 +59,8 @@ protected:
 private:
 	Ui::stepWindow ui;
 	Step* baseStep;
-	
-	QList<QComboBox*> lstComboReacs;
-	QList<QComboBox*> lstComboProds;
-	QList<QPushButton*> lstPushRemReacs;
-	QList<QPushButton*> lstPushRemProds;
-	QList<QLabel*> lstLblPlusReacs;
-	QList<QLabel*> lstLblPlusProds;
+	ReagentBox_t *reactants;
+	ReagentBox_t *products;
 
 };
 

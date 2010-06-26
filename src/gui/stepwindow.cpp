@@ -1,10 +1,18 @@
 #include "stepwindow.h"
 
-StepWindow::StepWindow(Step* base, MainWindow *main, QWidget* parent, bool isnew)
-	: QWidget(parent), mainparent(main), baseStep(base)
+StepWindow::StepWindow(Step* base, QWidget* parent, bool isnew)
+	: QWidget(parent), baseStep(base)
 {
 	ui.setupUi(this);
 
+	// fill the reagent boxes
+	reactants->addButton = ui.pushAddReac;
+	reactants->frame     = ui.frmReacs;
+	reactants->layout    = ui.layReac;
+	products->addButton  = ui.pushAddProd;
+	products->frame      = ui.frmProds;
+	products->layout     = ui.layProd;
+	
 	// set the window title
 	this->setWindowTitle( isnew ? "New step" : base->name() );
 	
@@ -13,8 +21,8 @@ StepWindow::StepWindow(Step* base, MainWindow *main, QWidget* parent, bool isnew
 	ui.spinKPlus  ->setValue( base->kPlus()  );
 	ui.spinKMinus ->setValue( base->kMinus() );
 	
-	addCpd(Reactant);
-	addCpd(Product);
+	addCpd(reactants);
+	addCpd(products );
 	
 	//connect added or removed compound to updateCpdLists();
 	
@@ -42,98 +50,84 @@ StepWindow::StepWindow(Step* base, MainWindow *main, QWidget* parent, bool isnew
 	         ui.spinKMinus, SLOT(setValue(double)) );
 }
 
-void StepWindow::addReac()
-{addCpd(Reactant);}
-void StepWindow::addProd()
-{addCpd(Product);}
+// slots
+void StepWindow::remReac1(){remCpd(reactants,0);}
+void StepWindow::remReac2(){remCpd(reactants,1);}
+void StepWindow::remReac3(){remCpd(reactants,2);}
+void StepWindow::remProd1(){remCpd(products ,0);}
+void StepWindow::remProd2(){remCpd(products ,1);}
+void StepWindow::remProd3(){remCpd(products ,2);}
 
-void StepWindow::remCpd(ReagentType t, int i)
+// base function
+void StepWindow::remCpd(ReagentBox_t* r, int i)
 {
-	disconnect()
+	
 }
 
-void StepWindow::addCpd(ReagentType t)
+// slots
+void StepWindow::addReac()
+{addCpd(reactants);}
+void StepWindow::addProd()
+{addCpd(products );}
+
+// base function
+void StepWindow::addCpd(ReagentBox_t* r)
 {
-	QList<QComboBox*>   *lstCombos;
-	QList<QPushButton*> *lstRems;
-	QList<QLabel*>      *lstPlus;
-	QFrame*             frame;
-	QGridLayout*        layout;
-	QPushButton*        addButton;
-	
-	if( t==this->Product ) {
-		lstCombos = &lstComboProds;
-		lstRems   = &lstPushRemProds;
-		lstPlus   = &lstLblPlusProds;
-		frame     = ui.frmProds;
-		layout    = ui.layProd;
-		addButton = ui.pushAddProd;
-	}
-	else {
-		lstCombos = &lstComboReacs;
-		lstRems   = &lstPushRemReacs;
-		lstPlus   = &lstLblPlusReacs;
-		frame     = ui.frmReacs;
-		layout    = ui.layReac;
-		addButton = ui.pushAddReac;
-	}
-	
-	if( lstCombos->size() > 2 )
+	if( r->lstCombos.size() > 2 )
 		return;
 	
 	QLabel *plus = 0;
 	
 	// set up combo box
-	QComboBox *combo = new QComboBox( frame );
+	QComboBox *combo = new QComboBox( r->frame );
 	combo->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
 	combo->setMinimumHeight(combo->height());
 	combo->setMaximumWidth(1000);
 	combo->addItems(mix->cpdIdList());
 	
 	// set up remove button
-	QPushButton *rem = new QPushButton( frame );
+	QPushButton *rem = new QPushButton( r->frame );
 	rem->setMaximumSize(20,20);
 	rem->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 	rem->setText("x");
 	
-	switch( lstCombos->size() ) {
+	switch( r->lstCombos.size() ) {
 	case 0:
 		// disable remove button
 		rem->setEnabled(false);
 		break;
 	case 1:
 		// enable previous remove button
-		lstRems->last()->setEnabled(true);
+		r->lstRems.last()->setEnabled(true);
 		
 		// NO BREAK, case 1 does both
 		
 	case 2:
 		// set up plus sign
-		plus = new QLabel("+", frame);
+		plus = new QLabel("+", r->frame);
 		plus->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
 		plus->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 	}
 	
 	// add the plus sign
 	if( plus != 0 ) {
-		layout->addWidget( plus,    ui.layReac->rowCount(), 0, 1, 1, Qt::AlignHCenter | Qt::AlignVCenter );
-		lstPlus->append(plus);
+		r->layout->addWidget( plus, r->layout->rowCount(), 0, 1, 1, Qt::AlignHCenter | Qt::AlignVCenter );
+		r->lstPlus.append(plus);
 	}
 	
 	// add combo box and remove button
-	layout ->addWidget( combo, layout->rowCount(),   0, 1, 1, Qt::AlignCenter );
-	layout ->addWidget( rem,   layout->rowCount()-1, 1, 1, 1, Qt::AlignCenter );
-	layout ->setColumnStretch(0, 5);
-	layout ->setColumnStretch(1, 1);
-	lstCombos ->append(combo);
-	lstRems   ->append(rem);
+	r->layout ->addWidget( combo, r->layout->rowCount(),   0, 1, 1, Qt::AlignCenter );
+	r->layout ->addWidget( rem,   r->layout->rowCount()-1, 1, 1, 1, Qt::AlignCenter );
+	r->layout ->setColumnStretch(0, 5);
+	r->layout ->setColumnStretch(1, 1);
+	r->lstCombos .append(combo);
+	r->lstRems   .append(rem);
 	
 	//connect( remReac, SIGNAL(pressed()), this, SLOT );
 	
 	// disable add button if already three reactants
-	if( lstCombos->size()==3 )
-		ui.pushAddReac->setEnabled(false);
-	
+	if( r->lstCombos.size()==3 )
+		r->addButton->setEnabled(false);
 }
 /*void StepWindow::addProduct()
 {

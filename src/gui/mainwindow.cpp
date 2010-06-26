@@ -64,9 +64,12 @@ void MainWindow::addCpd()
 }
 void MainWindow::removeCpd()
 {
+	if( lstCpds->currentRow()<0 )
+		return;
+	
 	Cpd *cpd = mix->getCpdById(lstCpds->item(lstCpds->currentRow())->text());
 	mix->removeCpd(cpd);
-	delete cpd;
+	//delete cpd;
 	updateCpdList();
 	
 	QList<QMdiSubWindow*> windowlist = ui.mdi->subWindowList(QMdiArea::ActivationHistoryOrder);
@@ -151,11 +154,21 @@ void MainWindow::updateCpdList()
 
 void MainWindow::addStep()
 {
-	StepWindow* win = new StepWindow(new Step(), 0, 0, true);
-	//QMdiSubWindow *subwin = ui.mdi->addSubWindow(win);
+	qDebug() << ":D (1)";
+	StepWindow* win = new StepWindow(new Step(), this, true);
+	QMdiSubWindow *subwin = new QMdiSubWindow;
+	subwin->setWidget(win);
+	subwin->setAttribute(Qt::WA_DeleteOnClose);
+	ui.mdi->addSubWindow(subwin);
+	subwin->show();
+	subwin->setGeometry(0,0,490,339);
+	subwin->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	subwin->setMinimumSize(490,339);
+	subwin->setMaximumSize(490,339);
 	//subwin->setAttribute(Qt::WA_DeleteOnClose);
 	//subwin->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	win->show();
+	//win->show();
+	
 }
 void MainWindow::removeStep()
 {
