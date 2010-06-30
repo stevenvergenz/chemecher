@@ -5,6 +5,9 @@ StepWindow::StepWindow(Step* base, QWidget* parent, bool isnew)
 {
 	ui.setupUi(this);
 
+	reactants = new ReagentBox_t;
+	products  = new ReagentBox_t;
+	
 	// fill the reagent boxes
 	reactants->addButton = ui.pushAddReac;
 	reactants->frame     = ui.frmReacs;
@@ -20,6 +23,8 @@ StepWindow::StepWindow(Step* base, QWidget* parent, bool isnew)
 	ui.txtName    ->setText(  base->name()   );
 	ui.spinKPlus  ->setValue( base->kPlus()  );
 	ui.spinKMinus ->setValue( base->kMinus() );
+	
+	qDebug() << ":)";
 	
 	addCpd(reactants);
 	addCpd(products );
@@ -48,6 +53,7 @@ StepWindow::StepWindow(Step* base, QWidget* parent, bool isnew)
 	         ui.spinKPlus,  SLOT(setValue(double)) );
 	connect( baseStep,	    SIGNAL(kMinusChanged(double)),
 	         ui.spinKMinus, SLOT(setValue(double)) );
+	
 }
 
 // slots

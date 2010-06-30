@@ -154,20 +154,24 @@ void MainWindow::updateCpdList()
 
 void MainWindow::addStep()
 {
-	qDebug() << ":D (1)";
+	qDebug() << ":D";
 	StepWindow* win = new StepWindow(new Step(), this, true);
-	QMdiSubWindow *subwin = new QMdiSubWindow;
-	subwin->setWidget(win);
-	subwin->setAttribute(Qt::WA_DeleteOnClose);
-	ui.mdi->addSubWindow(subwin);
-	subwin->show();
-	subwin->setGeometry(0,0,490,339);
-	subwin->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	subwin->setMinimumSize(490,339);
-	subwin->setMaximumSize(490,339);
+	
+	QMdiSubWindow *mdiSubWin = ui.mdi->addSubWindow(win);
+	
 	//subwin->setAttribute(Qt::WA_DeleteOnClose);
-	//subwin->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	//win->show();
+	mdiSubWin->setMinimumSize(win->minimumSize() + QSize(2,28) );
+	mdiSubWin->setMaximumSize(win->maximumSize() + QSize(2,28) );
+	
+	win->show();
+	
+	/*QMdiSubWindow *mdiSubWin = new QMdiSubWindow;
+	mdiSubWin->setWidget(win);
+	mdiSubWin->setAttribute(Qt::WA_DeleteOnClose);
+	mdiArea->addSubWindow(mdiSubWin);
+	mdiSubWin->show();
+	// mdiSubWin->setSizePolicy(qobject_cast<T *>(win)->sizePolicy());
+	*/
 	
 }
 void MainWindow::removeStep()
