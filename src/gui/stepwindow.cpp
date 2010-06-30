@@ -24,13 +24,10 @@ StepWindow::StepWindow(Step* base, QWidget* parent, bool isnew)
 	ui.spinKPlus  ->setValue( base->kPlus()  );
 	ui.spinKMinus ->setValue( base->kMinus() );
 	
-	qDebug() << ":)";
-	
 	addCpd(reactants);
 	addCpd(products );
 	
-	//connect added or removed compound to updateCpdLists();
-	
+	connect( mix, SIGNAL(cpdListChanged()), this, SLOT(updateCpdLists()) );
 	updateCpdLists();
 	
 	// connect add reactants and products
@@ -193,7 +190,23 @@ void StepWindow::addCpd(ReagentBox_t* r)
 
 void StepWindow::updateCpdLists()
 {
-	
+	QComboBox *combo;
+	for( int i=0; i<reactants->lstCombos.size(); i++ ) {
+		combo = reactants->lstCombos[i];
+		QString temp = combo->currentText();
+		combo->clear();
+		combo->addItems(mix->cpdIdList());
+		if( combo->findText(temp) != -1 )
+			combo->setCurrentIndex(combo->findText(temp));
+	}
+	for( int i=0; i<products->lstCombos.size(); i++ ) {
+		combo = products->lstCombos[i];
+		QString temp = combo->currentText();
+		combo->clear();
+		combo->addItems(mix->cpdIdList());
+		if( combo->findText(temp) != -1 )
+			combo->setCurrentIndex(combo->findText(temp));
+	}
 }
 
 //

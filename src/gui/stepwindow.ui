@@ -161,14 +161,8 @@
          <enum>QFrame::Box</enum>
         </property>
         <layout class="QGridLayout" name="layReac">
-         <property name="topMargin">
-          <number>6</number>
-         </property>
-         <property name="bottomMargin">
-          <number>6</number>
-         </property>
          <property name="verticalSpacing">
-          <number>2</number>
+          <number>1</number>
          </property>
         </layout>
        </widget>

@@ -21,13 +21,15 @@ public:
 	QStringList cpdIdList();
 	void addCpd(Cpd *cpd);
 	void removeCpd(Cpd *cpd);
+	void swapCpds(int first, int second);
 	Cpd* getCpdById(QString id);
 	
 	QList<Step*> StepList;
 	QStringList stepNameList();
 	void addStep(Step *step);
 	void removeStep(Step *step);
-	Step* getStepByName(QString name);
+	void swapSteps(int first, int second);
+	Step* getStepByString(QString string);
 	
 	void initialize();
 	void calculateRKF();
@@ -51,10 +53,8 @@ public:
 	double precision;
 	
 signals:
-	void addedStep(Step *step);
-	void removedStep(Step *step);
-	void addedCpd(Cpd *cpd);
-	void removedCpd(Cpd *cpd);
+	void stepListChanged();
+	void cpdListChanged();
 	
 public slots:
 	

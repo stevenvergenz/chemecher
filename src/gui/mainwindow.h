@@ -37,8 +37,8 @@ public:
 public slots:
 	
 	// cpd editing stuff
-	void addCpd();
-	void editCpdWindow(QListWidgetItem*);
+	void showCpdWindow( QListWidgetItem* item = 0 );
+	//void editCpdWindow(QListWidgetItem*);
 	void removeCpd();
 	void moveCpdUp();
 	void moveCpdDown();

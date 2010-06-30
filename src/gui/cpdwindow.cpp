@@ -68,7 +68,7 @@ void CpdWindow::validate()
 			mix->addCpd(baseCpd);
 		}
 		
-		this->mainparent->updateCpdList();
+		mainparent->updateCpdList();
 		
 		checkValidationState();
 		ui.txtLongName->setFocus();
