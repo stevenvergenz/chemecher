@@ -4,10 +4,15 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 {
 	ui.setupUi(this);
 	mdi = ui.mdi;
-
+	
+	//ui.lstSteps->setRowCount(0);
+	//ui.lstSteps->setColumnCount(0);
+	
 	// misc stuff
 	setCentralWidget(ui.mdi);
 	setWindowState( windowState() | Qt::WindowMaximized );
+	
+	//ui.lstSteps->horizontalHeader()->setResizeMode();
 	
 	// cpd list drag&drop stuff
 	lstCpds = new DragListWidget(ui.fraCpds);
@@ -22,20 +27,18 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	// cpd
 	connect(ui.pushAddCpd,    SIGNAL(clicked()), this, SLOT(showCpdWindow()));
 	connect(ui.pushRemoveCpd, SIGNAL(clicked()), this, SLOT(removeCpd()));
-	connect(mix, SIGNAL(cpdListChanged()), this, SLOT(updateCpdList()));
-	connect(lstCpds, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
-			this, SLOT(showCpdWindow(QListWidgetItem*)));
+	connect(lstCpds, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(showCpdWindow(QTableWidgetItem*)));
 	connect(ui.pushMoveCpdUp,   SIGNAL(clicked()), this, SLOT(moveCpdUp()));
 	connect(ui.pushMoveCpdDown, SIGNAL(clicked()), this, SLOT(moveCpdDown()));
+	connect(mix, SIGNAL(cpdListChanged()), this, SLOT(updateCpdList()));
 	
 	// step
 	connect(ui.pushAddStep,    SIGNAL(clicked()), this, SLOT(addStep()));
 	connect(ui.pushRemoveStep, SIGNAL(clicked()), this, SLOT(removeStep()));
-	connect(mix, SIGNAL(stepListChanged()), this, SLOT(updateStepList()));
-	connect(ui.lstSteps, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
-			this, SLOT(editStepWindow(QListWidgetItem*)));
+	connect(ui.lstSteps, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(editStepWindow(QListWidgetItem*)));
 	connect(ui.pushMoveStepUp,   SIGNAL(clicked()), this, SLOT(moveStepUp()));
 	connect(ui.pushMoveStepDown, SIGNAL(clicked()), this, SLOT(moveStepDown()));
+	connect(mix, SIGNAL(stepListChanged()), this, SLOT(updateStepList()));
 	
 	// saving/loading
 	connect(ui.actSaveMechDb, SIGNAL(triggered()), this, SLOT(saveMechDb()));
@@ -45,9 +48,9 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect(ui.actExit, SIGNAL(triggered()), qApp, SLOT(quit()));
 	//connect(qApp, SIGNAL(aboutToQuit()), mix->db, SLOT(closeDb()));
 	
-	mix->addCpd(new Cpd("A", Cpd::HOMO));
-	mix->addCpd(new Cpd("Z", Cpd::HOMO));
-	mix->addCpd(new Cpd("X", Cpd::HOMO));
+	mix->addCpd(new Cpd("A", Cpd::HOMO ));
+	mix->addCpd(new Cpd("B", Cpd::AQ   ));
+	mix->addCpd(new Cpd("C", Cpd::S    ));
 	//updateCpdList();
 	
 }
@@ -55,7 +58,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 // compound editing implementations ////
 //
 
-void MainWindow::showCpdWindow( QListWidgetItem* item )
+void MainWindow::showCpdWindow( QTableWidgetItem* item )
 {
 	Cpd *cpd;
 	
@@ -94,7 +97,7 @@ void MainWindow::removeCpd()
 	if( lstCpds->currentRow()<0 )
 		return;
 	
-	Cpd *cpd = mix->getCpdById(lstCpds->item(lstCpds->currentRow())->text());
+	Cpd *cpd; // = mix->getCpdById(lstCpds->item(lstCpds->currentRow())->text());
 	mix->removeCpd(cpd);
 	//delete cpd;
 	updateCpdList();
@@ -139,26 +142,28 @@ void MainWindow::removeCpd()
 }*/
 void MainWindow::moveCpdUp()
 {
-	QListWidget *list = lstCpds;
+	QTableWidget *list = lstCpds;
 	int cur = list->currentRow();
 	if( cur < 1 )
 		return;
 	mix->swapCpds(cur, cur-1);
-	list->setCurrentRow(cur-1);
+	//list->setCurrentRow(cur-1);
+	list->setCurrentCell(cur-1, 0);
 }
 void MainWindow::moveCpdDown()
 {
-	QListWidget *list = lstCpds;
+	QTableWidget *list = lstCpds;
 	int cur = list->currentRow();
-	if( cur==-1 || cur==list->count()-1 )
+	if( cur==-1 || cur==list->rowCount()-1 )
 		return;
 	mix->swapCpds(cur, cur+1);
-	list->setCurrentRow(cur+1);
+	//list->setCurrentRow(cur+1);
+	list->setCurrentCell(cur+1, 0);
 }
 void MainWindow::updateCpdList()
 {
 	lstCpds->clear();
-	lstCpds->addItems(mix->cpdIdList());
+	//lstCpds->addItems(mix->cpdIdList());
 }
 
 //
@@ -185,26 +190,26 @@ void MainWindow::editStepWindow(QListWidgetItem *)
 }
 void MainWindow::moveStepUp()
 {
-	QListWidget *list = ui.lstSteps;
+	/*QListWidget *list = ui.lstSteps;
 	int cur = list->currentRow();
 	if( cur < 1 )
 		return;
 	mix->swapSteps(cur, cur-1);
-	list->setCurrentRow(cur-1);
+	list->setCurrentRow(cur-1);*/
 }
 void MainWindow::moveStepDown()
 {
-	QListWidget *list = ui.lstSteps;
+	/*QListWidget *list = ui.lstSteps;
 	int cur = list->currentRow();
 	if( cur==-1 || cur==list->count()-1 )
 		return;
 	mix->swapSteps(cur, cur+1);
-	list->setCurrentRow(cur+1);
+	list->setCurrentRow(cur+1);*/
 }
 void MainWindow::updateStepList()
 {
-	ui.lstSteps->clear();
-	ui.lstSteps->addItems(mix->stepNameList());
+	//ui.lstSteps->clear();
+	//ui.lstSteps->addItems(mix->stepNameList());
 }
 
 

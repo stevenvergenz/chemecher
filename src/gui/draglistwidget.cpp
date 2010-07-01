@@ -1,7 +1,18 @@
 #include "draglistwidget.h"
 
-DragListWidget::DragListWidget(QWidget *parent) : QListWidget(parent)
-{}
+DragListWidget::DragListWidget(QWidget *parent) : QTableWidget(parent)
+{
+	this->setSelectionMode( QAbstractItemView::SingleSelection );
+	this->setSelectionBehavior( QAbstractItemView::SelectRows );
+	this->setGridStyle( Qt::DotLine );
+	this->setWordWrap( false );
+	this->setCornerButtonEnabled( false );
+	this->setColumnCount( 2 );
+	this->horizontalHeader()->setHighlightSections(false);
+	
+	this->setMinimumSize(0,0);
+	this->setMaximumSize(10000,10000);
+}
 
 void DragListWidget::mousePressEvent(QMouseEvent *event)
 {
@@ -9,7 +20,7 @@ void DragListWidget::mousePressEvent(QMouseEvent *event)
 		startpos = event->pos();
 	else
 		startpos = QPoint(-1,0);
-	QListWidget::mousePressEvent(event);
+	QTableWidget::mousePressEvent(event);
 }
 
 void DragListWidget::mouseMoveEvent(QMouseEvent *event)

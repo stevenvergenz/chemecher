@@ -1,7 +1,8 @@
 #ifndef DRAGLISTWIDGET_H
 #define DRAGLISTWIDGET_H
 
-#include <QListWidget>
+#include <QTableWidget>
+#include <QHeaderView>
 #include <QMouseEvent>
 #include <QMimeData>
 #include <QDrag>
@@ -11,7 +12,7 @@
 #include <QPixmap>
 #include <QPainter>
 
-class DragListWidget : public QListWidget
+class DragListWidget : public QTableWidget
 {
 public:
     DragListWidget(QWidget *parent=0);
