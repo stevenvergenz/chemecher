@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>490</width>
+    <width>326</width>
     <height>339</height>
    </rect>
   </property>
@@ -74,7 +74,7 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0" colspan="3">
+      <item row="2" column="0" colspan="3">
        <widget class="QFrame" name="frame_3">
         <property name="frameShape">
          <enum>QFrame::NoFrame</enum>
@@ -134,6 +134,16 @@
         </layout>
        </widget>
       </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Description:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1" colspan="2">
+       <widget class="QLineEdit" name="txtDesc"/>
+      </item>
      </layout>
     </widget>
    </item>
@@ -154,6 +164,12 @@
       </property>
       <item row="1" column="0">
        <widget class="QFrame" name="frmReacs">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="acceptDrops">
          <bool>false</bool>
         </property>
@@ -205,6 +221,12 @@
       </item>
       <item row="1" column="2">
        <widget class="QFrame" name="frmProds">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="acceptDrops">
          <bool>false</bool>
         </property>
@@ -226,6 +248,15 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>txtName</tabstop>
+  <tabstop>pushValidate</tabstop>
+  <tabstop>txtDesc</tabstop>
+  <tabstop>spinKPlus</tabstop>
+  <tabstop>spinKMinus</tabstop>
+  <tabstop>pushAddReac</tabstop>
+  <tabstop>pushAddProd</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

@@ -8,14 +8,16 @@ QStringList Mix::cpdIdList() {
 		ret.append(CpdList[i]->toString());
 	return ret;
 }
-void Mix::addCpd(Cpd *cpd) {
+Cpd* Mix::addCpd(Cpd *cpd) {
 	CpdList.append(cpd);
 	emit cpdListChanged();
+	return cpd;
 }
-void Mix::removeCpd(Cpd *cpd)
+Cpd* Mix::removeCpd(Cpd *cpd)
 {
 	CpdList.removeOne(cpd);
 	emit cpdListChanged();
+	return cpd;
 }
 void Mix::swapCpds(int first, int second)
 {
@@ -38,14 +40,16 @@ QStringList Mix::stepNameList() {
 		ret.append(StepList[i]->toString());
 	return ret;
 }
-void Mix::addStep(Step *step) {
+Step* Mix::addStep(Step *step) {
 	StepList.append(step);
 	emit stepListChanged();
+	return step;
 }
-void Mix::removeStep(Step *step)
+Step* Mix::removeStep(Step *step)
 {
 	StepList.removeOne(step);
 	emit stepListChanged();
+	return step;
 }
 void Mix::swapSteps(int first, int second)
 {

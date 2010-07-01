@@ -19,43 +19,47 @@ public:
 	Step();
 	
 	QString name();
+	QString desc();
 	double kPlus();
 	double kMinus();
 	int stoi( Cpd* cpd );
 
-	bool hasCpd( Cpd* cpd );
-	bool isReactant( Cpd* cpd );
-	bool isProduct ( Cpd* cpd );
+	// returns whether or not step is valid
+	//  i.e. has both products and reactants
+	bool isValid();
 	
-	QList<Cpd*> getReactantList();
-	QList<Cpd*> getProductList();
+	bool hasCpd( Cpd* cpd );
+	bool hasReactant( Cpd* cpd );
+	bool hasProduct ( Cpd* cpd );
+	
+	QList<Cpd*> reactantList();
+	QList<Cpd*> productList();
 	
 	QString toString();
 
 public slots:
 	void setName(QString n);
+	void setDesc(QString d);
 	void setKPlus(double k);
 	void setKMinus(double k);
 	
 	bool addReactant( Cpd* cpd );
 	bool addProduct ( Cpd* cpd );
-	
-	bool removeReagent( Cpd* cpd );
-	bool removeReagent( int cpd );
-	bool swapReagents( Cpd* cpd1, Cpd* cpd2 );
-	bool swapReagents( int cpd1, int cpd2 );
+	bool removeReactant( int cpd );
+	bool removeProduct ( int cpd );
 	
 	/*bool setStoi( Cpd* cpd, int stoi );
 	bool addStoi( Cpd* cpd, int diff );*/
 
 signals:
 	void nameChanged(QString);
+	void descChanged(QString);
 	void kPlusChanged(double);
 	void kMinusChanged(double);
 	void reagentsChanged();
 
 private:
-	QString stepname;
+	QString stepname, stepdesc;
 	double kplus, kminus;
 	QList<Cpd*> reactants, products;
 	

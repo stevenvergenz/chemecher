@@ -2,21 +2,27 @@
 
 DragListWidget::DragListWidget(QWidget *parent) : QTableWidget(parent)
 {
-	this->setSelectionMode( QAbstractItemView::SingleSelection );
-	this->setSelectionBehavior( QAbstractItemView::SelectRows );
-	this->setGridStyle( Qt::DotLine );
-	this->setWordWrap( false );
-	this->setCornerButtonEnabled( false );
-	this->setColumnCount( 2 );
-	this->horizontalHeader()->setHighlightSections(false);
+	setSelectionMode( QAbstractItemView::SingleSelection );
+	setSelectionBehavior( QAbstractItemView::SelectRows );
+	setGridStyle( Qt::DotLine );
+	setWordWrap( false );
+	setCornerButtonEnabled( false );
+	setColumnCount( 2 );
+	horizontalHeader()->setStretchLastSection( true );
+	verticalHeader()->setVisible( false );
+	verticalHeader()->setDefaultSectionSize( 20 );
 	
-	this->setMinimumSize(0,0);
-	this->setMaximumSize(10000,10000);
+	setHorizontalHeaderItem( 0, new QTableWidgetItem("Short Name") );
+	setHorizontalHeaderItem( 1, new QTableWidgetItem("Concentration") );
+	
+	setMinimumSize(0,0);
+	setMaximumSize(10000,10000);
 }
 
 void DragListWidget::mousePressEvent(QMouseEvent *event)
 {
-	if( event->button() == Qt::LeftButton && itemAt(event->pos())!=0 )
+	if( event->button() == Qt::LeftButton && itemAt(event->pos())!=0
+		&& itemAt(event->pos())->column()==0 )
 		startpos = event->pos();
 	else
 		startpos = QPoint(-1,0);

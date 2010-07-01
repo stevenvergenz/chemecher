@@ -120,5 +120,6 @@ void Cpd::setTransition(Transition t){ trans = t; emit transitionChanged((int)t)
 void Cpd::setTransition(int t){ trans = (Transition)t; emit transitionChanged(t);}
 
 //initial concentration
-double Cpd::initialConc(){ return conc; }
-void Cpd::setInitialConc(double c){ conc = c; emit initialConcChanged(c);}
+double  Cpd::initialConc(){ return conc; }
+void Cpd::setInitialConc(double c ){ conc = c; emit initialConcChanged(c);}
+void Cpd::setInitialConc(QString c){ conc = c.toDouble(); emit initialConcChanged(conc);}

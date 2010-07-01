@@ -53,6 +53,7 @@ public slots:
 	void setThreshold(double t);
 	void setSharpness(double s);
 	void setInitialConc(double c);
+	void setInitialConc(QString c);
 
 signals:
 	void shortNameChanged(QString);

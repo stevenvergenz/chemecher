@@ -19,15 +19,15 @@ public:
 	// members
 	QList<Cpd*> CpdList;
 	QStringList cpdIdList();
-	void addCpd(Cpd *cpd);
-	void removeCpd(Cpd *cpd);
+	Cpd* addCpd(Cpd *cpd);
+	Cpd* removeCpd(Cpd *cpd);
 	void swapCpds(int first, int second);
 	Cpd* getCpdById(QString id);
 	
 	QList<Step*> StepList;
 	QStringList stepNameList();
-	void addStep(Step *step);
-	void removeStep(Step *step);
+	Step* addStep(Step *step);
+	Step* removeStep(Step *step);
 	void swapSteps(int first, int second);
 	Step* getStepByString(QString string);
 	

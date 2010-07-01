@@ -14,6 +14,7 @@
 #include <QList>
 #include <QUrl>
 #include <QFileDialog>
+#include <QTableWidgetItem>
 
 class MainWindow;
 
@@ -38,15 +39,14 @@ public slots:
 	
 	// cpd editing stuff
 	void showCpdWindow( QTableWidgetItem* item = 0 );
-	//void editCpdWindow(QListWidgetItem*);
 	void removeCpd();
 	void moveCpdUp();
 	void moveCpdDown();
 	void updateCpdList();
+	void setCpdInitConc( QTableWidgetItem* item );
 	
 	// step editing stuff
-	void addStep();
-	void editStepWindow(QListWidgetItem*);
+	void showStepWindow( QTableWidgetItem* item = 0 );
 	void removeStep();
 	void moveStepUp();
 	void moveStepDown();

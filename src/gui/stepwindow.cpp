@@ -4,28 +4,29 @@ StepWindow::StepWindow(Step* base, QWidget* parent, bool isnew)
 	: QWidget(parent), baseStep(base)
 {
 	ui.setupUi(this);
-
-	reactants = new ReagentBox_t;
-	products  = new ReagentBox_t;
-	
-	// fill the reagent boxes
-	reactants->addButton = ui.pushAddReac;
-	reactants->frame     = ui.frmReacs;
-	reactants->layout    = ui.layReac;
-	products->addButton  = ui.pushAddProd;
-	products->frame      = ui.frmProds;
-	products->layout     = ui.layProd;
 	
 	// set the window title
 	this->setWindowTitle( isnew ? "New step" : base->name() );
 	
 	// initialize the fields
 	ui.txtName    ->setText(  base->name()   );
+	ui.txtDesc    ->setText(  base->desc()   );
 	ui.spinKPlus  ->setValue( base->kPlus()  );
 	ui.spinKMinus ->setValue( base->kMinus() );
 	
-	addCpd(reactants);
-	addCpd(products );
+	// initialize reagent boxes;
+	reactants = new ReagentBox_t;
+	products  = new ReagentBox_t;
+	reactants->addButton = ui.pushAddReac;
+	reactants->frame     = ui.frmReacs;
+	reactants->layout    = ui.layReac;
+	products->addButton  = ui.pushAddProd;
+	products->frame      = ui.frmProds;
+	products->layout     = ui.layProd;	
+	for( int i=0; i<baseStep->reactantList().size(); i++ )
+		addCpd( reactants );
+	for( int i=0; i<baseStep->productList().size(); i++ )
+		addCpd( products );
 	
 	connect( mix, SIGNAL(cpdListChanged()), this, SLOT(updateCpdLists()) );
 	updateCpdLists();
@@ -40,6 +41,8 @@ StepWindow::StepWindow(Step* base, QWidget* parent, bool isnew)
 	// connect slots to keep step up to date
 	connect( ui.txtName,    SIGNAL(textEdited(QString)),
 	         baseStep,      SLOT(setName(QString))  );
+	connect( ui.txtDesc,    SIGNAL(textEdited(QString)),
+			 baseStep,      SLOT(setDesc(QString))  );
 	connect( ui.spinKPlus,  SIGNAL(valueChanged(double)),
 	         baseStep,      SLOT(setKPlus(double))  );
 	connect( ui.spinKMinus, SIGNAL(valueChanged(double)),
@@ -97,11 +100,11 @@ void StepWindow::addCpd(ReagentBox_t* r)
 	switch( r->lstCombos.size() ) {
 	case 0:
 		// disable remove button
-		rem->setEnabled(false);
+		//rem->setEnabled(false);
 		break;
 	case 1:
 		// enable previous remove button
-		r->lstRems.last()->setEnabled(true);
+		//r->lstRems.last()->setEnabled(true);
 		
 		// NO BREAK, case 1 does both
 		
