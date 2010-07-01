@@ -14,6 +14,8 @@ class Step : public QObject
 {
 	Q_OBJECT;
 public:
+	friend class Cpd;
+	
 	Step();
 	
 	QString name();
@@ -43,8 +45,8 @@ public slots:
 	bool swapReagents( Cpd* cpd1, Cpd* cpd2 );
 	bool swapReagents( int cpd1, int cpd2 );
 	
-	bool setStoi( Cpd* cpd, int stoi );
-	bool addStoi( Cpd* cpd, int diff );
+	/*bool setStoi( Cpd* cpd, int stoi );
+	bool addStoi( Cpd* cpd, int diff );*/
 
 signals:
 	void nameChanged(QString);
@@ -56,7 +58,6 @@ private:
 	QString stepname;
 	double kplus, kminus;
 	QList<Cpd*> reactants, products;
-	QMap<Cpd*,int> stoiVals;
 	
 };
 

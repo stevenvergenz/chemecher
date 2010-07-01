@@ -6,14 +6,23 @@ Step::Step() : QObject(), stepname(""), kplus(0), kminus(0)
 // adding and removing reagents
 
 bool Step::addReactant( Cpd* cpd ) {
+	if( reactants.size()==3 )
+		return false;
 	
+	reactants.append( cpd );
+	cpd->stoiVals[this]--;
 }
 bool Step::addProduct ( Cpd *cpd ) {
+	if( products.size()==3 )
+		return false;
 	
+	products.append( cpd );
+	cpd->stoiVals[this]++;
 }
 
 bool Step::removeReagent( Cpd* cpd ) {
 	if( cpd==0 || !hasCpd(cpd) ) return false;
+	
 }
 bool Step::removeReagent( int cpd ) {
 	if( cpd < 0 || cpd >= getReactantList().size() )

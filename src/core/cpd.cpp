@@ -17,7 +17,7 @@ Cpd::Cpd(QString n, Cpd::State s) : QObject(), shortname(n), longname(""),
 	partial_conc[5] = 0; rate[5] = 0;
 }
 
-void Cpd::addAsReactant(Step* step)
+/*void Cpd::addAsReactant(Step* step)
 {
 	//check to see if it's already in the set step as a reactant
 	for(int i=0; i<reactantset.size(); i++)
@@ -85,7 +85,7 @@ void Cpd::removeAsProduct(Step* step)
 			return;
 		}//step found
 	}//for each step in products
-}
+}*/
 
 QString Cpd::toString(){
 	//QString states[6] = {"(.)","(*)","(aq)","(s)","(l)", "(g)"};
