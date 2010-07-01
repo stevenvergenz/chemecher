@@ -20,9 +20,9 @@ public:
 	};
 	typedef enum {NONE=0, LINEAR, ATAN} Transition;
 	typedef enum {HOMO=0, HETERO, AQ, S, L, G} State;
-	
-	/*extern static const*/ static const QString STATES[]; // = {"(.)","(*)","(aq)","(s)","(l)", "(g)"};
-	//QString states[6] = {"(.)","(*)","(aq)","(s)","(l)", "(g)"};
+
+	// defined in source file	
+	static const QString STATES[];
 
 	Cpd();
 	Cpd(QString, State);

@@ -53,6 +53,11 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	mix->addCpd(new Cpd("C", Cpd::S    ));
 	//updateCpdList();
 	
+	Step *step = new Step();
+	step->setName("Decay");
+	step->setKPlus(2.41);
+	step->setKMinus(6.8);
+	
 }
 
 // compound editing implementations ////
@@ -208,8 +213,8 @@ void MainWindow::moveStepDown()
 }
 void MainWindow::updateStepList()
 {
-	//ui.lstSteps->clear();
-	//ui.lstSteps->addItems(mix->stepNameList());
+	ui.lstSteps->clearContents();
+	
 }
 
 
