@@ -9,6 +9,7 @@
 class Step;
 
 #include "cpd.h"
+#include "mix.h"
 
 class Step : public QObject
 {
@@ -22,7 +23,6 @@ public:
 	QString desc();
 	double kPlus();
 	double kMinus();
-	int stoi( Cpd* cpd );
 
 	// returns whether or not step is valid
 	//  i.e. has both products and reactants
@@ -45,6 +45,8 @@ public slots:
 	
 	bool addReactant( Cpd* cpd );
 	bool addProduct ( Cpd* cpd );
+	bool setReactant( int i, Cpd* cpd );
+	bool setProduct( int i, Cpd* cpd );
 	bool removeReactant( int cpd );
 	bool removeProduct ( int cpd );
 	

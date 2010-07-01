@@ -75,7 +75,7 @@
        </widget>
       </item>
       <item row="2" column="0" colspan="3">
-       <widget class="QFrame" name="frame_3">
+       <widget class="QFrame" name="frmKs">
         <property name="frameShape">
          <enum>QFrame::NoFrame</enum>
         </property>
@@ -97,7 +97,14 @@
           </widget>
          </item>
          <item>
-          <widget class="QDoubleSpinBox" name="spinKPlus"/>
+          <widget class="QDoubleSpinBox" name="spinKPlus">
+           <property name="buttonSymbols">
+            <enum>QAbstractSpinBox::UpDownArrows</enum>
+           </property>
+           <property name="singleStep">
+            <double>0.010000000000000</double>
+           </property>
+          </widget>
          </item>
          <item>
           <spacer name="horizontalSpacer">
@@ -129,13 +136,17 @@
           </widget>
          </item>
          <item>
-          <widget class="QDoubleSpinBox" name="spinKMinus"/>
+          <widget class="QDoubleSpinBox" name="spinKMinus">
+           <property name="singleStep">
+            <double>0.010000000000000</double>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel" name="lblDesc">
         <property name="text">
          <string>Description:</string>
         </property>

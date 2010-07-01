@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 
-CpdWindow::CpdWindow(Cpd* base, MainWindow *main, QWidget* parent, bool isnew) : QWidget(parent), mainparent(main), baseCpd(base)
+CpdWindow::CpdWindow(Cpd* base, QWidget* parent, bool isnew) : QWidget(parent), baseCpd(base)
 {
 	ui.setupUi(this);
 	
@@ -11,6 +11,7 @@ CpdWindow::CpdWindow(Cpd* base, MainWindow *main, QWidget* parent, bool isnew) :
 			 this,            SLOT(checkValidationState()) );
 	connect( ui.pushValidate, SIGNAL(clicked()),
 			 this,            SLOT(validate()) );
+	connect( this, SIGNAL(validated()), mix, SIGNAL(stepListChanged()) );
 	
 	// connect the various widgets to modify the appropriate fields in base
 	connect( ui.txtLongName,  SIGNAL(textEdited(QString)),
@@ -68,7 +69,7 @@ void CpdWindow::validate()
 			mix->addCpd(baseCpd);
 		}
 		
-		mainparent->updateCpdList();
+		emit validated();
 		
 		checkValidationState();
 		ui.txtLongName->setFocus();
@@ -89,26 +90,20 @@ void CpdWindow::checkValidationState()
 {
 	if( ui.txtShortName->text()=="" || ui.txtShortName->text()!=baseCpd->shortName()
 		|| ui.comboState->currentIndex()!=(int)baseCpd->state() ) {
-		disableBottom();
+		setBottomEnabled(false);
 		ui.pushValidate->setEnabled(true);
 	}
 	else {
-		enableBottom();
+		setBottomEnabled(true);
 		ui.pushValidate->setEnabled(false);
 	}
 }
 
-void CpdWindow::enableBottom()
+void CpdWindow::setBottomEnabled( bool val )
 {
-	ui.frm1->setEnabled(true);
-	ui.frm2->setEnabled(true);
+	ui.frm1->setEnabled(val);
+	ui.frm2->setEnabled(val);
 	updateForm();
-}
-
-void CpdWindow::disableBottom()
-{
-	ui.frm1->setEnabled(false);
-	ui.frm2->setEnabled(false);
 }
 
 // updates the transition, thresh, and sharp rows

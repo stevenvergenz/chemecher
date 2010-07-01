@@ -60,7 +60,7 @@ signals:
 
 private:
 	Ui::mainWindow ui;
-	DragListWidget *lstCpds;
+	QTableWidget *lstCpds;
 	//QList<QMdiSubWindow*> windowlist;
 
 };

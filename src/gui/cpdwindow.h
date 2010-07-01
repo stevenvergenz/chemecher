@@ -7,29 +7,27 @@
 #include "ui_cpdwindow.h"
 #include "cpd.h"
 #include "mainwindow.h"
+#include "mix.h"
 
 class CpdWindow : public QWidget
 {
 	Q_OBJECT
 
 public:
-	CpdWindow(Cpd* base, MainWindow *main, QWidget* parent = 0, bool isnew=false );
+	CpdWindow(Cpd* base, QWidget* parent = 0, bool isnew=false );
 	Cpd* base(){ return baseCpd; }
-	
-	MainWindow *mainparent;
 
 public slots:
 	// for new cpds
 	void validate();
 	void checkValidationState();
-	
-	void enableBottom();
-	void disableBottom();
+	void setBottomEnabled( bool val );
 	
 	// for existing cpds
 	void updateForm();
 
 signals:
+	void validated();
 
 private slots:
 	//void toHTML(); //changes long name field from editable text to markup

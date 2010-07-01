@@ -15,6 +15,7 @@ class Mix : public QObject
 {
 Q_OBJECT
 public:
+	friend class Step;
 	
 	// members
 	QList<Cpd*> CpdList;
@@ -30,6 +31,7 @@ public:
 	Step* removeStep(Step *step);
 	void swapSteps(int first, int second);
 	Step* getStepByString(QString string);
+	Step* getStepByName(QString name);
 	
 	void initialize();
 	void calculateRKF();

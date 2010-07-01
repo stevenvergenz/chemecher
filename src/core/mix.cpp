@@ -65,6 +65,15 @@ Step* Mix::getStepByString(QString string)
 	}
 	return ret;
 }
+Step* Mix::getStepByName(QString name)
+{
+	Step *ret = 0;
+	for( int i=0; i<StepList.size(); i++ ) {
+		if( StepList[i]->name() == name )
+			ret = StepList[i];
+	}
+	return ret;
+}
 
 
 void Mix::initialize()

@@ -36,9 +36,12 @@ public:
 		QPushButton*        addButton;
 	} ReagentBox_t;
 	
-	//typedef enum {Reactant, Product} ReagentType;
-	
 public slots:
+	// for new steps
+	void validate();
+	void checkValidationState();
+	void setBottomEnabled( bool val );
+	
 	void updateCpdLists();
 	
 	void addCpd( ReagentBox_t* r );
@@ -50,11 +53,12 @@ public slots:
 	void remProd1(); void remProd2(); void remProd3();
 
 signals:
+	void validated();
 
 protected:
-	void dragEnterEvent(QDragEnterEvent *event);
+	/*void dragEnterEvent(QDragEnterEvent *event);
 	void dropEvent(QDropEvent *event);
-	void dragMoveEvent(QDragMoveEvent *event);
+	void dragMoveEvent(QDragMoveEvent *event);*/
 	
 private:
 	Ui::stepWindow ui;

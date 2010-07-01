@@ -1,7 +1,9 @@
 #include "step.h"
 
 Step::Step() : QObject(), stepname(""), kplus(0), kminus(0)
-{}
+{
+	mix->connect( this, SIGNAL(reagentsChanged()), mix, SIGNAL(stepListChanged()) );
+}
 
 QList<Cpd*> Step::reactantList()
 { return reactants; }
@@ -32,6 +34,7 @@ bool Step::addReactant( Cpd* cpd ) {
 		return false;
 	reactants.append( cpd );
 	cpd->stoiVals[this]--;
+	emit reagentsChanged();
 	return true;
 }
 bool Step::addProduct ( Cpd *cpd ) {
@@ -39,18 +42,37 @@ bool Step::addProduct ( Cpd *cpd ) {
 		return false;
 	products.append( cpd );
 	cpd->stoiVals[this]++;
+	emit reagentsChanged();
+	return true;
+}
+bool Step::setReactant( int i, Cpd* cpd )
+{
+	if( reactants.size()<i+1 )
+		return false;
+	reactants[i] = cpd;
+	emit reagentsChanged();
+	return true;
+}
+bool Step::setProduct( int i, Cpd* cpd )
+{
+	if( products.size()<i+1 )
+		return false;
+	products[i] = cpd;
+	emit reagentsChanged();
 	return true;
 }
 bool Step::removeReactant( int cpd ) {
 	if( cpd < 0 || cpd >= reactantList().size() )
 		return false;
 	reactants.removeAt( cpd );
+	emit reagentsChanged();
 	return true;
 }
 bool Step::removeProduct( int cpd ) {
 	if( cpd < 0 || cpd >= productList().size() )
 		return false;
 	products.removeAt( cpd );
+	emit reagentsChanged();
 	return true;
 }
 

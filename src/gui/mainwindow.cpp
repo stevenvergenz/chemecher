@@ -10,9 +10,10 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	setWindowState( windowState() | Qt::WindowMaximized );
 	
 	// cpd list drag&drop stuff
-	lstCpds = new DragListWidget(ui.fraCpds);
+	lstCpds = ui.lstCpds;
+	/*lstCpds = new DragListWidget(ui.fraCpds);
 	lstCpds->setSizePolicy(ui.lstSteps->sizePolicy());
-	ui.cpdLayout->addWidget(lstCpds, 1,0,2,2, Qt::AlignLeft);
+	ui.cpdLayout->addWidget(lstCpds, 1,0,2,2, Qt::AlignLeft);*/
 	//lstCpds->show();
 	
 	///////////////////
@@ -100,7 +101,7 @@ void MainWindow::showCpdWindow( QTableWidgetItem* item )
 	}
 	
 	// create the subwindow
-	CpdWindow* win = new CpdWindow( cpd, this, 0, (item==0) );
+	CpdWindow* win = new CpdWindow( cpd, 0, (item==0) );
 	QMdiSubWindow *mdiSubWin = ui.mdi->addSubWindow(win);
 	mdiSubWin->setMinimumSize( win->minimumSize() + QSize(10,28) );
 	mdiSubWin->setMaximumSize( win->maximumSize() + QSize(10,28) );
@@ -209,7 +210,23 @@ void MainWindow::showStepWindow( QTableWidgetItem *item )
 }
 void MainWindow::removeStep()
 {
+	if( ui.lstSteps->currentRow()<0 )
+		return;
 	
+	Step *step = mix->getStepByName( ui.lstSteps->item(ui.lstSteps->currentRow(),0)->text() );
+	mix->removeStep(step);
+	delete step;
+	updateStepList();
+	
+	QList<QMdiSubWindow*> windowlist = ui.mdi->subWindowList(QMdiArea::ActivationHistoryOrder);
+	for(int i=0; i<windowlist.size(); i++)
+	{
+		if( windowlist[i]->windowTitle() == step->name() ){
+			ui.mdi->removeSubWindow(windowlist[i]);
+			delete windowlist[i];
+			return;
+		}
+	}
 }
 void MainWindow::moveStepUp()
 {
