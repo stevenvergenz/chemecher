@@ -42,6 +42,7 @@ public slots:
 	void checkValidationState();
 	void setBottomEnabled( bool val );
 	
+	void refreshReagentBoxConnections();
 	void updateCpdLists();
 	
 	void addCpd( ReagentBox_t* r );
@@ -49,8 +50,8 @@ public slots:
 	void addProd();
 	
 	void remCpd( ReagentBox_t* r, int i );
-	void remReac1(); void remReac2(); void remReac3();
-	void remProd1(); void remProd2(); void remProd3();
+	/*void remReac1(); void remReac2(); void remReac3();
+	void remProd1(); void remProd2(); void remProd3();*/
 
 signals:
 	void validated();

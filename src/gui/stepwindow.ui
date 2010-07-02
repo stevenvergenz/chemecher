@@ -74,7 +74,7 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="0" colspan="3">
+      <item row="3" column="0" colspan="3">
        <widget class="QFrame" name="frmKs">
         <property name="frameShape">
          <enum>QFrame::NoFrame</enum>
@@ -145,14 +145,14 @@
         </layout>
        </widget>
       </item>
-      <item row="1" column="0">
+      <item row="1" column="0" rowspan="2">
        <widget class="QLabel" name="lblDesc">
         <property name="text">
          <string>Description:</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="1" colspan="2">
+      <item row="1" column="1" rowspan="2" colspan="2">
        <widget class="QLineEdit" name="txtDesc"/>
       </item>
      </layout>
@@ -262,7 +262,6 @@
  <tabstops>
   <tabstop>txtName</tabstop>
   <tabstop>pushValidate</tabstop>
-  <tabstop>txtDesc</tabstop>
   <tabstop>spinKPlus</tabstop>
   <tabstop>spinKMinus</tabstop>
   <tabstop>pushAddReac</tabstop>

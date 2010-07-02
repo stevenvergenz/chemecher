@@ -51,6 +51,7 @@ StepWindow::StepWindow(Step* base, QWidget* parent, bool isnew)
 	connect( baseStep,	    SIGNAL(kMinusChanged(double)),
 	         ui.spinKMinus, SLOT(setValue(double)) );
 	
+	updateCpdLists();
 	
 	if( isnew ) {
 		setWindowTitle( "New step" );
@@ -59,13 +60,17 @@ StepWindow::StepWindow(Step* base, QWidget* parent, bool isnew)
 		setWindowTitle( base->name() );
 		// initialize the fields
 		ui.txtName    ->setText(  base->name()   );
-		ui.txtDesc    ->setPlainText(  base->desc()   );
+		ui.txtDesc    ->setText(  base->desc()   );
 		ui.spinKPlus  ->setValue( base->kPlus()  );
 		ui.spinKMinus ->setValue( base->kMinus() );
-		for( int i=0; i<baseStep->reactantList().size(); i++ )
+		for( int i=0; i<baseStep->reactantList().size(); i++ ) {
 			addCpd( reactants );
-		for( int i=0; i<baseStep->productList().size(); i++ )
+			reactants->lstCombos[i]->setCurrentIndex( mix->CpdList.indexOf(baseStep->reactantList()[i]) );
+		}
+		for( int i=0; i<baseStep->productList().size(); i++ ) {
 			addCpd( products );
+			products->lstCombos[i]->setCurrentIndex( mix->CpdList.indexOf(baseStep->reactantList()[i]) );
+		}
 	}
 	
 	checkValidationState();
@@ -125,18 +130,17 @@ void StepWindow::setBottomEnabled( bool val )
 	ui.frmStep ->setEnabled(val);
 }
 
-// slots
-void StepWindow::remReac1(){remCpd(reactants,0);}
-void StepWindow::remReac2(){remCpd(reactants,1);}
-void StepWindow::remReac3(){remCpd(reactants,2);}
-void StepWindow::remProd1(){remCpd(products ,0);}
-void StepWindow::remProd2(){remCpd(products ,1);}
-void StepWindow::remProd3(){remCpd(products ,2);}
-
-// base function
-void StepWindow::remCpd(ReagentBox_t* r, int i)
+void StepWindow::refreshReagentBoxConnections()
 {
-	
+	for( int i=0; i<reactants->lstCombos.size(); i++ ) {
+		disconnect( reactants->lstCombos[i], 0, 0, 0 );
+		disconnect( this, 0, reactants->lstCombos[i], 0 );
+		disconnect( reactants->lstRems[i], 0, 0, 0 );
+		disconnect( this, 0, reactants->lstRems[i], 0 );
+		
+		connect( reactants->lstCombos[i], SIGNAL(currentIndexChanged(int)), this, SLOT(setReactants()) );
+		//connect( reactants->lstCombos[i], SIGNAL(currentIndexChanged(int)), this, SLOT(setReactants()) );
+	}
 }
 
 // slots
@@ -166,18 +170,7 @@ void StepWindow::addCpd(ReagentBox_t* r)
 	rem->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 	rem->setText("x");
 	
-	switch( r->lstCombos.size() ) {
-	case 0:
-		// disable remove button
-		//rem->setEnabled(false);
-		break;
-	case 1:
-		// enable previous remove button
-		//r->lstRems.last()->setEnabled(true);
-		
-		// NO BREAK, case 1 does both
-		
-	case 2:
+	if( r->lstCombos.size()==1 || r->lstCombos.size()==2 ) {
 		// set up plus sign
 		plus = new QLabel("+", r->frame);
 		plus->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
@@ -200,15 +193,29 @@ void StepWindow::addCpd(ReagentBox_t* r)
 	
 	//connect( remReac, SIGNAL(pressed()), this, SLOT );
 	
+	/******************/
+	
 	// disable add button if already three reactants
 	if( r->lstCombos.size()==3 )
 		r->addButton->setEnabled(false);
 }
+// base function
+void StepWindow::remCpd(ReagentBox_t* r, int i)
+{
+	/******************/
+}
+
+// slots
+/*void StepWindow::remReac1(){remCpd(reactants,0);}
+void StepWindow::remReac2(){remCpd(reactants,1);}
+void StepWindow::remReac3(){remCpd(reactants,2);}
+void StepWindow::remProd1(){remCpd(products ,0);}
+void StepWindow::remProd2(){remCpd(products ,1);}
+void StepWindow::remProd3(){remCpd(products ,2);}*/
 
 void StepWindow::updateCpdLists()
 {
 	QComboBox *combo;
-	qDebug() << ":D";
 	for( int i=0; i<reactants->lstCombos.size(); i++ ) {
 		combo = reactants->lstCombos[i];
 		QString temp = combo->currentText();
@@ -225,7 +232,6 @@ void StepWindow::updateCpdLists()
 		if( combo->findText(temp) != -1 )
 			combo->setCurrentIndex(combo->findText(temp));
 	}
-	qDebug() << ":D";
 }
 
 //
