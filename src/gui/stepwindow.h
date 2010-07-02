@@ -14,6 +14,7 @@
 #include <QDragEnterEvent>
 #include <QPaintEngine>
 #include <QComboBox>
+#include <QDoubleValidator>
 
 #include "ui_stepwindow.h"
 #include "step.h"
@@ -43,6 +44,8 @@ public slots:
 	void setBottomEnabled( bool val );
 	
 	void refreshReagentBoxConnections();
+	void disconnectReagentBoxes();
+	void connectReagentBoxes();
 	void updateCpdLists();
 	
 	void setReagents();
@@ -54,11 +57,14 @@ public slots:
 	void remReacButton();
 	void remProdButton();
 	void remCpd( ReagentBox_t* r, int i );
+	void remAllCpds();
 	/*void remReac1(); void remReac2(); void remReac3();
 	void remProd1(); void remProd2(); void remProd3();*/
 
 signals:
 	void validated();
+	
+	void addCpdClicked();
 
 protected:
 	/*void dragEnterEvent(QDragEnterEvent *event);

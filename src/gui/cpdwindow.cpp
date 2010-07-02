@@ -11,7 +11,7 @@ CpdWindow::CpdWindow(Cpd* base, QWidget* parent, bool isnew) : QWidget(parent), 
 			 this,            SLOT(checkValidationState()) );
 	connect( ui.pushValidate, SIGNAL(clicked()),
 			 this,            SLOT(validate()) );
-	connect( this, SIGNAL(validated()), mix, SIGNAL(stepListChanged()) );
+	connect( this, SIGNAL(validated()), mix, SIGNAL(cpdListChanged()) );
 	
 	// connect the various widgets to modify the appropriate fields in base
 	connect( ui.txtLongName,  SIGNAL(textEdited(QString)),
@@ -30,10 +30,13 @@ CpdWindow::CpdWindow(Cpd* base, QWidget* parent, bool isnew) : QWidget(parent), 
 			 this,          SLOT(updateForm()) );
 	
 	// if the compound is being added
-	if( isnew )
-		this->setWindowTitle("New specie");
+	if( isnew ) {
+		setWindowTitle("New specie");
+		ui.pushValidate->setText("&Add");
+	}
 	else {
-		this->setWindowTitle(baseCpd->toString());
+		setWindowTitle(baseCpd->toString());
+		ui.pushValidate->setText("&Update");
 		ui.txtShortName->setText(baseCpd->shortName());
 		ui.comboState->setCurrentIndex((int)baseCpd->state());
 		ui.comboTrans->setCurrentIndex((int)baseCpd->transition());
@@ -75,6 +78,7 @@ void CpdWindow::validate()
 		ui.txtLongName->setFocus();
 		
 		setWindowTitle( baseCpd->toString() );
+		ui.pushValidate->setText("&Update");
 	}
 	else {
 		QMessageBox::critical(this, "Error", "Name/state combination must be unique!", QMessageBox::Ok);

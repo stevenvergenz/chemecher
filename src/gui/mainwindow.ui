@@ -73,10 +73,10 @@
     <property name="title">
      <string>&amp;View</string>
     </property>
-    <addaction name="actionCascade_Windows"/>
-    <addaction name="actionTile_Windows"/>
+    <addaction name="actCascade"/>
+    <addaction name="actTile"/>
     <addaction name="separator"/>
-    <addaction name="actionClose_All_Subwindows"/>
+    <addaction name="actCloseAll"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menuS_imulation"/>
@@ -519,17 +519,17 @@
     <string>Save Mech &amp;As...</string>
    </property>
   </action>
-  <action name="actionCascade_Windows">
+  <action name="actCascade">
    <property name="text">
     <string>Cascade Subwindows</string>
    </property>
   </action>
-  <action name="actionTile_Windows">
+  <action name="actTile">
    <property name="text">
     <string>Tile Subwindows</string>
    </property>
   </action>
-  <action name="actionClose_All_Subwindows">
+  <action name="actCloseAll">
    <property name="text">
     <string>Close All Subwindows</string>
    </property>

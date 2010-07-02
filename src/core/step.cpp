@@ -100,8 +100,11 @@ QString Step::desc(){ return stepdesc; }
 void Step::setDesc(QString n){ stepdesc = n; emit descChanged(n);}
 double Step::kPlus(){ return kplus; }
 void Step::setKPlus(double k){ kplus = k; emit kPlusChanged(kplus);}
+void Step::setKPlus(QString k){ kplus = k.toDouble(); emit kPlusChanged(kplus);}
 double Step::kMinus(){ return kminus; }
 void Step::setKMinus(double k){ kminus = k; emit kMinusChanged(kminus);}
+void Step::setKMinus(QString k){ kminus = k.toDouble(); emit kMinusChanged(kminus);}
+
 
 // returns the reaction equation
 QString Step::toString()

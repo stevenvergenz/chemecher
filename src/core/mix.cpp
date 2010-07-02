@@ -37,9 +37,16 @@ Cpd* Mix::getCpdById(QString id)
 QStringList Mix::stepNameList() {
 	QStringList ret;
 	for( int i=0; i<StepList.size(); i++ )
+		ret.append(StepList[i]->name());
+	return ret;
+}
+QStringList Mix::stepStringList() {
+	QStringList ret;
+	for( int i=0; i<StepList.size(); i++ )
 		ret.append(StepList[i]->toString());
 	return ret;
 }
+
 Step* Mix::addStep(Step *step) {
 	StepList.append(step);
 	emit stepListChanged();

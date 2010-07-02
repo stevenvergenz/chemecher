@@ -28,6 +28,7 @@ public:
 	// step functions
 	QList<Step*> StepList;
 	QStringList stepNameList();
+	QStringList stepStringList();
 	Step* addStep(Step *step);
 	Step* removeStep(Step *step);
 	void swapSteps(int first, int second);

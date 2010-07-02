@@ -37,6 +37,11 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect(ui.pushMoveStepDown, SIGNAL(clicked()), this, SLOT(moveStepDown()));
 	connect(mix, SIGNAL(stepListChanged()), this, SLOT(updateStepList()));
 	
+	// mdi area
+	connect( ui.actCascade,  SIGNAL(triggered()), ui.mdi, SLOT(cascadeSubWindows())  );
+	connect( ui.actTile,     SIGNAL(triggered()), ui.mdi, SLOT(tileSubWindows())     );
+	connect( ui.actCloseAll, SIGNAL(triggered()), ui.mdi, SLOT(closeAllSubWindows()) );
+	
 	// saving/loading
 	connect(ui.actSaveMechDb, SIGNAL(triggered()), this, SLOT(saveMechDb()));
 	connect(ui.actLoadMechDb, SIGNAL(triggered()), this, SLOT(loadMechDb()));
@@ -55,7 +60,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	step->setKPlus(2.41);
 	step->setKMinus(6.8);
 	step->addReactant( cpd_a );
-	step->addReactant( cpd_b );
+	//step->addReactant( cpd_b );
 	//step->addProduct ( cpd_c );
 	mix->addStep( step );
 	
@@ -101,7 +106,7 @@ void MainWindow::showCpdWindow( QTableWidgetItem* item )
 	}
 	
 	// create the subwindow
-	CpdWindow* win = new CpdWindow( cpd, 0, (item==0) );
+	CpdWindow* win = new CpdWindow( cpd, this, (item==0) );
 	QMdiSubWindow *mdiSubWin = ui.mdi->addSubWindow(win);
 	mdiSubWin->setMinimumSize( win->minimumSize() + QSize(10,28) );
 	mdiSubWin->setMaximumSize( win->maximumSize() + QSize(10,28) );
@@ -195,14 +200,20 @@ void MainWindow::showStepWindow( QTableWidgetItem *item )
 				windowlist[i]->showNormal();
 				windowlist[i]->raise();
 				windowlist[i]->setFocus();
+				
+				ui.lstSteps->setCurrentCell(-1,-1);
+				
 				return;
 			}
 		}
 		
 	}
 	
+	ui.lstSteps->setCurrentCell(-1,-1);
+	
 	// create the subwindow
 	StepWindow* win = new StepWindow( step, 0, (item==0) );
+	connect( win, SIGNAL(addCpdClicked()), this, SLOT(showCpdWindow()) );
 	QMdiSubWindow *mdiSubWin = ui.mdi->addSubWindow(win);
 	mdiSubWin->setMinimumSize( win->minimumSize() + QSize(10,28) );
 	mdiSubWin->setMaximumSize( win->maximumSize() + QSize(10,28) );

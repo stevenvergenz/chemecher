@@ -8,12 +8,18 @@ StepWindow::StepWindow(Step* base, QWidget* parent, bool isnew)
 	// initialize reagent boxes;
 	reactants = new ReagentBox_t;
 	products  = new ReagentBox_t;
+	reactants->lstCombos = QList<QComboBox*>();
 	reactants->addButton = ui.pushAddReac;
 	reactants->frame     = ui.frmReacs;
 	reactants->layout    = ui.layReac;
 	products->addButton  = ui.pushAddProd;
 	products->frame      = ui.frmProds;
 	products->layout     = ui.layProd;
+	
+	// validator for k textboxes
+	QDoubleValidator *val = new QDoubleValidator(0., 1000000., 30, 0);
+	ui.spinKMinus->setValidator(val);
+	ui.spinKPlus->setValidator(val);
 	
 	/*******************
 	 * SIGNALS & SLOTS *
@@ -29,47 +35,50 @@ StepWindow::StepWindow(Step* base, QWidget* parent, bool isnew)
 	updateCpdLists();
 	
 	// connect add reactants and products
-	connect( ui.pushAddReac, SIGNAL(clicked()),
-	         this,           SLOT(addReac()) );
-	connect( ui.pushAddProd, SIGNAL(clicked()),
-	         this,           SLOT(addProd()) );
-	         
+	connect( ui.pushAddReac,   SIGNAL(clicked()),
+	         this,             SLOT(addReac()) );
+	connect( ui.pushAddProd,   SIGNAL(clicked()),
+	         this,             SLOT(addProd()) );
+	connect( ui.pushCreateCpd, SIGNAL(clicked()),
+	         this,             SIGNAL(addCpdClicked()) );
 	
 	// connect slots to keep step up to date
 	//connect( ui.txtName,    SIGNAL(textEdited(QString)),
 	//         baseStep,      SLOT(setName(QString))  );
 	connect( ui.txtDesc,    SIGNAL(textEdited(QString)),
 			 baseStep,      SLOT(setDesc(QString))  );
-	connect( ui.spinKPlus,  SIGNAL(valueChanged(double)),
-	         baseStep,      SLOT(setKPlus(double))  );
-	connect( ui.spinKMinus, SIGNAL(valueChanged(double)),
-	         baseStep,      SLOT(setKMinus(double)) );
+	connect( ui.spinKPlus,  SIGNAL(textEdited(QString)),
+	         baseStep,      SLOT(setKPlus(QString))  );
+	connect( ui.spinKMinus, SIGNAL(textEdited(QString)),
+	         baseStep,      SLOT(setKMinus(QString)) );
 
 	// set up a feedback loop for the rate boxes
-	connect( baseStep,      SIGNAL(kPlusChanged(double)),
+	/*connect( baseStep,      SIGNAL(kPlusChanged(double)),
 	         ui.spinKPlus,  SLOT(setValue(double)) );
 	connect( baseStep,	    SIGNAL(kMinusChanged(double)),
-	         ui.spinKMinus, SLOT(setValue(double)) );
+	         ui.spinKMinus, SLOT(setValue(double)) );*/
 	
 	updateCpdLists();
 	
 	if( isnew ) {
 		setWindowTitle( "New step" );
+		ui.pushValidate->setText("&Add");
 	}
 	else {
 		setWindowTitle( base->name() );
+		ui.pushValidate->setText("&Update");
 		// initialize the fields
-		ui.txtName    ->setText(  base->name()   );
-		ui.txtDesc    ->setText(  base->desc()   );
-		ui.spinKPlus  ->setValue( base->kPlus()  );
-		ui.spinKMinus ->setValue( base->kMinus() );
+		ui.txtName    ->setText( base->name()   );
+		ui.txtDesc    ->setText( base->desc()   );
+		ui.spinKPlus  ->setText( QString("%1").arg(base->kPlus())  );
+		ui.spinKMinus ->setText( QString("%1").arg(base->kMinus()) );
 		for( int i=0; i<baseStep->reactantList().size(); i++ ) {
 			addCpd( reactants, false );
-			reactants->lstCombos[i]->setCurrentIndex( mix->CpdList.indexOf(baseStep->reactantList()[i]) );
+			reactants->lstCombos.at(i)->setCurrentIndex( mix->CpdList.indexOf(baseStep->reactantList().at(0)) );
 		}
 		for( int i=0; i<baseStep->productList().size(); i++ ) {
 			addCpd( products, false );
-			products->lstCombos[i]->setCurrentIndex( mix->CpdList.indexOf(baseStep->reactantList()[i]) );
+			products->lstCombos[i]->setCurrentIndex( mix->CpdList.indexOf(baseStep->productList()[i]) );
 		}
 	}
 	
@@ -89,6 +98,7 @@ void StepWindow::validate()
 	}
 	
 	// if name does not yet exist
+	qDebug() << mix->stepNameList();
 	if( !mix->stepNameList().contains(name) ) {
 		
 		baseStep->setName(name);
@@ -103,6 +113,7 @@ void StepWindow::validate()
 		ui.txtDesc->setFocus();
 		
 		setWindowTitle( baseStep->name() );
+		ui.pushValidate->setText("&Update");
 	}
 	else {
 		QMessageBox::critical(this, "Error", "Name must be unique!", QMessageBox::Ok);
@@ -133,21 +144,31 @@ void StepWindow::setBottomEnabled( bool val )
 
 void StepWindow::refreshReagentBoxConnections()
 {
+	disconnectReagentBoxes();
+	connectReagentBoxes();
+}
+void StepWindow::disconnectReagentBoxes()
+{
 	for( int i=0; i<reactants->lstCombos.size(); i++ ) {
 		disconnect( reactants->lstCombos[i], 0, 0, 0 );
 		disconnect( this, 0, reactants->lstCombos[i], 0 );
 		disconnect( reactants->lstRems[i], 0, 0, 0 );
 		disconnect( this, 0, reactants->lstRems[i], 0 );
-		
-		connect( reactants->lstCombos[i], SIGNAL(currentIndexChanged(int)), this, SLOT(setReagents()) );
-		connect( reactants->lstRems[i], SIGNAL(pressed()), this, SLOT(remReacButton()) );
 	}
 	for( int i=0; i<products->lstCombos.size(); i++ ) {
 		disconnect( products->lstCombos[i], 0, 0, 0 );
 		disconnect( this, 0, products->lstCombos[i], 0 );
 		disconnect( products->lstRems[i], 0, 0, 0 );
 		disconnect( this, 0, products->lstRems[i], 0 );
-		
+	}
+}
+void StepWindow::connectReagentBoxes()
+{
+	for( int i=0; i<reactants->lstCombos.size(); i++ ) {		
+		connect( reactants->lstCombos[i], SIGNAL(currentIndexChanged(int)), this, SLOT(setReagents()) );
+		connect( reactants->lstRems[i], SIGNAL(pressed()), this, SLOT(remReacButton()) );
+	}
+	for( int i=0; i<products->lstCombos.size(); i++ ) {
 		connect( products->lstCombos[i], SIGNAL(currentIndexChanged(int)), this, SLOT(setReagents()) );
 		connect( products->lstRems[i], SIGNAL(pressed()), this, SLOT(remProdButton()) );
 	}
@@ -156,11 +177,15 @@ void StepWindow::refreshReagentBoxConnections()
 void StepWindow::setReagents()
 {
 	QList<Cpd*> list = baseStep->reactantList();
+	if( list.size()!=reactants->lstCombos.size() )
+		return;
 	for( int i=0; i<list.size(); i++ ) {
 		if( list[i]->toString()!=reactants->lstCombos[i]->currentText() )
 			baseStep->setReactant( i, mix->getCpdById(reactants->lstCombos[i]->currentText()) );
 	}
 	list = baseStep->productList();
+	if( list.size()!=products->lstCombos.size() )
+		return;
 	for( int i=0; i<list.size(); i++ ) {
 		if( list[i]->toString()!=products->lstCombos[i]->currentText() )
 			baseStep->setProduct( i, mix->getCpdById(products->lstCombos[i]->currentText()) );
@@ -173,10 +198,6 @@ void StepWindow::addReac()
 void StepWindow::addProd()
 {addCpd(products );}
 
-/**
-  * @name addCpd
-  * @arg ReagentBox_t* r blah
-  */
 void StepWindow::addCpd(ReagentBox_t* r, bool addtobase)
 {
 	if( r->lstCombos.size() > 2 )
@@ -223,7 +244,9 @@ void StepWindow::addCpd(ReagentBox_t* r, bool addtobase)
 			baseStep->addReactant( mix->getCpdById(r->lstCombos.last()->currentText()) );
 		else
 			baseStep->addProduct ( mix->getCpdById(r->lstCombos.last()->currentText()) );
+		updateCpdLists();
 	}
+	
 	refreshReagentBoxConnections();
 	
 	// disable add button if already three reactants
@@ -234,23 +257,47 @@ void StepWindow::addCpd(ReagentBox_t* r, bool addtobase)
 void StepWindow::remReacButton() {
 	for( int i=0; i<reactants->lstRems.size(); i++ )
 		if( reactants->lstRems[i]->isDown() )
-			//remCpd( reactants, i );
-			reactants->lstRems[i]->setText(":D");
+			remCpd( reactants, i );
 }
 void StepWindow::remProdButton() {
 	for( int i=0; i<products->lstRems.size(); i++ )
 		if( products->lstRems[i]->isDown() )
-			remCpd( products, i );
+			remCpd( products,  i );
 }
 
 // base function
 void StepWindow::remCpd(ReagentBox_t* r, int i)
 {
-	qDebug() << ":D";
+	qDebug() << (r==reactants?"react":"prod") << ", " << i;
+
+	int size = r->lstCombos.size();	
+	if( size < i+1 )
+		return;
 	
-	/******************/
+	r->lstCombos[i]->~QComboBox();
+	r->lstCombos.removeAt(i);
+	r->lstRems[i]->~QPushButton();
+	r->lstRems.removeAt(i);
+	if( r==reactants )
+		baseStep->removeReactant(i);
+	else
+		baseStep->removeProduct (i);
+	
+	if( size>1 ) {
+		if( i==0 ) i++;
+		r->lstPlus[i-1]->~QLabel();
+		r->lstPlus.removeAt(i-1);
+	}
+	
+	r->addButton->setEnabled(true);
 	
 	refreshReagentBoxConnections();
+}
+void StepWindow::remAllCpds() {
+	while( reactants->lstCombos.size()>0 )
+		remCpd(reactants, 0);
+	while( products->lstCombos.size()>0 )
+		remCpd(products, 0);
 }
 
 // slots
@@ -264,12 +311,16 @@ void StepWindow::remProd3(){remCpd(products ,2);}*/
 void StepWindow::updateCpdLists()
 {
 	QComboBox *combo;
+	disconnectReagentBoxes();
 	for( int i=0; i<reactants->lstCombos.size(); i++ ) {
 		combo = reactants->lstCombos[i];
 		QString temp = combo->currentText();
+		disconnectReagentBoxes();
 		combo->clear();
 		combo->addItems(mix->cpdIdList());
-		if( combo->findText(temp) != -1 )
+		if( combo->findText(temp) == -1 )
+			remCpd(reactants, i);
+		else
 			combo->setCurrentIndex(combo->findText(temp));
 	}
 	for( int i=0; i<products->lstCombos.size(); i++ ) {
@@ -277,9 +328,18 @@ void StepWindow::updateCpdLists()
 		QString temp = combo->currentText();
 		combo->clear();
 		combo->addItems(mix->cpdIdList());
-		if( combo->findText(temp) != -1 )
+		if( combo->findText(temp) == -1 )
+			remCpd(products, i);
+		else
 			combo->setCurrentIndex(combo->findText(temp));
 	}
+	connectReagentBoxes();
+	ui.pushAddProd->setEnabled(mix->CpdList.size()>0);
+	ui.pushAddReac->setEnabled(mix->CpdList.size()>0);
+	if( mix->CpdList.size()>0 )
+		setReagents();
+	else
+		remAllCpds();
 }
 
 //

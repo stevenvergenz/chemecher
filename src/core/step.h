@@ -43,7 +43,9 @@ public slots:
 	void setName(QString n);
 	void setDesc(QString d);
 	void setKPlus(double k);
+	void setKPlus(QString k);
 	void setKMinus(double k);
+	void setKMinus(QString k);
 	
 	bool addReactant( Cpd* cpd );
 	bool addProduct ( Cpd* cpd );
