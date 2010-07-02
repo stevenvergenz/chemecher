@@ -75,7 +75,6 @@ Step* Mix::getStepByName(QString name)
 	return ret;
 }
 
-
 void Mix::initialize()
 {
 

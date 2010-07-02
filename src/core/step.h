@@ -38,6 +38,8 @@ public:
 	QString toString();
 
 public slots:
+	void checkReagents();
+	
 	void setName(QString n);
 	void setDesc(QString d);
 	void setKPlus(double k);

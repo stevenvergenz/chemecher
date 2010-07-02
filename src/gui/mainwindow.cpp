@@ -187,18 +187,18 @@ void MainWindow::showStepWindow( QTableWidgetItem *item )
 	// if function was called from list double-clicked
 	else {
 		step = mix->StepList.at( item->tableWidget()->row(item) );
-		qDebug() << step->isValid();
 		
 		// if subwindow exists, raise it and return
 		QList<QMdiSubWindow*> windowlist = ui.mdi->subWindowList(QMdiArea::ActivationHistoryOrder);
 		for(int i=0; i<windowlist.size(); i++) {
-			if( windowlist[i]->windowTitle() == step->name() ){
+			if( windowlist[i]->windowTitle() == step->name() && windowlist[i]->widget() ){
 				windowlist[i]->showNormal();
 				windowlist[i]->raise();
 				windowlist[i]->setFocus();
 				return;
 			}
 		}
+		
 	}
 	
 	// create the subwindow

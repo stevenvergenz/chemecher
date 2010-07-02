@@ -17,7 +17,7 @@ Q_OBJECT
 public:
 	friend class Step;
 	
-	// members
+	// compound functions
 	QList<Cpd*> CpdList;
 	QStringList cpdIdList();
 	Cpd* addCpd(Cpd *cpd);
@@ -25,6 +25,7 @@ public:
 	void swapCpds(int first, int second);
 	Cpd* getCpdById(QString id);
 	
+	// step functions
 	QList<Step*> StepList;
 	QStringList stepNameList();
 	Step* addStep(Step *step);
@@ -33,11 +34,15 @@ public:
 	Step* getStepByString(QString string);
 	Step* getStepByName(QString name);
 	
+	
 	void initialize();
 	void calculateRKF();
 	void calculateLegacy();
 	
-
+	/*************************
+	 * Simulation parameters *
+	 *************************/
+	
 	//current mix identifiers
 	QString mechName;
 	QString mechDesc;
@@ -57,8 +62,6 @@ public:
 signals:
 	void stepListChanged();
 	void cpdListChanged();
-	
-public slots:
 	
 };
 

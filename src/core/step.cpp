@@ -2,7 +2,24 @@
 
 Step::Step() : QObject(), stepname(""), kplus(0), kminus(0)
 {
+	connect( mix, SIGNAL(cpdListChanged()), this, SLOT(checkReagents()) );
 	mix->connect( this, SIGNAL(reagentsChanged()), mix, SIGNAL(stepListChanged()) );
+}
+
+void Step::checkReagents()
+{
+	for( int i=0; i<reactants.size(); i++ )
+		if( !mix->CpdList.contains(reactants[i]) ) {
+			removeReactant( i );
+			emit reagentsChanged();
+			i--;
+		}
+	for( int i=0; i<products.size(); i++ )
+		if( !mix->CpdList.contains(products[i]) ) {
+			removeProduct( i );
+			emit reagentsChanged();
+			i--;
+		}
 }
 
 QList<Cpd*> Step::reactantList()
@@ -94,7 +111,8 @@ QString Step::toString()
 	for( i=0; i<reactants.size(); i++ )
 		ret += reactants[i]->toString() + " + ";
 	if( i>0 )
-		ret = ret.left(ret.length()-2) + "<-> ";
+		ret = ret.left(ret.length()-2);
+	ret +=  "<> ";
 	for( i=0; i<products.size(); i++ )
 		ret += products[i]->toString() + " + ";
 	if( i>0 )

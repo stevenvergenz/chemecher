@@ -64,15 +64,16 @@ StepWindow::StepWindow(Step* base, QWidget* parent, bool isnew)
 		ui.spinKPlus  ->setValue( base->kPlus()  );
 		ui.spinKMinus ->setValue( base->kMinus() );
 		for( int i=0; i<baseStep->reactantList().size(); i++ ) {
-			addCpd( reactants );
+			addCpd( reactants, false );
 			reactants->lstCombos[i]->setCurrentIndex( mix->CpdList.indexOf(baseStep->reactantList()[i]) );
 		}
 		for( int i=0; i<baseStep->productList().size(); i++ ) {
-			addCpd( products );
+			addCpd( products, false );
 			products->lstCombos[i]->setCurrentIndex( mix->CpdList.indexOf(baseStep->reactantList()[i]) );
 		}
 	}
 	
+	refreshReagentBoxConnections();
 	checkValidationState();
 }
 
@@ -138,8 +139,31 @@ void StepWindow::refreshReagentBoxConnections()
 		disconnect( reactants->lstRems[i], 0, 0, 0 );
 		disconnect( this, 0, reactants->lstRems[i], 0 );
 		
-		connect( reactants->lstCombos[i], SIGNAL(currentIndexChanged(int)), this, SLOT(setReactants()) );
-		//connect( reactants->lstCombos[i], SIGNAL(currentIndexChanged(int)), this, SLOT(setReactants()) );
+		connect( reactants->lstCombos[i], SIGNAL(currentIndexChanged(int)), this, SLOT(setReagents()) );
+		connect( reactants->lstRems[i], SIGNAL(pressed()), this, SLOT(remReacButton()) );
+	}
+	for( int i=0; i<products->lstCombos.size(); i++ ) {
+		disconnect( products->lstCombos[i], 0, 0, 0 );
+		disconnect( this, 0, products->lstCombos[i], 0 );
+		disconnect( products->lstRems[i], 0, 0, 0 );
+		disconnect( this, 0, products->lstRems[i], 0 );
+		
+		connect( products->lstCombos[i], SIGNAL(currentIndexChanged(int)), this, SLOT(setReagents()) );
+		connect( products->lstRems[i], SIGNAL(pressed()), this, SLOT(remProdButton()) );
+	}
+}
+
+void StepWindow::setReagents()
+{
+	QList<Cpd*> list = baseStep->reactantList();
+	for( int i=0; i<list.size(); i++ ) {
+		if( list[i]->toString()!=reactants->lstCombos[i]->currentText() )
+			baseStep->setReactant( i, mix->getCpdById(reactants->lstCombos[i]->currentText()) );
+	}
+	list = baseStep->productList();
+	for( int i=0; i<list.size(); i++ ) {
+		if( list[i]->toString()!=products->lstCombos[i]->currentText() )
+			baseStep->setProduct( i, mix->getCpdById(products->lstCombos[i]->currentText()) );
 	}
 }
 
@@ -149,8 +173,11 @@ void StepWindow::addReac()
 void StepWindow::addProd()
 {addCpd(products );}
 
-// base function
-void StepWindow::addCpd(ReagentBox_t* r)
+/**
+  * @name addCpd
+  * @arg ReagentBox_t* r blah
+  */
+void StepWindow::addCpd(ReagentBox_t* r, bool addtobase)
 {
 	if( r->lstCombos.size() > 2 )
 		return;
@@ -191,18 +218,39 @@ void StepWindow::addCpd(ReagentBox_t* r)
 	r->lstCombos .append(combo);
 	r->lstRems   .append(rem);
 	
-	//connect( remReac, SIGNAL(pressed()), this, SLOT );
-	
-	/******************/
+	if( addtobase ) {
+		if( r==reactants )
+			baseStep->addReactant( mix->getCpdById(r->lstCombos.last()->currentText()) );
+		else
+			baseStep->addProduct ( mix->getCpdById(r->lstCombos.last()->currentText()) );
+	}
+	refreshReagentBoxConnections();
 	
 	// disable add button if already three reactants
 	if( r->lstCombos.size()==3 )
 		r->addButton->setEnabled(false);
 }
+
+void StepWindow::remReacButton() {
+	for( int i=0; i<reactants->lstRems.size(); i++ )
+		if( reactants->lstRems[i]->isDown() )
+			//remCpd( reactants, i );
+			reactants->lstRems[i]->setText(":D");
+}
+void StepWindow::remProdButton() {
+	for( int i=0; i<products->lstRems.size(); i++ )
+		if( products->lstRems[i]->isDown() )
+			remCpd( products, i );
+}
+
 // base function
 void StepWindow::remCpd(ReagentBox_t* r, int i)
 {
+	qDebug() << ":D";
+	
 	/******************/
+	
+	refreshReagentBoxConnections();
 }
 
 // slots

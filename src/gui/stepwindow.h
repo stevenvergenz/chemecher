@@ -45,10 +45,14 @@ public slots:
 	void refreshReagentBoxConnections();
 	void updateCpdLists();
 	
-	void addCpd( ReagentBox_t* r );
+	void setReagents();
+	
+	void addCpd( ReagentBox_t* r, bool addtobase=true );
 	void addReac();
 	void addProd();
 	
+	void remReacButton();
+	void remProdButton();
 	void remCpd( ReagentBox_t* r, int i );
 	/*void remReac1(); void remReac2(); void remReac3();
 	void remProd1(); void remProd2(); void remProd3();*/
@@ -64,8 +68,7 @@ protected:
 private:
 	Ui::stepWindow ui;
 	Step* baseStep;
-	ReagentBox_t *reactants;
-	ReagentBox_t *products;
+	ReagentBox_t *reactants, *products;
 
 };
 
