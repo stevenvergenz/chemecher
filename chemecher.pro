@@ -24,7 +24,8 @@ HEADERS += src/core/cpd.h \
     src/core/dbhandler.h \
     src/gui/sqlconfig.h \
     src/gui/simparams.h \
-    src/gui/draglistwidget.h
+    src/gui/draglistwidget.h \
+    src/core/iomanager.h
 FORMS += src/gui/cpdwindow.ui \
     src/gui/mainwindow.ui \
     src/gui/stepwindow.ui \
@@ -42,4 +43,5 @@ SOURCES += src/chemecher.cpp \
     src/core/dbhandler.cpp \
     src/gui/sqlconfig.cpp \
     src/gui/simparams.cpp \
-    src/gui/draglistwidget.cpp
+    src/gui/draglistwidget.cpp \
+    src/core/iomanager.cpp

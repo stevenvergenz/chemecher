@@ -35,7 +35,7 @@ public:
 	Step* getStepByString(QString string);
 	Step* getStepByName(QString name);
 	
-	
+	void clone(Mix* newmix);
 	void initialize();
 	void calculateRKF();
 	void calculateLegacy();
@@ -47,7 +47,6 @@ public:
 	//current mix identifiers
 	QString mechName;
 	QString mechDesc;
-	QFile fileName;
 
 	//time data
 	double timeStep, reportStep;
@@ -59,6 +58,16 @@ public:
 
 	//accuracy data
 	double precision;
+
+	//legacy parameters
+	int order;
+	QString method;
+	QString transition;
+	bool autostep;
+	int gateband;
+	int shifttest;
+	int maxreduce;
+	int stepfactor;
 	
 signals:
 	void stepListChanged();

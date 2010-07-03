@@ -122,3 +122,22 @@ QString Step::toString()
 		ret = ret.left(ret.length()-3);
 	return ret;
 }
+
+QString Step::tov3String()
+{
+	QString ret = "";
+	int i;
+	for( i=0; i<reactants.size(); i++ )
+		ret += reactants[i]->toString() + "+";
+	if( i>0 )
+		ret = ret.left(ret.length()-1);
+	ret +=  ">";
+	for( i=0; i<products.size(); i++ )
+		ret += products[i]->toString() + "+";
+	if( i>0 )
+		ret = ret.left(ret.length()-1);
+
+	ret += QString::number(kplus);
+	ret += QString::number(kminus);
+	return ret;
+}

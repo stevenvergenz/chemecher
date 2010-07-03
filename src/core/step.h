@@ -36,6 +36,7 @@ public:
 	QList<Cpd*> productList();
 	
 	QString toString();
+	QString tov3String();
 
 public slots:
 	void checkReagents();

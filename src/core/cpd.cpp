@@ -87,9 +87,15 @@ void Cpd::removeAsProduct(Step* step)
 	}//for each step in products
 }*/
 
-QString Cpd::toString(){
+const QString Cpd::toString(){
 	//QString states[6] = {"(.)","(*)","(aq)","(s)","(l)", "(g)"};
 	return shortname + STATES[(int)cpd_state];
+}
+
+const QString Cpd::tov3String(){
+	return shortname + " " +
+		STATES[(int)cpd_state] + " " +
+		isHomo() ? "0 0" : thresh + sharp;
 }
 
 /********************** Getters and Setters *********************/

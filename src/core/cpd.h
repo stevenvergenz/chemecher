@@ -32,7 +32,11 @@ public:
 	//void addAsReactant(Step* s); void removeAsReactant(Step* s);
 	//void addAsProduct(Step* s);  void removeAsProduct(Step* s);
 
-	QString toString();
+	const QString toString();
+	const QString tov3String();
+
+	bool isHomo(){ return state==HOMO || state==AQ || state==G; }
+	bool isHetero(){ return !isHomo(); }
 
 	/*    Getters    */
 	QString shortName();

@@ -82,6 +82,33 @@ Step* Mix::getStepByName(QString name)
 	return ret;
 }
 
+void Mix::clone(Mix* newmix)
+{
+	StepList = newmix->StepList;
+	CpdList = newmix->CpdList;
+
+	//current mix identifiers
+	mechName = newmix->mechName;
+	mechDesc = newmix->mechDesc;
+
+	//time data
+	timeStep = newmix->timeStep;
+	reportStep = newmix->reportStep;
+	startTime = newmix->startTime;
+	endTime = newmix->endTime;
+	debugStart = newmix->debugStart;
+	debugEnd = newmix->debugEnd;
+
+	// sql data
+	db = newmix->db;
+
+	//accuracy data
+	precision = newmix->precision;
+
+	emit stepListChanged();
+	emit cpdListChanged();
+}
+
 void Mix::initialize()
 {
 
