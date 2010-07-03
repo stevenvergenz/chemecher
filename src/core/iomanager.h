@@ -6,6 +6,8 @@
 #include <QTextStream>
 #include <QDateTime>
 
+class IOManager;
+
 #include "mix.h"
 
 class IOManager : public QObject

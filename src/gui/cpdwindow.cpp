@@ -48,6 +48,7 @@ CpdWindow::CpdWindow(Cpd* base, QWidget* parent, bool isnew) : QWidget(parent), 
 	checkValidationState();
 	updateForm();
 	
+	ui.txtShortName->setFocus();
 }
 
 // makes sure name/state combo is valid, adds cpd

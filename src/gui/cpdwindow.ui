@@ -146,7 +146,7 @@
       <item row="0" column="3">
        <widget class="QPushButton" name="pushValidate">
         <property name="text">
-         <string>&amp;Save</string>
+         <string>&amp;Add</string>
         </property>
        </widget>
       </item>

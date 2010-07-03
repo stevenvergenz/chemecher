@@ -35,31 +35,22 @@ StepWindow::StepWindow(Step* base, QWidget* parent, bool isnew)
 	updateCpdLists();
 	
 	// connect add reactants and products
-	connect( ui.pushAddReac,   SIGNAL(clicked()),
-	         this,             SLOT(addReac()) );
-	connect( ui.pushAddProd,   SIGNAL(clicked()),
-	         this,             SLOT(addProd()) );
-	connect( ui.pushCreateCpd, SIGNAL(clicked()),
-	         this,             SIGNAL(addCpdClicked()) );
+	connect( ui.pushAddReac,   SIGNAL(clicked()), this, SLOT(addReac()) );
+	connect( ui.pushAddProd,   SIGNAL(clicked()), this, SLOT(addProd()) );
+	connect( ui.pushCreateCpd, SIGNAL(clicked()), this, SIGNAL(addCpdClicked()) );
 	
 	// connect slots to keep step up to date
-	//connect( ui.txtName,    SIGNAL(textEdited(QString)),
-	//         baseStep,      SLOT(setName(QString))  );
 	connect( ui.txtDesc,    SIGNAL(textEdited(QString)),
 			 baseStep,      SLOT(setDesc(QString))  );
 	connect( ui.spinKPlus,  SIGNAL(textEdited(QString)),
 	         baseStep,      SLOT(setKPlus(QString))  );
 	connect( ui.spinKMinus, SIGNAL(textEdited(QString)),
 	         baseStep,      SLOT(setKMinus(QString)) );
-
-	// set up a feedback loop for the rate boxes
-	/*connect( baseStep,      SIGNAL(kPlusChanged(double)),
-	         ui.spinKPlus,  SLOT(setValue(double)) );
-	connect( baseStep,	    SIGNAL(kMinusChanged(double)),
-	         ui.spinKMinus, SLOT(setValue(double)) );*/
 	
+	// get the combo boxes (if any) to display the list of compounds	
 	updateCpdLists();
 	
+	// if the compound is new
 	if( isnew ) {
 		setWindowTitle( "New step" );
 		ui.pushValidate->setText("&Add");
@@ -67,6 +58,7 @@ StepWindow::StepWindow(Step* base, QWidget* parent, bool isnew)
 	else {
 		setWindowTitle( base->name() );
 		ui.pushValidate->setText("&Update");
+		
 		// initialize the fields
 		ui.txtName    ->setText( base->name()   );
 		ui.txtDesc    ->setText( base->desc()   );
@@ -96,6 +88,14 @@ void StepWindow::validate()
 		ui.txtName->setFocus();
 		return;
 	}
+	
+	/*for( int i=0; i<Cpd::STATES->size(); i++ ) {
+		if( name.contains(Cpd::STATES[i]) ) {
+			QMessageBox::critical(this, "Error", "Name cannot contain state label: " + Cpd::STATES[i], QMessageBox::Ok);
+			ui.txtName->setFocus();
+			return;
+		}
+	}*/
 	
 	// if name does not yet exist
 	qDebug() << mix->stepNameList();

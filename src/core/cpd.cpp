@@ -2,6 +2,9 @@
 
 const QString Cpd::STATES[6] = {"(.)","(*)","(aq)","(s)","(l)", "(g)"};
 
+bool Cpd::isHomo(){ return cpd_state==HOMO || cpd_state==AQ || cpd_state==G; }
+bool Cpd::isHetero(){ return !isHomo(); }
+
 // base constructor calls the other constructor with default parameters
 Cpd::Cpd() { Cpd::Cpd("", Cpd::HOMO); }
 
@@ -17,76 +20,6 @@ Cpd::Cpd(QString n, Cpd::State s) : QObject(), shortname(n), longname(""),
 	partial_conc[5] = 0; rate[5] = 0;
 }
 
-/*void Cpd::addAsReactant(Step* step)
-{
-	//check to see if it's already in the set step as a reactant
-	for(int i=0; i<reactantset.size(); i++)
-		if(reactantset[i]->step == step){
-			reactantset[i]->stoi--; //if so, decrement v_pw
-			return;
-		}
-
-	//it is not already listed, create a new pair
-	StepPair* newpair = new StepPair(step, -1);
-	reactantset.append( newpair );
-}
-
-void Cpd::removeAsReactant(Step* step)
-{
-	//search the set of reactants
-	for(int i=0; i<reactantset.size(); i++)
-	{
-		//for a particular step
-		if(reactantset[i]->step == step)
-		{
-			reactantset[i]->stoi++; //decrement the amount of the reactant
-
-			//remove if there was only one of that reactant
-			if(reactantset[i]->stoi == 0)
-			{
-				delete reactantset[i];
-				reactantset.removeAt(i);
-			}//remove stub
-			return;
-		}//step found
-	}//for each step in reactants
-}//function
-
-void Cpd::addAsProduct(Step* step)
-{
-	//check to see if it's already in the set step as a reactant
-	for(int i=0; i<productset.size(); i++)
-		if(productset[i]->step == step){
-			productset[i]->stoi++; //if so, increment v_pw
-			return;
-		}
-
-	//it is not already listed, create a new pair
-	StepPair* newpair = new StepPair(step, 1);
-	productset.append( newpair );
-}
-
-void Cpd::removeAsProduct(Step* step)
-{
-	//search the set of products
-	for(int i=0; i<productset.size(); i++)
-	{
-		//for a particular step
-		if(productset[i]->step == step)
-		{
-			productset[i]->stoi--; //decrement the amount of the product
-
-			//remove if there was only one of that reactant
-			if(reactantset[i]->stoi == 0)
-			{
-				delete productset[i];
-				productset.removeAt(i);
-			}//remove stub
-			return;
-		}//step found
-	}//for each step in products
-}*/
-
 const QString Cpd::toString(){
 	//QString states[6] = {"(.)","(*)","(aq)","(s)","(l)", "(g)"};
 	return shortname + STATES[(int)cpd_state];
@@ -95,7 +28,7 @@ const QString Cpd::toString(){
 const QString Cpd::tov3String(){
 	return shortname + " " +
 		STATES[(int)cpd_state] + " " +
-		isHomo() ? "0 0" : thresh + sharp;
+		(isHomo() ? "0 0" : QString("%1 %2").arg(thresh).arg(sharp) );
 }
 
 /********************** Getters and Setters *********************/

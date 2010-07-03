@@ -1,5 +1,8 @@
 #include "mainwindow.h"
 
+/** MainWindow::MainWindow
+  * Initializes a few widgets, connects signals and slots.
+  */
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 {
 	ui.setupUi(this);
@@ -21,9 +24,10 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	///////////////////
 	
 	// cpd
-	connect(ui.pushAddCpd,    SIGNAL(clicked()), this, SLOT(showCpdWindow()));
+	connect(ui.pushAddCpd,    SIGNAL(pressed()), this, SLOT(showCpdWindow()));
 	connect(ui.pushRemoveCpd, SIGNAL(clicked()), this, SLOT(removeCpd()));
 	connect(lstCpds, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(showCpdWindow(QTableWidgetItem*)));
+	connect(ui.pushEditCpd, SIGNAL(pressed()), this, SLOT(showCpdWindow()));
 	connect(ui.pushMoveCpdUp,   SIGNAL(clicked()), this, SLOT(moveCpdUp()));
 	connect(ui.pushMoveCpdDown, SIGNAL(clicked()), this, SLOT(moveCpdDown()));
 	connect(mix, SIGNAL(cpdListChanged()), this, SLOT(updateCpdList()));
@@ -33,6 +37,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect(ui.pushAddStep,    SIGNAL(clicked()), this, SLOT(showStepWindow()));
 	connect(ui.pushRemoveStep, SIGNAL(clicked()), this, SLOT(removeStep()));
 	connect(ui.lstSteps, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(showStepWindow(QTableWidgetItem*)));
+	connect(ui.pushEditStep, SIGNAL(pressed()), this, SLOT(showStepWindow()));
 	connect(ui.pushMoveStepUp,   SIGNAL(clicked()), this, SLOT(moveStepUp()));
 	connect(ui.pushMoveStepDown, SIGNAL(clicked()), this, SLOT(moveStepDown()));
 	connect(mix, SIGNAL(stepListChanged()), this, SLOT(updateStepList()));
@@ -43,8 +48,9 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect( ui.actCloseAll, SIGNAL(triggered()), ui.mdi, SLOT(closeAllSubWindows()) );
 	
 	// saving/loading
-	connect(ui.actSaveMechDb, SIGNAL(triggered()), this, SLOT(saveMechDb()));
-	connect(ui.actLoadMechDb, SIGNAL(triggered()), this, SLOT(loadMechDb()));
+	connect(ui.actSaveAs,     SIGNAL(triggered()), this, SLOT(saveAs())     );
+	connect(ui.actSaveMechDb, SIGNAL(triggered()), this, SLOT(saveMechDb()) );
+	connect(ui.actLoadMechDb, SIGNAL(triggered()), this, SLOT(loadMechDb()) );
 	
 	// exit
 	connect(ui.actExit, SIGNAL(triggered()), qApp, SLOT(quit()));
@@ -75,28 +81,36 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	
 }
 
-// compound editing implementations ////
-//
 
+/** showCpdWindow
+  * Displays a specie editing window.
+  * Called in three instances:
+  *   1. A compound from lstCpds is double-clicked.
+  *   2. The "Add Specie" button is clicked.
+  *   3. The "Edit Specie" button is clicked.
+  */
 void MainWindow::showCpdWindow( QTableWidgetItem* item )
 {
 	Cpd *cpd;
+	if( item==0 )
+		item = lstCpds->item( lstCpds->currentRow(), 0 );
+	else if( item->column()==1 )
+		return;
 	
 	// if function was called from Add button
-	if( item == 0 ) {
+	if( ui.pushAddCpd->isDown() ) {
 		// make it a new compound
 		cpd = new Cpd();
 	}
-	
-	// if function was called from list double-clicked
+	// if function was called from either list double-clicked or "Edit Specie" button
 	else {
-		if( item->column()!=0 ) return;
 		cpd = mix->CpdList.at( item->tableWidget()->row(item) );
 		
 		// if subwindow exists, raise it and return
 		QList<QMdiSubWindow*> windowlist = ui.mdi->subWindowList(QMdiArea::ActivationHistoryOrder);
 		for(int i=0; i<windowlist.size(); i++) {
-			if( windowlist[i]->windowTitle() == cpd->toString() ){
+			if( windowtypes[windowlist[i]] == CPDWIN
+					&& windowlist[i]->windowTitle() == cpd->toString() ){
 				windowlist[i]->showNormal();
 				windowlist[i]->raise();
 				windowlist[i]->setFocus();
@@ -105,13 +119,21 @@ void MainWindow::showCpdWindow( QTableWidgetItem* item )
 		}
 	}
 	
-	// create the subwindow
-	CpdWindow* win = new CpdWindow( cpd, this, (item==0) );
+	// create the subwindow, as new only if "Add Specie" button is down
+	CpdWindow* win = new CpdWindow( cpd, this, (ui.pushAddCpd->isDown()) );
 	QMdiSubWindow *mdiSubWin = ui.mdi->addSubWindow(win);
 	mdiSubWin->setMinimumSize( win->minimumSize() + QSize(10,28) );
 	mdiSubWin->setMaximumSize( win->maximumSize() + QSize(10,28) );
 	mdiSubWin->show();
+	
+	// set the type of the window
+	windowtypes[mdiSubWin] = CPDWIN;
+	purgeWindowTypes();
 }
+
+/** removeCpd
+  * Removes the currently selected compound from the list.
+  */
 void MainWindow::removeCpd()
 {
 	if( lstCpds->currentRow()<0 )
@@ -125,13 +147,18 @@ void MainWindow::removeCpd()
 	QList<QMdiSubWindow*> windowlist = ui.mdi->subWindowList(QMdiArea::ActivationHistoryOrder);
 	for(int i=0; i<windowlist.size(); i++)
 	{
-		if( windowlist[i]->windowTitle() == cpd->toString() ){
+		if( windowtypes[windowlist[i]] == CPDWIN
+				&& windowlist[i]->windowTitle() == cpd->toString() ){
 			ui.mdi->removeSubWindow(windowlist[i]);
 			delete windowlist[i];
 			return;
 		}
 	}
 }
+
+/** moveCpdUp
+  * Moves the currently selected compound up on the list, if possible.
+  */
 void MainWindow::moveCpdUp()
 {
 	QTableWidget *list = lstCpds;
@@ -141,6 +168,10 @@ void MainWindow::moveCpdUp()
 	mix->swapCpds(cur, cur-1);
 	list->setCurrentCell(cur-1, 0);
 }
+
+/** moveCpdDown()
+  * Moves the currently selected compound down on the list, if possible.
+  */
 void MainWindow::moveCpdDown()
 {
 	QTableWidget *list = lstCpds;
@@ -150,6 +181,10 @@ void MainWindow::moveCpdDown()
 	mix->swapCpds(cur, cur+1);
 	list->setCurrentCell(cur+1, 0);
 }
+
+/** updateCpdList
+  * Refreshes the current list of compounds to match mix->CpdList.
+  */
 void MainWindow::updateCpdList()
 {
 	lstCpds->clearContents();
@@ -164,20 +199,24 @@ void MainWindow::updateCpdList()
 		lstCpds->setItem( i,1, conc );
 	}
 }
+
+/** setCpdInitConc
+  * Sets the initial concentration of the compound when its table cell is edited.
+  */
 void MainWindow::setCpdInitConc( QTableWidgetItem* item )
 {
-	if( item->row()==1
-		&& item->text().toDouble() != mix->getCpdById(
-				item->tableWidget()->item(item->row(), 0)->text()
-			)->initialConc() )
-		qDebug() << ":D";
+	if( item->column()!=1 )
+		return;
+	
+	// set variables (to make code more readable ;) )
+	double dispconc = item->text().toDouble();
+	Cpd *cpd = mix->getCpdById(	item->tableWidget()->item(item->row(), 0)->text() );
+	
+	if( dispconc != cpd->initialConc() )
+		cpd->setInitialConc( dispconc );
 }
 
-//
-////////////////////////////////
 
-// step editing implementations ////
-//
 
 void MainWindow::showStepWindow( QTableWidgetItem *item )
 {
@@ -196,7 +235,8 @@ void MainWindow::showStepWindow( QTableWidgetItem *item )
 		// if subwindow exists, raise it and return
 		QList<QMdiSubWindow*> windowlist = ui.mdi->subWindowList(QMdiArea::ActivationHistoryOrder);
 		for(int i=0; i<windowlist.size(); i++) {
-			if( windowlist[i]->windowTitle() == step->name() && windowlist[i]->widget() ){
+			if( windowtypes[windowlist[i]] == STEPWIN
+					&& windowlist[i]->windowTitle() == step->name() && windowlist[i]->widget() ){
 				windowlist[i]->showNormal();
 				windowlist[i]->raise();
 				windowlist[i]->setFocus();
@@ -218,13 +258,19 @@ void MainWindow::showStepWindow( QTableWidgetItem *item )
 	mdiSubWin->setMinimumSize( win->minimumSize() + QSize(10,28) );
 	mdiSubWin->setMaximumSize( win->maximumSize() + QSize(10,28) );
 	mdiSubWin->show();
+	windowtypes[mdiSubWin] = STEPWIN;
+	purgeWindowTypes();
+	
+	qDebug() << step->tov3String();
 }
 void MainWindow::removeStep()
 {
 	if( ui.lstSteps->currentRow()<0 )
 		return;
 	
-	Step *step = mix->getStepByName( ui.lstSteps->item(ui.lstSteps->currentRow(),0)->text() );
+	QString name = ui.lstSteps->item(ui.lstSteps->currentRow(),0)->text();
+	
+	Step *step = mix->getStepByName( name );
 	mix->removeStep(step);
 	delete step;
 	updateStepList();
@@ -232,7 +278,8 @@ void MainWindow::removeStep()
 	QList<QMdiSubWindow*> windowlist = ui.mdi->subWindowList(QMdiArea::ActivationHistoryOrder);
 	for(int i=0; i<windowlist.size(); i++)
 	{
-		if( windowlist[i]->windowTitle() == step->name() ){
+		if( windowtypes[windowlist[i]] == STEPWIN
+				&& windowlist[i]->windowTitle() == name ){
 			ui.mdi->removeSubWindow(windowlist[i]);
 			delete windowlist[i];
 			return;
@@ -276,12 +323,31 @@ void MainWindow::updateStepList()
 	}
 }
 
+void MainWindow::updateEditButtonEnabled()
+{
+	ui.pushEditCpd ->setEnabled( ui.lstCpds ->currentRow()<0 );
+	ui.pushEditStep->setEnabled( ui.lstSteps->currentRow()<0 );
+}
+
+void MainWindow::purgeWindowTypes()
+{
+	for( int i=0; i<windowtypes.keys().size(); i++ )
+		if( !ui.mdi->subWindowList().contains(windowtypes.keys()[i]) )
+			windowtypes.remove(windowtypes.keys()[i]);	
+}
 
 //
 ////////////////////////////////
 
 // saving/loading ////
 //
+
+void MainWindow::saveAs()
+{
+	QString filename = QFileDialog::getSaveFileName(
+			this, "Save Mech", QDir::current().path(), "");
+	iomgr->saveToCM3( filename + ".cm3s", filename + ".cm3m" );
+}
 
 void MainWindow::saveMechDb()
 {

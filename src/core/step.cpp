@@ -107,7 +107,7 @@ void Step::setKMinus(QString k){ kminus = k.toDouble(); emit kMinusChanged(kminu
 
 
 // returns the reaction equation
-QString Step::toString()
+QString Step::toString( QString equChar )
 {
 	QString ret = "";
 	int i;
@@ -115,7 +115,7 @@ QString Step::toString()
 		ret += reactants[i]->toString() + " + ";
 	if( i>0 )
 		ret = ret.left(ret.length()-2);
-	ret +=  "<> ";
+	ret +=  equChar + " ";
 	for( i=0; i<products.size(); i++ )
 		ret += products[i]->toString() + " + ";
 	if( i>0 )
@@ -125,19 +125,10 @@ QString Step::toString()
 
 QString Step::tov3String()
 {
-	QString ret = "";
-	int i;
-	for( i=0; i<reactants.size(); i++ )
-		ret += reactants[i]->toString() + "+";
-	if( i>0 )
-		ret = ret.left(ret.length()-1);
-	ret +=  ">";
-	for( i=0; i<products.size(); i++ )
-		ret += products[i]->toString() + "+";
-	if( i>0 )
-		ret = ret.left(ret.length()-1);
+	QString ret = toString(">").replace(" ","");
+	qDebug() << ret;
 
-	ret += QString::number(kplus);
-	ret += QString::number(kminus);
+	ret += " " + QString::number(kplus);
+	ret += " " + QString::number(kminus);
 	return ret;
 }

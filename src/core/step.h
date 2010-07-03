@@ -35,7 +35,7 @@ public:
 	QList<Cpd*> reactantList();
 	QList<Cpd*> productList();
 	
-	QString toString();
+	QString toString( QString equChar = "=" );
 	QString tov3String();
 
 public slots:

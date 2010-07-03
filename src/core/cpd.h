@@ -35,8 +35,8 @@ public:
 	const QString toString();
 	const QString tov3String();
 
-	bool isHomo(){ return state==HOMO || state==AQ || state==G; }
-	bool isHetero(){ return !isHomo(); }
+	bool isHomo();
+	bool isHetero();
 
 	/*    Getters    */
 	QString shortName();

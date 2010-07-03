@@ -15,6 +15,8 @@
 #include <QUrl>
 #include <QFileDialog>
 #include <QTableWidgetItem>
+#include <QMap>
+#include <QDir>
 
 class MainWindow;
 
@@ -23,6 +25,7 @@ class MainWindow;
 #include "mechdb.h"
 #include "mix.h"
 #include "draglistwidget.h"
+#include "iomanager.h"
 
 #include "ui_mainwindow.h"
 
@@ -52,7 +55,10 @@ public slots:
 	void moveStepDown();
 	void updateStepList();
 	
+	void updateEditButtonEnabled();
+	
 	// saving/loading
+	void saveAs();
 	void saveMechDb();
 	void loadMechDb();
 
@@ -61,7 +67,11 @@ signals:
 private:
 	Ui::mainWindow ui;
 	QTableWidget *lstCpds;
-	//QList<QMdiSubWindow*> windowlist;
+	
+	typedef enum{CPDWIN,STEPWIN} SubWindowType;
+	QMap<QMdiSubWindow*, SubWindowType> windowtypes;
+	void purgeWindowTypes();
+	
 
 };
 
