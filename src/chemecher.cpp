@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <QDebug>
+#include <iostream>
 
-#include "mix.h"
 #include "mainwindow.h"
 
 int main(int argc, char** argv)
@@ -11,6 +11,10 @@ int main(int argc, char** argv)
 
 	MainWindow ui;
 	ui.show();
+
+	//test something
+	QString test = "a;sldkfj";
+	std::cout << "test val: " << test.toInt() << endl;
 
 	return app.exec();
 }

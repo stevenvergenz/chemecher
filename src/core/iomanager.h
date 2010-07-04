@@ -29,6 +29,8 @@ public:
 private:
 	Status status;
 	QString message;
+
+	QString getLineWithoutComments(QTextStream& txt);
 };
 
 extern IOManager *iomgr;

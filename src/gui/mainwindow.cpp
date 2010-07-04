@@ -27,7 +27,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect(ui.pushAddCpd,    SIGNAL(pressed()), this, SLOT(showCpdWindow()));
 	connect(ui.pushRemoveCpd, SIGNAL(clicked()), this, SLOT(removeCpd()));
 	connect(lstCpds, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(showCpdWindow(QTableWidgetItem*)));
-	connect(ui.pushEditCpd, SIGNAL(pressed()), this, SLOT(showCpdWindow()));
+//	connect(ui.pushEditCpd, SIGNAL(pressed()), this, SLOT(showCpdWindow()));
 	connect(ui.pushMoveCpdUp,   SIGNAL(clicked()), this, SLOT(moveCpdUp()));
 	connect(ui.pushMoveCpdDown, SIGNAL(clicked()), this, SLOT(moveCpdDown()));
 	connect(mix, SIGNAL(cpdListChanged()), this, SLOT(updateCpdList()));
@@ -37,7 +37,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect(ui.pushAddStep,    SIGNAL(clicked()), this, SLOT(showStepWindow()));
 	connect(ui.pushRemoveStep, SIGNAL(clicked()), this, SLOT(removeStep()));
 	connect(ui.lstSteps, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(showStepWindow(QTableWidgetItem*)));
-	connect(ui.pushEditStep, SIGNAL(pressed()), this, SLOT(showStepWindow()));
+//	connect(ui.pushEditStep, SIGNAL(pressed()), this, SLOT(showStepWindow()));
 	connect(ui.pushMoveStepUp,   SIGNAL(clicked()), this, SLOT(moveStepUp()));
 	connect(ui.pushMoveStepDown, SIGNAL(clicked()), this, SLOT(moveStepDown()));
 	connect(mix, SIGNAL(stepListChanged()), this, SLOT(updateStepList()));
@@ -48,7 +48,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect( ui.actCloseAll, SIGNAL(triggered()), ui.mdi, SLOT(closeAllSubWindows()) );
 	
 	// saving/loading
-	connect(ui.actSaveAs,     SIGNAL(triggered()), this, SLOT(saveAs())     );
+//	connect(ui.actSaveAs,     SIGNAL(triggered()), this, SLOT(saveAs())     );
 	connect(ui.actSaveMechDb, SIGNAL(triggered()), this, SLOT(saveMechDb()) );
 	connect(ui.actLoadMechDb, SIGNAL(triggered()), this, SLOT(loadMechDb()) );
 	
@@ -325,8 +325,8 @@ void MainWindow::updateStepList()
 
 void MainWindow::updateEditButtonEnabled()
 {
-	ui.pushEditCpd ->setEnabled( ui.lstCpds ->currentRow()<0 );
-	ui.pushEditStep->setEnabled( ui.lstSteps->currentRow()<0 );
+//	ui.pushEditCpd ->setEnabled( ui.lstCpds ->currentRow()<0 );
+//	ui.pushEditStep->setEnabled( ui.lstSteps->currentRow()<0 );
 }
 
 void MainWindow::purgeWindowTypes()

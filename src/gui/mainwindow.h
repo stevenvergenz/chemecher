@@ -24,7 +24,7 @@ class MainWindow;
 #include "cpdwindow.h"
 #include "mechdb.h"
 #include "mix.h"
-#include "draglistwidget.h"
+//#include "draglistwidget.h"
 #include "iomanager.h"
 
 #include "ui_mainwindow.h"
