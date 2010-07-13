@@ -23,6 +23,9 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	// SIGNALS/SLOTS //
 	///////////////////
 	
+	// sim parameters
+	
+	
 	// cpd
 	connect(ui.pushAddCpd,    SIGNAL(pressed()), this, SLOT(showCpdWindow()));
 	connect(ui.pushRemoveCpd, SIGNAL(clicked()), this, SLOT(removeCpd()));
@@ -48,12 +51,14 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect( ui.actCloseAll, SIGNAL(triggered()), ui.mdi, SLOT(closeAllSubWindows()) );
 	
 	// saving/loading
-//	connect(ui.actSaveAs,     SIGNAL(triggered()), this, SLOT(saveAs())     );
+	connect(ui.actSaveToCM3,  SIGNAL(triggered()), this, SLOT(saveToCM3())     );
 	connect(ui.actSaveMechDb, SIGNAL(triggered()), this, SLOT(saveMechDb()) );
 	connect(ui.actLoadMechDb, SIGNAL(triggered()), this, SLOT(loadMechDb()) );
 	
-	// exit
-	connect(ui.actExit, SIGNAL(triggered()), qApp, SLOT(quit()));
+	// misc
+	connect(ui.actAbout,   SIGNAL(triggered()), this, SLOT(showAboutWindow()));
+	connect(ui.actAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+	connect(ui.actExit,    SIGNAL(triggered()), qApp, SLOT(quit()));
 	//connect(qApp, SIGNAL(aboutToQuit()), mix->db, SLOT(closeDb()));
 	
 	Cpd* cpd_a = mix->addCpd(new Cpd("A", Cpd::HOMO ));
@@ -260,8 +265,6 @@ void MainWindow::showStepWindow( QTableWidgetItem *item )
 	mdiSubWin->show();
 	windowtypes[mdiSubWin] = STEPWIN;
 	purgeWindowTypes();
-	
-	qDebug() << step->tov3String();
 }
 void MainWindow::removeStep()
 {
@@ -325,8 +328,8 @@ void MainWindow::updateStepList()
 
 void MainWindow::updateEditButtonEnabled()
 {
-//	ui.pushEditCpd ->setEnabled( ui.lstCpds ->currentRow()<0 );
-//	ui.pushEditStep->setEnabled( ui.lstSteps->currentRow()<0 );
+	//ui.pushEditCpd ->setEnabled( ui.lstCpds ->currentRow()<0 );
+	//ui.pushEditStep->setEnabled( ui.lstSteps->currentRow()<0 );
 }
 
 void MainWindow::purgeWindowTypes()
@@ -342,11 +345,64 @@ void MainWindow::purgeWindowTypes()
 // saving/loading ////
 //
 
-void MainWindow::saveAs()
+void MainWindow::saveToCM3()
 {
-	QString filename = QFileDialog::getSaveFileName(
-			this, "Save Mech", QDir::current().path(), "");
-	iomgr->saveToCM3( filename + ".cm3s", filename + ".cm3m" );
+	// warn the user about CM3 format
+	QMessageBox::StandardButton ret;
+	ret = QMessageBox::warning ( this, "CheMecher",
+			"Warning:\n\nInformation on step names, descriptions, and specie long "
+			"names will be not be saved in CheMecher3 format.",
+			QMessageBox::Ok | QMessageBox::Cancel ) ;
+	if( ret == QMessageBox::Cancel )
+		return;
+	
+	QFileDialog save(this);
+	save.setAcceptMode(QFileDialog::AcceptSave);
+	QString mech, sim;
+	
+	// get the mechanism filename
+	save.setDefaultSuffix("cm3m");
+	save.setFilter("CheMecher3 mechanism files (*.cm3m);;Text files (*.txt);;All files (*.*)");
+	save.setWindowTitle("Mechanism File");
+	save.setDirectory(QDir::current().path()+"/../input");
+	if( !save.exec() )
+		return;
+	mech = save.selectedFiles()[0];
+	/*QString mech = save.getSaveFileName(
+			this, "Mechanism File", QDir::current().path(), 
+			"CheMecher3 mechanism files (*.cm3m *.txt);;All files (*.*)");*/
+	
+	// construct the default simulation filename
+	QFileInfo fi = QFileInfo(mech);
+	sim = fi.absolutePath()+"/"+fi.completeBaseName();
+	if( fi.suffix()=="cm3m" )
+		sim += ".cm3s";
+	else
+		sim += ".sim." + fi.suffix();
+	save.selectFile(sim);
+	
+	// get the simulation filename
+	save.setDefaultSuffix( fi.suffix()=="cm3m"?"cm3s":fi.suffix() );
+	save.setFilter("CheMecher3 solution files (*.cm3s);;Text files (*.txt);;All files (*.*)");
+	save.setWindowTitle("Simulation File (Mechanism: " + QFileInfo(mech).fileName() + ")");
+	save.setDirectory(fi.absolutePath());
+	if( !save.exec() )
+		return;
+	sim = save.selectedFiles()[0];
+	/*sim = save.getSaveFileName(
+			this, "Simulation File (Mechanism: " + QFileInfo(mech).fileName() + ")",
+			QFileInfo(mech).absolutePath(),
+			"CheMecher3 simulation files (*.cm3s *.txt);;All files (*.*)");*/
+	if( sim =="" ) return;
+	
+	if( mech==sim ) {
+		QMessageBox::warning ( this, "CheMecher",
+				"Mechanism and solution files must be different!",
+				QMessageBox::Ok ) ;
+		return;
+	}
+	
+	iomgr->saveToCM3( mech, sim );
 }
 
 void MainWindow::saveMechDb()
@@ -364,3 +420,9 @@ void MainWindow::loadMechDb()
 
 //
 ////////////////////////////////
+
+void MainWindow::showAboutWindow()
+{
+	About *about = new About();
+	about->exec();
+}

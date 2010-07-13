@@ -26,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>709</width>
-     <height>27</height>
+     <height>28</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -37,6 +37,7 @@
     <addaction name="actLoad"/>
     <addaction name="actSave"/>
     <addaction name="actSaveAs"/>
+    <addaction name="actSaveToCM3"/>
     <addaction name="separator"/>
     <addaction name="actSaveMechDb"/>
     <addaction name="actLoadMechDb"/>
@@ -45,6 +46,7 @@
     <addaction name="separator"/>
     <addaction name="action_Print_Mechanism"/>
     <addaction name="action_Print_Preview"/>
+    <addaction name="actionPrinting_Preferences"/>
     <addaction name="separator"/>
     <addaction name="actExit"/>
    </widget>
@@ -59,7 +61,8 @@
     <property name="title">
      <string>&amp;Help</string>
     </property>
-    <addaction name="actionAbout_CheMecher"/>
+    <addaction name="actAbout"/>
+    <addaction name="actAboutQt"/>
    </widget>
    <widget class="QMenu" name="menuS_imulation">
     <property name="title">
@@ -493,7 +496,7 @@
     <string>Preferences</string>
    </property>
   </action>
-  <action name="actionAbout_CheMecher">
+  <action name="actAbout">
    <property name="text">
     <string>About CheMecher</string>
    </property>
@@ -556,6 +559,21 @@
   <action name="action_Print_Preview">
    <property name="text">
     <string>Print Preview</string>
+   </property>
+  </action>
+  <action name="actSaveToCM3">
+   <property name="text">
+    <string>Save to CM3 Format...</string>
+   </property>
+  </action>
+  <action name="actAboutQt">
+   <property name="text">
+    <string>About Qt</string>
+   </property>
+  </action>
+  <action name="actionPrinting_Preferences">
+   <property name="text">
+    <string>Printing Preferences</string>
    </property>
   </action>
  </widget>

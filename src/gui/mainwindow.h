@@ -26,6 +26,7 @@ class MainWindow;
 #include "mix.h"
 //#include "draglistwidget.h"
 #include "iomanager.h"
+#include "about.h"
 
 #include "ui_mainwindow.h"
 
@@ -58,10 +59,11 @@ public slots:
 	void updateEditButtonEnabled();
 	
 	// saving/loading
-	void saveAs();
+	void saveToCM3();
 	void saveMechDb();
 	void loadMechDb();
-
+	
+	void showAboutWindow();
 signals:
 
 private:

@@ -126,9 +126,11 @@ QString Step::toString( QString equChar )
 QString Step::tov3String()
 {
 	QString ret = toString(">").replace(" ","");
-	qDebug() << ret;
+	ret = QString().fill(' ',mix->maxStepArrowPos()-ret.indexOf(">")) + ret;
+	ret += QString().fill(' ',mix->maxStepLen()-ret.length()+1);
 
-	ret += " " + QString::number(kplus);
-	ret += " " + QString::number(kminus);
+	ret += QString("%1 %2")
+		   .arg(kplus)
+		   .arg(kminus);
 	return ret;
 }

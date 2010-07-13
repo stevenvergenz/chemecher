@@ -12,9 +12,5 @@ int main(int argc, char** argv)
 	MainWindow ui;
 	ui.show();
 
-	//test something
-	QString test = "a;sldkfj";
-	std::cout << "test val: " << test.toInt() << endl;
-
 	return app.exec();
 }

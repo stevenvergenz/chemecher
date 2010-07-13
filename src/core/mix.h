@@ -17,6 +17,8 @@ Q_OBJECT
 public:
 	friend class Step;
 	
+	Mix();
+	
 	// compound functions
 	QList<Cpd*> CpdList;
 	QStringList cpdIdList();
@@ -34,6 +36,12 @@ public:
 	void swapSteps(int first, int second);
 	Step* getStepByString(QString string);
 	Step* getStepByName(QString name);
+	
+	int maxCpdNameLen();
+	int maxCpdIdLen();
+	int maxStateLen();
+	int maxStepArrowPos();
+	int maxStepLen();
 	
 	void clone(Mix* newmix);
 	void initialize();
@@ -53,9 +61,6 @@ public:
 	double startTime, endTime;
 	int debugStart, debugEnd;
 
-	// sql data
-	DBHandler *db;
-
 	//accuracy data
 	double precision;
 
@@ -68,6 +73,9 @@ public:
 	int shifttest;
 	int maxreduce;
 	int stepfactor;
+	
+	// sql data
+	DBHandler *db;
 	
 signals:
 	void stepListChanged();

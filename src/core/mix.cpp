@@ -2,6 +2,22 @@
 
 Mix *mix = new Mix();
 
+Mix::Mix()
+	: mechName(""), mechDesc(""),
+	  timeStep(0), reportStep(0),
+	  startTime(0), endTime(0),
+	  debugStart(0), debugEnd(0),
+	  precision(0),
+	  order(0)
+	/*QString method;
+	QString transition;
+	bool autostep;
+	int gateband;
+	int shifttest;
+	int maxreduce;
+	int stepfactor;*/
+{}
+
 QStringList Mix::cpdIdList() {
 	QStringList ret;
 	for( int i=0; i<CpdList.size(); i++ )
@@ -107,6 +123,50 @@ void Mix::clone(Mix* newmix)
 
 	emit stepListChanged();
 	emit cpdListChanged();
+}
+
+// i/o stuff
+int Mix::maxCpdNameLen() {
+	int maxlen=0;
+	for( int i=0; i<mix->CpdList.length(); i++ )
+		if( mix->CpdList[i]->shortName().length()>maxlen )
+			maxlen = mix->CpdList[i]->shortName().length();
+	return maxlen;
+}
+int Mix::maxCpdIdLen() {
+	int maxlen=0;
+	for( int i=0; i<mix->CpdList.length(); i++ )
+		if( mix->CpdList[i]->toString().length()>maxlen )
+			maxlen = mix->CpdList[i]->toString().length();
+	return maxlen;
+}
+int Mix::maxStateLen() {
+	int maxlen=0;
+	for( int i=0; i<mix->CpdList.length(); i++ )
+		if( Cpd::STATES[(int)mix->CpdList[i]->state()].length()>maxlen )
+			maxlen = Cpd::STATES[(int)mix->CpdList[i]->state()].length();
+	return maxlen;
+}
+// gets the position of the arrow in the step where it is highest
+int Mix::maxStepArrowPos() {
+	int maxlen = 0;
+	for( int i=0; i<mix->StepList.size(); i++ ) {
+		QString string = mix->StepList[i]->toString(">").replace(" ","");
+		if( string.indexOf(">")>maxlen )
+			maxlen = string.indexOf(">");
+	}
+	return maxlen;
+}
+// gets the length of step output in the longest step
+int Mix::maxStepLen() {
+	int maxlen = 0;
+	for( int i=0; i<mix->StepList.size(); i++ ) {
+		QString string = mix->StepList[i]->toString(">").replace(" ","");
+		string = QString().fill(' ',mix->maxStepArrowPos()-string.indexOf(">")) + string;
+		if( string.length()>maxlen )
+			maxlen = string.length();
+	}
+	return maxlen;
 }
 
 void Mix::initialize()
