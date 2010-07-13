@@ -5,7 +5,7 @@ IOManager *iomgr = new IOManager();
 IOManager::IOManager()
 {}
 
-bool IOManager::saveToCM3(QString sim, QString mech)
+bool IOManager::saveToCM3(QString mech, QString sim)
 {
 	/***************** write to the mechanism file *****************/
 	

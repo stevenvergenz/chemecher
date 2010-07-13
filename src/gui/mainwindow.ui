@@ -70,7 +70,7 @@
     </property>
     <addaction name="action_Launch_Simulator"/>
     <addaction name="separator"/>
-    <addaction name="editSimParams"/>
+    <addaction name="actEditSimParams"/>
    </widget>
    <widget class="QMenu" name="menu_View">
     <property name="title">
@@ -426,21 +426,33 @@
    </widget>
   </widget>
   <action name="actNew">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;New Mech...</string>
    </property>
   </action>
   <action name="actLoad">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Load Mech...</string>
    </property>
   </action>
   <action name="actSave">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Save Mech</string>
    </property>
   </action>
   <action name="action_Import">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Import...</string>
    </property>
@@ -487,11 +499,17 @@
    </property>
   </action>
   <action name="actionFormatting_Wizard">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Formatting Wizard...</string>
    </property>
   </action>
   <action name="actionPreferences">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Preferences</string>
    </property>
@@ -502,11 +520,14 @@
    </property>
   </action>
   <action name="action_Launch_Simulator">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Launch Simulator...</string>
    </property>
   </action>
-  <action name="editSimParams">
+  <action name="actEditSimParams">
    <property name="text">
     <string>&amp;Edit Simulation Parameters...</string>
    </property>
@@ -522,16 +543,25 @@
    </property>
   </action>
   <action name="actSaveMechDb">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Save Mech to &amp;DB...</string>
    </property>
   </action>
   <action name="actLoadMechDb">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Load Mech from D&amp;B...</string>
    </property>
   </action>
   <action name="actSaveAs">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Save Mech &amp;As...</string>
    </property>
@@ -552,11 +582,17 @@
    </property>
   </action>
   <action name="action_Print_Mechanism">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Print Mechanism</string>
    </property>
   </action>
   <action name="action_Print_Preview">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Print Preview</string>
    </property>
@@ -572,6 +608,9 @@
    </property>
   </action>
   <action name="actionPrinting_Preferences">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Printing Preferences</string>
    </property>

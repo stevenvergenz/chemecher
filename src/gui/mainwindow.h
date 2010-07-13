@@ -27,6 +27,7 @@ class MainWindow;
 //#include "draglistwidget.h"
 #include "iomanager.h"
 #include "about.h"
+#include "simparams.h"
 
 #include "ui_mainwindow.h"
 
@@ -57,6 +58,8 @@ public slots:
 	void updateStepList();
 	
 	void updateEditButtonEnabled();
+	
+	void editSimParams();
 	
 	// saving/loading
 	void saveToCM3();

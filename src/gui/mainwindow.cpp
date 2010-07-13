@@ -45,21 +45,23 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect(ui.pushMoveStepDown, SIGNAL(clicked()), this, SLOT(moveStepDown()));
 	connect(mix, SIGNAL(stepListChanged()), this, SLOT(updateStepList()));
 	
-	// mdi area
+	// file menu
+	connect(ui.actSaveToCM3,  SIGNAL(triggered()), this, SLOT(saveToCM3())     );
+	connect(ui.actSaveMechDb, SIGNAL(triggered()), this, SLOT(saveMechDb()) );
+	connect(ui.actLoadMechDb, SIGNAL(triggered()), this, SLOT(loadMechDb()) );
+	connect(ui.actExit,       SIGNAL(triggered()), qApp, SLOT(quit()));
+	
+	// simulation menu
+	connect(ui.actEditSimParams, SIGNAL(triggered()), this, SLOT(editSimParams()));
+	
+	// view menu
 	connect( ui.actCascade,  SIGNAL(triggered()), ui.mdi, SLOT(cascadeSubWindows())  );
 	connect( ui.actTile,     SIGNAL(triggered()), ui.mdi, SLOT(tileSubWindows())     );
 	connect( ui.actCloseAll, SIGNAL(triggered()), ui.mdi, SLOT(closeAllSubWindows()) );
 	
-	// saving/loading
-	connect(ui.actSaveToCM3,  SIGNAL(triggered()), this, SLOT(saveToCM3())     );
-	connect(ui.actSaveMechDb, SIGNAL(triggered()), this, SLOT(saveMechDb()) );
-	connect(ui.actLoadMechDb, SIGNAL(triggered()), this, SLOT(loadMechDb()) );
-	
-	// misc
+	// help menu
 	connect(ui.actAbout,   SIGNAL(triggered()), this, SLOT(showAboutWindow()));
 	connect(ui.actAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
-	connect(ui.actExit,    SIGNAL(triggered()), qApp, SLOT(quit()));
-	//connect(qApp, SIGNAL(aboutToQuit()), mix->db, SLOT(closeDb()));
 	
 	Cpd* cpd_a = mix->addCpd(new Cpd("A", Cpd::HOMO ));
 	cpd_a->setInitialConc(1.599);
@@ -342,6 +344,12 @@ void MainWindow::purgeWindowTypes()
 //
 ////////////////////////////////
 
+void MainWindow::editSimParams()
+{
+	SimParams *simparams = new SimParams();
+	simparams->show();
+}
+
 // saving/loading ////
 //
 
@@ -350,8 +358,9 @@ void MainWindow::saveToCM3()
 	// warn the user about CM3 format
 	QMessageBox::StandardButton ret;
 	ret = QMessageBox::warning ( this, "CheMecher",
-			"Warning:\n\nInformation on step names, descriptions, and specie long "
-			"names will be not be saved in CheMecher3 format.",
+			"Warning:\n"
+			"Information on step names, descriptions, specie long names, "
+			"etc. will be not be saved in CheMecher3 format.",
 			QMessageBox::Ok | QMessageBox::Cancel ) ;
 	if( ret == QMessageBox::Cancel )
 		return;
@@ -368,9 +377,6 @@ void MainWindow::saveToCM3()
 	if( !save.exec() )
 		return;
 	mech = save.selectedFiles()[0];
-	/*QString mech = save.getSaveFileName(
-			this, "Mechanism File", QDir::current().path(), 
-			"CheMecher3 mechanism files (*.cm3m *.txt);;All files (*.*)");*/
 	
 	// construct the default simulation filename
 	QFileInfo fi = QFileInfo(mech);
@@ -389,12 +395,9 @@ void MainWindow::saveToCM3()
 	if( !save.exec() )
 		return;
 	sim = save.selectedFiles()[0];
-	/*sim = save.getSaveFileName(
-			this, "Simulation File (Mechanism: " + QFileInfo(mech).fileName() + ")",
-			QFileInfo(mech).absolutePath(),
-			"CheMecher3 simulation files (*.cm3s *.txt);;All files (*.*)");*/
 	if( sim =="" ) return;
 	
+	// check for uniqueness
 	if( mech==sim ) {
 		QMessageBox::warning ( this, "CheMecher",
 				"Mechanism and solution files must be different!",
@@ -402,6 +405,7 @@ void MainWindow::saveToCM3()
 		return;
 	}
 	
+	// save the file
 	iomgr->saveToCM3( mech, sim );
 }
 

@@ -18,8 +18,8 @@ public:
 
 	IOManager();
 
-	bool saveToCM3(QString sim, QString mech);
-	bool loadFromCM3(QString sim, QString mech);
+	bool saveToCM3(QString mech, QString sim);
+	bool loadFromCM3(QString mech, QString sim);
 
 	bool saveToCM4(QString filename);
 	bool loadFromCM4(QString filename);
