@@ -142,10 +142,61 @@ QString getLine(QTextStream& txt, int &linecounter)
 	return ret;
 }
 
+// save the currently loaded mechanism in XML format
 bool IOManager::saveToCM4(QString filename)
 {
+	//open the simulation file
+	QFile sfile(filename);
+	if( !sfile.open( QFile::WriteOnly ) ){
+		status = FS_ERROR;
+		message = "Error opening file "+sim;
+		return false;
+	}
 	
-	return false;
+	//start writing
+	QXmlStreamWriter stream(sfile);
+	stream.setAutoFormatting(true);
+	stream.writeStartDocument();
+	
+	stream.writeStartElement("Mechanism");
+	stream.writeAttribute("name", mix->mechName);
+	stream.writeTextElement("MechDescription", mix->mechDesc);
+	
+	//write the cpd list
+	stream.writeStartElement("CpdList");
+	for(int i=0; i<mix->CpdList.size(); i++)
+	{
+		stream.writeStartElement("Cpd");
+		stream.writeAttribute("name", mix->CpdList[i]->shortName());
+		stream.writeAttribute("state", Cpd::STATES[mix->CpdList[i]->state()]);
+		stream.writeEmptyElement("LongName");
+		stream.writeAttribute("value", mix->CpdList[i]->longName());
+		stream.writeEmptyElement("Concentration");
+		stream.writeAttribute("value", QString::number(mix->CpdList[i]->initialConc()));
+		stream.writeEmptyElement("Threshold");
+		stream.writeAttribute("value", QString::number(mix->CpdList[i]->threshold()));
+		stream.writeEmptyElement("Sharpness");
+		stream.writeAttribute("value", QString::number(mix->CpdList[i]->sharpness()));
+		stream.writeEmptyElement("Transition");
+		stream.writeAttribute("value", Cpd::TRANS[mix->CpdList[i]->transition()]);
+		stream.writeEndElement(); //Cpd
+	}
+	stream.writeEndElement(); //CpdList
+	
+	//write the step list
+	
+	
+	
+	//write the attribute list
+	
+	
+	
+	stream.writeEndElement(); //Mechanism
+	
+	//finish writing
+	stream.writeEndDocument();
+	sfile.close();
+	return true;
 }
 
 bool IOManager::loadFromCM4(QString filename)

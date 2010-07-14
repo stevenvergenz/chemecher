@@ -25,7 +25,8 @@ public:
 
 	// defined in source file	
 	static const QString STATES[];
-
+	static const QString TRANS[];
+	
 	Cpd();
 	Cpd(QString, State);
 

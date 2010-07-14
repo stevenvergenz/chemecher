@@ -1,6 +1,7 @@
 #include "cpd.h"
 
 const QString Cpd::STATES[6] = {"(.)","(*)","(aq)","(s)","(l)", "(g)"};
+const QString Cpd::TRANS[3] = {"none", "linear", "arctan"};
 
 bool Cpd::isHomo(){ return cpd_state==HOMO || cpd_state==AQ || cpd_state==G; }
 bool Cpd::isHetero(){ return !isHomo(); }
