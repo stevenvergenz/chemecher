@@ -47,7 +47,7 @@ StepWindow::StepWindow(Step* base, QWidget* parent, bool isnew)
 	connect( ui.spinKMinus, SIGNAL(textEdited(QString)),
 	         baseStep,      SLOT(setKMinus(QString)) );
 	
-	// get the combo boxes (if any) to display the list of compounds	
+	// get the combo boxes (if any) to display the list of compounds
 	updateCpdLists();
 	
 	// if the compound is new
@@ -98,7 +98,7 @@ void StepWindow::validate()
 	}*/
 	
 	// if name does not yet exist
-	qDebug() << mix->stepNameList();
+	//qDebug() << mix->stepNameList();
 	if( !mix->stepNameList().contains(name) ) {
 		
 		baseStep->setName(name);

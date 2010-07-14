@@ -12,12 +12,25 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	setCentralWidget(ui.mdi);
 	setWindowState( windowState() | Qt::WindowMaximized );
 	
+	// step editing signal stuff
+	cpdMapper = new QSignalMapper(this);
+	cpdMapper->setMapping( ui.pushAddCpd,   "AddCpd"   );
+	cpdMapper->setMapping( ui.pushEditCpd,  "EditCpd"  );
+	cpdMapper->setMapping( ui.lstCpds,      "EditCpd"  );
+	connect( cpdMapper, SIGNAL(mapped(QString)), this, SLOT(showCpdWindow(QString)) );
+	stepMapper = new QSignalMapper(this);
+	stepMapper->setMapping( ui.pushAddStep,  "AddStep"  );
+	stepMapper->setMapping( ui.pushEditStep, "EditStep" );
+	stepMapper->setMapping( ui.lstSteps,     "EditStep" );
+	connect( stepMapper, SIGNAL(mapped(QString)), this, SLOT(showStepWindow(QString)) );
+	
+	
 	// cpd list drag&drop stuff
-	lstCpds = ui.lstCpds;
-	/*lstCpds = new DragListWidget(ui.fraCpds);
-	lstCpds->setSizePolicy(ui.lstSteps->sizePolicy());
-	ui.cpdLayout->addWidget(lstCpds, 1,0,2,2, Qt::AlignLeft);*/
-	//lstCpds->show();
+	//ui.lstCpds = ui.lstCpds;
+	/*ui.lstCpds = new DragListWidget(ui.fraCpds);
+	ui.lstCpds->setSizePolicy(ui.lstSteps->sizePolicy());
+	ui.cpdLayout->addWidget(ui.lstCpds, 1,0,2,2, Qt::AlignLeft);*/
+	//ui.lstCpds->show();
 	
 	///////////////////
 	// SIGNALS/SLOTS //
@@ -27,20 +40,20 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	
 	
 	// cpd
-	connect(ui.pushAddCpd,    SIGNAL(pressed()), this, SLOT(showCpdWindow()));
+	connect(ui.pushAddCpd,    SIGNAL(clicked()), cpdMapper, SLOT(map()) );
 	connect(ui.pushRemoveCpd, SIGNAL(clicked()), this, SLOT(removeCpd()));
-	connect(lstCpds, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(showCpdWindow(QTableWidgetItem*)));
-//	connect(ui.pushEditCpd, SIGNAL(pressed()), this, SLOT(showCpdWindow()));
+	connect(ui.lstCpds, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), cpdMapper, SLOT(map()) );
+	connect(ui.pushEditCpd, SIGNAL(clicked()), cpdMapper, SLOT(map()));
 	connect(ui.pushMoveCpdUp,   SIGNAL(clicked()), this, SLOT(moveCpdUp()));
 	connect(ui.pushMoveCpdDown, SIGNAL(clicked()), this, SLOT(moveCpdDown()));
 	connect(mix, SIGNAL(cpdListChanged()), this, SLOT(updateCpdList()));
-	connect(lstCpds, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(setCpdInitConc(QTableWidgetItem*)) );
+	connect(ui.lstCpds, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(setCpdInitConc(QTableWidgetItem*)) );
 	
 	// step
-	connect(ui.pushAddStep,    SIGNAL(clicked()), this, SLOT(showStepWindow()));
+	connect(ui.pushAddStep,    SIGNAL(clicked()), stepMapper, SLOT(map()) );
 	connect(ui.pushRemoveStep, SIGNAL(clicked()), this, SLOT(removeStep()));
-	connect(ui.lstSteps, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(showStepWindow(QTableWidgetItem*)));
-//	connect(ui.pushEditStep, SIGNAL(pressed()), this, SLOT(showStepWindow()));
+	connect(ui.lstSteps, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), stepMapper, SLOT(map()) );
+	connect(ui.pushEditStep, SIGNAL(clicked()), stepMapper, SLOT(map()) );
 	connect(ui.pushMoveStepUp,   SIGNAL(clicked()), this, SLOT(moveStepUp()));
 	connect(ui.pushMoveStepDown, SIGNAL(clicked()), this, SLOT(moveStepDown()));
 	connect(mix, SIGNAL(stepListChanged()), this, SLOT(updateStepList()));
@@ -63,7 +76,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect(ui.actAbout,   SIGNAL(triggered()), this, SLOT(showAboutWindow()));
 	connect(ui.actAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 	
-	Cpd* cpd_a = mix->addCpd(new Cpd("A", Cpd::HOMO ));
+	/*Cpd* cpd_a = mix->addCpd(new Cpd("A", Cpd::HOMO ));
 	cpd_a->setInitialConc(1.599);
 	Cpd* cpd_b = mix->addCpd(new Cpd("B", Cpd::AQ   ));
 	Cpd* cpd_c = mix->addCpd(new Cpd("C", Cpd::S    ));
@@ -84,50 +97,49 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	step->addReactant( cpd_c );
 	step->addProduct ( cpd_b );
 	//step->addProduct ( cpd_c );
-	mix->addStep( step );
+	mix->addStep( step );*/
 	
 }
 
 
 /** showCpdWindow
-  * Displays a specie editing window.
-  * Called in three instances:
-  *   1. A compound from lstCpds is double-clicked.
-  *   2. The "Add Specie" button is clicked.
-  *   3. The "Edit Specie" button is clicked.
+  * Displays a specie editing window. Uses a signal mapper
+  * to determine appropriate action.
+  * 
+  * Called in three instances (args in parentheses):
+  *   1. A compound from ui.lstCpds is double-clicked. ("EditCpd")
+  *   2. The "Add Specie" button is clicked. ("AddCpd")
+  *   3. The "Edit Specie" button is clicked. ("EditCpd")
   */
-void MainWindow::showCpdWindow( QTableWidgetItem* item )
+void MainWindow::showCpdWindow( QString action )
 {
 	Cpd *cpd;
-	if( item==0 )
-		item = lstCpds->item( lstCpds->currentRow(), 0 );
-	else if( item->column()==1 )
-		return;
+	bool isnew = (action=="AddCpd");
 	
-	// if function was called from Add button
-	if( ui.pushAddCpd->isDown() ) {
-		// make it a new compound
+	if( isnew )
 		cpd = new Cpd();
-	}
-	// if function was called from either list double-clicked or "Edit Specie" button
 	else {
-		cpd = mix->CpdList.at( item->tableWidget()->row(item) );
-		
-		// if subwindow exists, raise it and return
-		QList<QMdiSubWindow*> windowlist = ui.mdi->subWindowList(QMdiArea::ActivationHistoryOrder);
-		for(int i=0; i<windowlist.size(); i++) {
-			if( windowtypes[windowlist[i]] == CPDWIN
-					&& windowlist[i]->windowTitle() == cpd->toString() ){
-				windowlist[i]->showNormal();
-				windowlist[i]->raise();
-				windowlist[i]->setFocus();
-				return;
-			}
+		int row = ui.lstCpds->currentRow();
+		if( row < 0 )
+			return;
+		else
+			cpd = mix->getCpdById( ui.lstCpds->item(row,0)->text() );
+	}
+	
+	// if subwindow exists, raise it and return
+	QList<QMdiSubWindow*> windowlist = ui.mdi->subWindowList(QMdiArea::ActivationHistoryOrder);
+	for(int i=0; i<windowlist.size(); i++) {
+		if( windowtypes[windowlist[i]] == CPDWIN
+				&& static_cast<CpdWindow*>(windowlist[i]->widget())->baseCpd == cpd ){
+			windowlist[i]->showNormal();
+			windowlist[i]->raise();
+			windowlist[i]->setFocus();
+			return;
 		}
 	}
-	
+		
 	// create the subwindow, as new only if "Add Specie" button is down
-	CpdWindow* win = new CpdWindow( cpd, this, (ui.pushAddCpd->isDown()) );
+	CpdWindow* win = new CpdWindow( cpd, this, isnew );
 	QMdiSubWindow *mdiSubWin = ui.mdi->addSubWindow(win);
 	mdiSubWin->setMinimumSize( win->minimumSize() + QSize(10,28) );
 	mdiSubWin->setMaximumSize( win->maximumSize() + QSize(10,28) );
@@ -143,10 +155,10 @@ void MainWindow::showCpdWindow( QTableWidgetItem* item )
   */
 void MainWindow::removeCpd()
 {
-	if( lstCpds->currentRow()<0 )
+	if( ui.lstCpds->currentRow()<0 )
 		return;
 	
-	Cpd *cpd = mix->getCpdById( lstCpds->item(lstCpds->currentRow(),0)->text() );
+	Cpd *cpd = mix->getCpdById( ui.lstCpds->item(ui.lstCpds->currentRow(),0)->text() );
 	mix->removeCpd(cpd);
 	delete cpd;
 	updateCpdList();
@@ -168,7 +180,7 @@ void MainWindow::removeCpd()
   */
 void MainWindow::moveCpdUp()
 {
-	QTableWidget *list = lstCpds;
+	QTableWidget *list = ui.lstCpds;
 	int cur = list->currentRow();
 	if( cur < 1 )
 		return;
@@ -181,7 +193,7 @@ void MainWindow::moveCpdUp()
   */
 void MainWindow::moveCpdDown()
 {
-	QTableWidget *list = lstCpds;
+	QTableWidget *list = ui.lstCpds;
 	int cur = list->currentRow();
 	if( cur==-1 || cur==list->rowCount()-1 )
 		return;
@@ -194,16 +206,16 @@ void MainWindow::moveCpdDown()
   */
 void MainWindow::updateCpdList()
 {
-	lstCpds->clearContents();
-	lstCpds->setRowCount(mix->CpdList.size());
+	ui.lstCpds->clearContents();
+	ui.lstCpds->setRowCount(mix->CpdList.size());
 	for( int i=0; i<mix->CpdList.size(); i++ ) {
 		QTableWidgetItem *id = new QTableWidgetItem( mix->CpdList[i]->toString() );
 		id->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
-		lstCpds->setItem( i,0, id );
+		ui.lstCpds->setItem( i,0, id );
 		QTableWidgetItem *conc = new QTableWidgetItem( QString("%1").arg(mix->CpdList[i]->initialConc()) );
 		conc->setFlags( Qt::ItemIsEnabled | Qt::ItemIsEditable );\
 		conc->setTextAlignment( Qt::AlignRight );
-		lstCpds->setItem( i,1, conc );
+		ui.lstCpds->setItem( i,1, conc );
 	}
 }
 
@@ -225,42 +237,39 @@ void MainWindow::setCpdInitConc( QTableWidgetItem* item )
 
 
 
-void MainWindow::showStepWindow( QTableWidgetItem *item )
+void MainWindow::showStepWindow( QString action )
 {
 	Step *step;
+	bool isnew = (action=="AddStep");
 	
-	// if function was called from Add button
-	if( item == 0 ) {
-		// make it a new step
+	if( isnew )
 		step = new Step();
+	else {
+		int row = ui.lstSteps->currentRow();
+		if( row < 0 )
+			return;
+		else
+			step = mix->getStepByName( ui.lstSteps->item(row,0)->text() );
 	}
 	
-	// if function was called from list double-clicked
-	else {
-		step = mix->StepList.at( item->tableWidget()->row(item) );
-		
-		// if subwindow exists, raise it and return
-		QList<QMdiSubWindow*> windowlist = ui.mdi->subWindowList(QMdiArea::ActivationHistoryOrder);
-		for(int i=0; i<windowlist.size(); i++) {
-			if( windowtypes[windowlist[i]] == STEPWIN
-					&& windowlist[i]->windowTitle() == step->name() && windowlist[i]->widget() ){
-				windowlist[i]->showNormal();
-				windowlist[i]->raise();
-				windowlist[i]->setFocus();
-				
-				ui.lstSteps->setCurrentCell(-1,-1);
-				
-				return;
-			}
+	// if subwindow exists, raise it and return
+	QList<QMdiSubWindow*> windowlist = ui.mdi->subWindowList(QMdiArea::ActivationHistoryOrder);
+	for(int i=0; i<windowlist.size(); i++) {
+		if( windowtypes[windowlist[i]] == STEPWIN
+				&& static_cast<StepWindow*>(windowlist[i]->widget())->baseStep == step ){
+			windowlist[i]->showNormal();
+			windowlist[i]->raise();
+			windowlist[i]->setFocus();
+			return;
 		}
-		
 	}
 	
 	ui.lstSteps->setCurrentCell(-1,-1);
 	
 	// create the subwindow
-	StepWindow* win = new StepWindow( step, 0, (item==0) );
-	connect( win, SIGNAL(addCpdClicked()), this, SLOT(showCpdWindow()) );
+	StepWindow* win = new StepWindow( step, 0, isnew );
+	cpdMapper->setMapping( win, "AddCpd" );
+	connect( win, SIGNAL(addCpdClicked()), cpdMapper, SLOT(map()) );
 	QMdiSubWindow *mdiSubWin = ui.mdi->addSubWindow(win);
 	mdiSubWin->setMinimumSize( win->minimumSize() + QSize(10,28) );
 	mdiSubWin->setMaximumSize( win->maximumSize() + QSize(10,28) );
@@ -348,6 +357,20 @@ void MainWindow::editSimParams()
 {
 	SimParams *simparams = new SimParams();
 	simparams->show();
+}
+
+/** contextMenuEvent
+  * Brings up a popup menu when step or specie lists are clicked */
+void MainWindow::contextMenuEvent(QContextMenuEvent *event)
+{
+	QPoint pos = event->globalPos();
+	QTableWidget *list = static_cast<QTableWidget*>(qApp->widgetAt(pos));
+	if( list!=ui.lstCpds && list!=ui.lstSteps )
+		return;
+	
+	qDebug() << ":D" << list->rowCount();
+	
+	/*&& ui.lstSteps->itemAt(pos-ui.lstSteps->pos())*/
 }
 
 // saving/loading ////

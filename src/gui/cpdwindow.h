@@ -14,6 +14,8 @@ class CpdWindow : public QWidget
 	Q_OBJECT
 
 public:
+	friend class MainWindow;
+	
 	CpdWindow(Cpd* base, QWidget* parent = 0, bool isnew=false );
 	Cpd* base(){ return baseCpd; }
 

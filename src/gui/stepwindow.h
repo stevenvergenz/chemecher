@@ -26,6 +26,8 @@ class StepWindow : public QWidget
 	Q_OBJECT
 
 public:
+	friend class MainWindow;
+	
 	StepWindow(Step* base, QWidget* parent = 0, bool isnew=false);
 	
 	typedef struct {

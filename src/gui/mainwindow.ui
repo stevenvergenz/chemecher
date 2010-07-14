@@ -114,7 +114,7 @@
        <property name="childrenCollapsible">
         <bool>false</bool>
        </property>
-       <widget class="QFrame" name="frame">
+       <widget class="QFrame" name="fraSteps">
         <property name="frameShape">
          <enum>QFrame::NoFrame</enum>
         </property>

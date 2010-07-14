@@ -17,6 +17,7 @@
 #include <QTableWidgetItem>
 #include <QMap>
 #include <QDir>
+#include <QSignalMapper>
 
 class MainWindow;
 
@@ -43,7 +44,7 @@ public:
 public slots:
 	
 	// cpd editing stuff
-	void showCpdWindow( QTableWidgetItem* item = 0 );
+	void showCpdWindow( QString action );
 	void removeCpd();
 	void moveCpdUp();
 	void moveCpdDown();
@@ -51,7 +52,7 @@ public slots:
 	void setCpdInitConc( QTableWidgetItem* item );
 	
 	// step editing stuff
-	void showStepWindow( QTableWidgetItem* item = 0 );
+	void showStepWindow( QString action );
 	void removeStep();
 	void moveStepUp();
 	void moveStepDown();
@@ -60,6 +61,8 @@ public slots:
 	void updateEditButtonEnabled();
 	
 	void editSimParams();
+	
+	void contextMenuEvent( QContextMenuEvent *event );
 	
 	// saving/loading
 	void saveToCM3();
@@ -71,7 +74,9 @@ signals:
 
 private:
 	Ui::mainWindow ui;
-	QTableWidget *lstCpds;
+	//QTableWidget *lstCpds;
+	
+	QSignalMapper *stepMapper, *cpdMapper;
 	
 	typedef enum{CPDWIN,STEPWIN} SubWindowType;
 	QMap<QMdiSubWindow*, SubWindowType> windowtypes;
