@@ -162,9 +162,11 @@ bool IOManager::saveToCM4(QString filename)
 	stream.writeAttribute("name", mix->mechName);
 	stream.writeTextElement("MechDescription", mix->mechDesc);
 	
+	int i;
+	
 	//write the cpd list
 	stream.writeStartElement("CpdList");
-	for(int i=0; i<mix->CpdList.size(); i++)
+	for(i=0; i<mix->CpdList.size(); i++)
 	{
 		stream.writeStartElement("Cpd");
 		stream.writeAttribute("name", mix->CpdList[i]->shortName());
@@ -184,10 +186,38 @@ bool IOManager::saveToCM4(QString filename)
 	stream.writeEndElement(); //CpdList
 	
 	//write the step list
+	stream.writeStartElement("StepList");
+	for(i=0; i<mix->StepList.size(); i++)
+	{
+		stream.writeStartElement("Step");
+		stream.writeAttribute("name", mix->StepList[i]->name());
+		stream.writeTextElement("Description", mix->StepList[i]->desc());
+		stream.writeEmptyElement("RatePlus");
+		stream.writeAttribute("value", QString::number(mix->StepList[i]->kPlus()));
+		stream.writeEmptyElement("RateMinus");
+		stream.writeAttribute("value", QString::number(mix->StepList[i]->kMinus()));
+		
+		//write the reagents of the step
+		int j;
+		stream.writeStartElement("ReactantList");
+		for(j=0; j<mix->StepList[i]->reactantList.size(); j++){
+			stream.writeEmptyElement("Reactant");
+			stream.writeAttribute("id", mix->StepList[i]->reactantList[j]->toString());
+		}
+		stream.writeEndElement(); //ReactantList
+		
+		stream.writeStartElement("ProductList");
+		for(j=0; j<mix->StepList[i]->productList.size(); j++){
+			stream.writeEmptyElement("Product");
+			stream.writeAttribute("id", mix->StepList[i]->productList[j]->toString());
+		}
+		stream.writeEndElement(); //ProductList
+		
+		stream.writeEndElement(); //Step
+	}
+	stream.writeEndElement(); //StepList
 	
-	
-	
-	//write the attribute list
+	/***************** TODO: WRITE THE ATTRIBUTE LIST *****************/
 	
 	
 	
