@@ -18,6 +18,8 @@
 #include <QMap>
 #include <QDir>
 #include <QSignalMapper>
+#include <QDesktopServices>
+#include <QKeySequence>
 
 class MainWindow;
 
@@ -43,9 +45,12 @@ public:
 
 public slots:
 	
+	void initTestMech();
+	
 	// cpd editing stuff
 	void showCpdWindow( QString action );
-	void removeCpd();
+	void deleteCpd( int pos = -1 );
+	void deleteAllCpds();
 	void moveCpdUp();
 	void moveCpdDown();
 	void updateCpdList();
@@ -53,7 +58,8 @@ public slots:
 	
 	// step editing stuff
 	void showStepWindow( QString action );
-	void removeStep();
+	void deleteStep( int pos = -1 );
+	void deleteAllSteps();
 	void moveStepUp();
 	void moveStepDown();
 	void updateStepList();
@@ -62,14 +68,19 @@ public slots:
 	
 	void editSimParams();
 	
-	void contextMenuEvent( QContextMenuEvent *event );
+	void cpdContextMenu ( QPoint pos );
+	void stepContextMenu( QPoint pos );
 	
 	// saving/loading
+	void saveToCM4();
 	void saveToCM3();
 	void saveMechDb();
 	void loadMechDb();
 	
+	void reportBug();
+	void suggestFeature();
 	void showAboutWindow();
+	
 signals:
 
 private:

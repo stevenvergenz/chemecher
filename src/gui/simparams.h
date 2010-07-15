@@ -2,7 +2,7 @@
 #define SIMPARAMS_H
 
 #include <QDialog>
-#include <QFileDialog>
+#include <QDoubleValidator>
 
 namespace Ui {
     class SimParams;

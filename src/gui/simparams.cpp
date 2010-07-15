@@ -6,6 +6,9 @@ SimParams::SimParams(QWidget *parent) :
     ui(new Ui::SimParams)
 {
     ui->setupUi(this);
+	
+	QDoubleValidator *val = new QDoubleValidator(0., 100., 30, 0);
+	ui->txtPrecision->setValidator(val);
 }
 
 SimParams::~SimParams()

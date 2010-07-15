@@ -149,12 +149,14 @@ bool IOManager::saveToCM4(QString filename)
 	QFile sfile(filename);
 	if( !sfile.open( QFile::WriteOnly ) ){
 		status = FS_ERROR;
-		message = "Error opening file "+sim;
+		message = "Error opening file "+filename;
 		return false;
 	}
 	
+	QString *fcontents = new QString();
+	
 	//start writing
-	QXmlStreamWriter stream(sfile);
+	QXmlStreamWriter stream(fcontents);
 	stream.setAutoFormatting(true);
 	stream.writeStartDocument();
 	
@@ -200,16 +202,16 @@ bool IOManager::saveToCM4(QString filename)
 		//write the reagents of the step
 		int j;
 		stream.writeStartElement("ReactantList");
-		for(j=0; j<mix->StepList[i]->reactantList.size(); j++){
+		for(j=0; j<mix->StepList[i]->reactantList().size(); j++){
 			stream.writeEmptyElement("Reactant");
-			stream.writeAttribute("id", mix->StepList[i]->reactantList[j]->toString());
+			stream.writeAttribute("id", mix->StepList[i]->reactantList()[j]->toString());
 		}
 		stream.writeEndElement(); //ReactantList
 		
 		stream.writeStartElement("ProductList");
-		for(j=0; j<mix->StepList[i]->productList.size(); j++){
+		for(j=0; j<mix->StepList[i]->productList().size(); j++){
 			stream.writeEmptyElement("Product");
-			stream.writeAttribute("id", mix->StepList[i]->productList[j]->toString());
+			stream.writeAttribute("id", mix->StepList[i]->productList()[j]->toString());
 		}
 		stream.writeEndElement(); //ProductList
 		
@@ -225,6 +227,9 @@ bool IOManager::saveToCM4(QString filename)
 	
 	//finish writing
 	stream.writeEndDocument();
+	
+	// output to the file
+	sfile.write( fcontents->toAscii() );
 	sfile.close();
 	return true;
 }

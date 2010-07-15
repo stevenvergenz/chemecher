@@ -61,16 +61,11 @@
     <property name="title">
      <string>&amp;Help</string>
     </property>
+    <addaction name="actReportBug"/>
+    <addaction name="actSuggestFeature"/>
+    <addaction name="separator"/>
     <addaction name="actAbout"/>
     <addaction name="actAboutQt"/>
-   </widget>
-   <widget class="QMenu" name="menuS_imulation">
-    <property name="title">
-     <string>S&amp;imulation</string>
-    </property>
-    <addaction name="action_Launch_Simulator"/>
-    <addaction name="separator"/>
-    <addaction name="actEditSimParams"/>
    </widget>
    <widget class="QMenu" name="menu_View">
     <property name="title">
@@ -81,8 +76,44 @@
     <addaction name="separator"/>
     <addaction name="actCloseAll"/>
    </widget>
+   <widget class="QMenu" name="menuSteps_Species">
+    <property name="title">
+     <string>Mechanism</string>
+    </property>
+    <widget class="QMenu" name="menuSteps">
+     <property name="title">
+      <string>Steps...</string>
+     </property>
+     <addaction name="actAddStep"/>
+     <addaction name="actEditStep"/>
+     <addaction name="separator"/>
+     <addaction name="actMvStepUp"/>
+     <addaction name="actMvStepDown"/>
+     <addaction name="separator"/>
+     <addaction name="actDeleteStep"/>
+     <addaction name="actDeleteAllSteps"/>
+    </widget>
+    <widget class="QMenu" name="menuSpecies">
+     <property name="title">
+      <string>Species...</string>
+     </property>
+     <addaction name="actAddCpd"/>
+     <addaction name="actEditCpd"/>
+     <addaction name="separator"/>
+     <addaction name="actMvCpdUp"/>
+     <addaction name="actMvCpdDown"/>
+     <addaction name="separator"/>
+     <addaction name="actDeleteCpd"/>
+     <addaction name="actDeleteAllCpds"/>
+    </widget>
+    <addaction name="menuSteps"/>
+    <addaction name="menuSpecies"/>
+    <addaction name="separator"/>
+    <addaction name="actEditSimParams"/>
+    <addaction name="actLaunchSim"/>
+   </widget>
    <addaction name="menu_File"/>
-   <addaction name="menuS_imulation"/>
+   <addaction name="menuSteps_Species"/>
    <addaction name="menu_Tools"/>
    <addaction name="menu_View"/>
    <addaction name="menu_Help"/>
@@ -162,9 +193,9 @@
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="pushRemoveStep">
+             <widget class="QPushButton" name="pushDeleteStep">
               <property name="text">
-               <string>Remove Step</string>
+               <string>Delete Step</string>
               </property>
              </widget>
             </item>
@@ -211,6 +242,9 @@
          </item>
          <item row="1" column="0" rowspan="2">
           <widget class="QTableWidget" name="lstSteps">
+           <property name="contextMenuPolicy">
+            <enum>Qt::CustomContextMenu</enum>
+           </property>
            <property name="selectionMode">
             <enum>QAbstractItemView::SingleSelection</enum>
            </property>
@@ -315,9 +349,9 @@
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="pushRemoveCpd">
+             <widget class="QPushButton" name="pushDeleteCpd">
               <property name="text">
-               <string>Remove Specie</string>
+               <string>Delete Specie</string>
               </property>
              </widget>
             </item>
@@ -364,6 +398,9 @@
          </item>
          <item row="1" column="0" rowspan="2">
           <widget class="QTableWidget" name="lstCpds">
+           <property name="contextMenuPolicy">
+            <enum>Qt::CustomContextMenu</enum>
+           </property>
            <property name="selectionMode">
             <enum>QAbstractItemView::SingleSelection</enum>
            </property>
@@ -559,9 +596,6 @@
    </property>
   </action>
   <action name="actSaveAs">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
    <property name="text">
     <string>Save Mech &amp;As...</string>
    </property>
@@ -570,15 +604,27 @@
    <property name="text">
     <string>Cascade Subwindows</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+C</string>
+   </property>
   </action>
   <action name="actTile">
    <property name="text">
     <string>Tile Subwindows</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+T</string>
+   </property>
   </action>
   <action name="actCloseAll">
    <property name="text">
     <string>Close All Subwindows</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+W</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
    </property>
   </action>
   <action name="action_Print_Mechanism">
@@ -613,6 +659,151 @@
    </property>
    <property name="text">
     <string>Printing Preferences</string>
+   </property>
+  </action>
+  <action name="actionEdit_Step">
+   <property name="text">
+    <string>Edit Step</string>
+   </property>
+  </action>
+  <action name="actionRemove_Step">
+   <property name="text">
+    <string>Remove Step</string>
+   </property>
+  </action>
+  <action name="actAddStep">
+   <property name="text">
+    <string>Add Step</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+A</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actEditStep">
+   <property name="text">
+    <string>Edit Step</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+E</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actDeleteStep">
+   <property name="text">
+    <string>Delete Step</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+D</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actDeleteAllSteps">
+   <property name="text">
+    <string>Delete All Steps</string>
+   </property>
+  </action>
+  <action name="actAddCpd">
+   <property name="text">
+    <string>Add Specie</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actEditCpd">
+   <property name="text">
+    <string>Edit Specie</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actDeleteCpd">
+   <property name="text">
+    <string>Delete Specie</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actDeleteAllCpds">
+   <property name="text">
+    <string>Delete All Species</string>
+   </property>
+  </action>
+  <action name="actLaunchSim">
+   <property name="text">
+    <string>Launch Simulator</string>
+   </property>
+  </action>
+  <action name="actReportBug">
+   <property name="text">
+    <string>Report a bug</string>
+   </property>
+  </action>
+  <action name="actSuggestFeature">
+   <property name="text">
+    <string>Suggest a feature</string>
+   </property>
+  </action>
+  <action name="actMvStepDown">
+   <property name="text">
+    <string>Move Step Down</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Down</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actMvStepUp">
+   <property name="text">
+    <string>Move Step Up</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Up</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actMvCpdUp">
+   <property name="text">
+    <string>Move Specie Up</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Up</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actMvCpdDown">
+   <property name="text">
+    <string>Move Specie Down</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Down</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
    </property>
   </action>
  </widget>

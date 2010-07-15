@@ -14,14 +14,12 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	
 	// step editing signal stuff
 	cpdMapper = new QSignalMapper(this);
-	cpdMapper->setMapping( ui.pushAddCpd,   "AddCpd"   );
-	cpdMapper->setMapping( ui.pushEditCpd,  "EditCpd"  );
-	cpdMapper->setMapping( ui.lstCpds,      "EditCpd"  );
+	cpdMapper->setMapping( ui.actAddCpd,   "AddCpd"   );
+	cpdMapper->setMapping( ui.actEditCpd,  "EditCpd"  );
 	connect( cpdMapper, SIGNAL(mapped(QString)), this, SLOT(showCpdWindow(QString)) );
 	stepMapper = new QSignalMapper(this);
-	stepMapper->setMapping( ui.pushAddStep,  "AddStep"  );
-	stepMapper->setMapping( ui.pushEditStep, "EditStep" );
-	stepMapper->setMapping( ui.lstSteps,     "EditStep" );
+	stepMapper->setMapping( ui.actAddStep,  "AddStep"  );
+	stepMapper->setMapping( ui.actEditStep, "EditStep" );
 	connect( stepMapper, SIGNAL(mapped(QString)), this, SLOT(showStepWindow(QString)) );
 	
 	
@@ -36,35 +34,60 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	// SIGNALS/SLOTS //
 	///////////////////
 	
+	// context menu
+	connect( ui.lstCpds,  SIGNAL(customContextMenuRequested(QPoint)),
+			 this,        SLOT(cpdContextMenu(QPoint)) );
+	connect( ui.lstSteps, SIGNAL(customContextMenuRequested(QPoint)),
+			 this,        SLOT(stepContextMenu(QPoint)) );
+	
+	// actions
+	connect( ui.actAddCpd,         SIGNAL(triggered()), cpdMapper,  SLOT(map())            );
+	connect( ui.actEditCpd,        SIGNAL(triggered()), cpdMapper,  SLOT(map())            );
+	connect( ui.actMvCpdUp,        SIGNAL(triggered()), this,       SLOT(moveCpdUp())      );
+	connect( ui.actMvCpdDown,      SIGNAL(triggered()), this,       SLOT(moveCpdDown())    );
+	connect( ui.actDeleteCpd,      SIGNAL(triggered()), this,       SLOT(deleteCpd())      );
+	connect( ui.actDeleteAllCpds,  SIGNAL(triggered()), this,       SLOT(deleteAllCpds())  );
+	connect( ui.actAddStep,        SIGNAL(triggered()), stepMapper, SLOT(map())            );
+	connect( ui.actEditStep,       SIGNAL(triggered()), stepMapper, SLOT(map())            );
+	connect( ui.actMvStepUp,       SIGNAL(triggered()), this,       SLOT(moveStepUp())     );
+	connect( ui.actMvStepDown,     SIGNAL(triggered()), this,       SLOT(moveStepDown())   );
+	connect( ui.actDeleteStep,     SIGNAL(triggered()), this,       SLOT(deleteStep())     );
+	connect( ui.actDeleteAllSteps, SIGNAL(triggered()), this,       SLOT(deleteAllSteps()) );
+	
+	// keyboard shortcuts
+	
 	// sim parameters
 	
 	
 	// cpd
-	connect(ui.pushAddCpd,    SIGNAL(clicked()), cpdMapper, SLOT(map()) );
-	connect(ui.pushRemoveCpd, SIGNAL(clicked()), this, SLOT(removeCpd()));
-	connect(ui.lstCpds, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), cpdMapper, SLOT(map()) );
-	connect(ui.pushEditCpd, SIGNAL(clicked()), cpdMapper, SLOT(map()));
-	connect(ui.pushMoveCpdUp,   SIGNAL(clicked()), this, SLOT(moveCpdUp()));
-	connect(ui.pushMoveCpdDown, SIGNAL(clicked()), this, SLOT(moveCpdDown()));
+	connect(ui.pushAddCpd,    SIGNAL(clicked()), ui.actAddCpd,    SLOT(trigger()) );
+	connect(ui.pushEditCpd,   SIGNAL(clicked()), ui.actEditCpd,   SLOT(trigger()) );
+	connect(ui.pushDeleteCpd, SIGNAL(clicked()), ui.actDeleteCpd, SLOT(trigger()) );
+	connect(ui.lstCpds, SIGNAL(cellDoubleClicked(int,int)), ui.actEditCpd, SLOT(trigger()) );
+	connect(ui.pushMoveCpdUp,   SIGNAL(clicked()), ui.actMvCpdUp,   SLOT(trigger()) );
+	connect(ui.pushMoveCpdDown, SIGNAL(clicked()), ui.actMvCpdDown, SLOT(trigger()) );
+	
 	connect(mix, SIGNAL(cpdListChanged()), this, SLOT(updateCpdList()));
 	connect(ui.lstCpds, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(setCpdInitConc(QTableWidgetItem*)) );
 	
 	// step
-	connect(ui.pushAddStep,    SIGNAL(clicked()), stepMapper, SLOT(map()) );
-	connect(ui.pushRemoveStep, SIGNAL(clicked()), this, SLOT(removeStep()));
-	connect(ui.lstSteps, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), stepMapper, SLOT(map()) );
-	connect(ui.pushEditStep, SIGNAL(clicked()), stepMapper, SLOT(map()) );
-	connect(ui.pushMoveStepUp,   SIGNAL(clicked()), this, SLOT(moveStepUp()));
-	connect(ui.pushMoveStepDown, SIGNAL(clicked()), this, SLOT(moveStepDown()));
+	connect(ui.pushAddStep,    SIGNAL(clicked()), ui.actAddStep,    SLOT(trigger()) );
+	connect(ui.pushEditStep,   SIGNAL(clicked()), ui.actEditStep,   SLOT(trigger()) );
+	connect(ui.pushDeleteStep, SIGNAL(clicked()), ui.actDeleteStep, SLOT(trigger()) );
+	connect(ui.lstSteps, SIGNAL(cellDoubleClicked(int,int)), ui.actEditStep, SLOT(trigger()) );
+	connect(ui.pushMoveStepUp,   SIGNAL(clicked()), ui.actMvStepUp, SLOT(trigger()) );
+	connect(ui.pushMoveStepDown, SIGNAL(clicked()), ui.actMvStepDown, SLOT(trigger()));
+	
 	connect(mix, SIGNAL(stepListChanged()), this, SLOT(updateStepList()));
 	
 	// file menu
-	connect(ui.actSaveToCM3,  SIGNAL(triggered()), this, SLOT(saveToCM3())     );
+	connect(ui.actSaveAs,     SIGNAL(triggered()), this, SLOT(saveToCM4())  );
+	connect(ui.actSaveToCM3,  SIGNAL(triggered()), this, SLOT(saveToCM3())  );
 	connect(ui.actSaveMechDb, SIGNAL(triggered()), this, SLOT(saveMechDb()) );
 	connect(ui.actLoadMechDb, SIGNAL(triggered()), this, SLOT(loadMechDb()) );
 	connect(ui.actExit,       SIGNAL(triggered()), qApp, SLOT(quit()));
 	
-	// simulation menu
+	// mechanism menu
 	connect(ui.actEditSimParams, SIGNAL(triggered()), this, SLOT(editSimParams()));
 	
 	// view menu
@@ -73,10 +96,19 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect( ui.actCloseAll, SIGNAL(triggered()), ui.mdi, SLOT(closeAllSubWindows()) );
 	
 	// help menu
-	connect(ui.actAbout,   SIGNAL(triggered()), this, SLOT(showAboutWindow()));
-	connect(ui.actAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+	connect(ui.actReportBug,      SIGNAL(triggered()), this, SLOT(reportBug())       );
+	connect(ui.actSuggestFeature, SIGNAL(triggered()), this, SLOT(suggestFeature())  );
+	connect(ui.actAbout,          SIGNAL(triggered()), this, SLOT(showAboutWindow()) );
+	connect(ui.actAboutQt,        SIGNAL(triggered()), qApp, SLOT(aboutQt())         );
 	
-	/*Cpd* cpd_a = mix->addCpd(new Cpd("A", Cpd::HOMO ));
+	initTestMech();
+	
+}
+
+/** DEBUG MODE ONLY -- DISABLE FOR ACTUAL BUILD **/
+void MainWindow::initTestMech()
+{
+	Cpd* cpd_a = mix->addCpd(new Cpd("A", Cpd::HOMO ));
 	cpd_a->setInitialConc(1.599);
 	Cpd* cpd_b = mix->addCpd(new Cpd("B", Cpd::AQ   ));
 	Cpd* cpd_c = mix->addCpd(new Cpd("C", Cpd::S    ));
@@ -97,10 +129,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	step->addReactant( cpd_c );
 	step->addProduct ( cpd_b );
 	//step->addProduct ( cpd_c );
-	mix->addStep( step );*/
-	
+	mix->addStep( step );
 }
-
 
 /** showCpdWindow
   * Displays a specie editing window. Uses a signal mapper
@@ -153,12 +183,15 @@ void MainWindow::showCpdWindow( QString action )
 /** removeCpd
   * Removes the currently selected compound from the list.
   */
-void MainWindow::removeCpd()
+void MainWindow::deleteCpd( int i )
 {
-	if( ui.lstCpds->currentRow()<0 )
+	// use argument if it's greater than 0
+	// otherwise use current row of lstSteps
+	i = (i<0 ? ui.lstCpds->currentRow() : i);
+	if( i<0 )
 		return;
 	
-	Cpd *cpd = mix->getCpdById( ui.lstCpds->item(ui.lstCpds->currentRow(),0)->text() );
+	Cpd *cpd = mix->getCpdById( ui.lstCpds->item(i,0)->text() );
 	mix->removeCpd(cpd);
 	delete cpd;
 	updateCpdList();
@@ -173,6 +206,18 @@ void MainWindow::removeCpd()
 			return;
 		}
 	}
+}
+void MainWindow::deleteAllCpds()
+{
+	QMessageBox::StandardButton ret;
+	ret = QMessageBox::warning ( this, "CheMecher",
+			"Are you sure you want to delete all species from the current mechanism?",
+			QMessageBox::Yes | QMessageBox::Cancel ) ;
+	if( ret != QMessageBox::Yes )
+		return;
+	
+	while( ui.lstCpds->rowCount()>0 )
+		deleteCpd(0);
 }
 
 /** moveCpdUp
@@ -277,12 +322,15 @@ void MainWindow::showStepWindow( QString action )
 	windowtypes[mdiSubWin] = STEPWIN;
 	purgeWindowTypes();
 }
-void MainWindow::removeStep()
+void MainWindow::deleteStep( int i )
 {
-	if( ui.lstSteps->currentRow()<0 )
+	// use argument if it's greater than 0
+	// otherwise use current row of lstSteps
+	i = (i<0 ? ui.lstSteps->currentRow() : i);
+	if( i<0 )
 		return;
 	
-	QString name = ui.lstSteps->item(ui.lstSteps->currentRow(),0)->text();
+	QString name = ui.lstSteps->item(i,0)->text();
 	
 	Step *step = mix->getStepByName( name );
 	mix->removeStep(step);
@@ -300,6 +348,19 @@ void MainWindow::removeStep()
 		}
 	}
 }
+void MainWindow::deleteAllSteps()
+{
+	QMessageBox::StandardButton ret;
+	ret = QMessageBox::warning ( this, "CheMecher",
+			"Are you sure you want to delete all steps from the current mechanism?",
+			QMessageBox::Yes | QMessageBox::Cancel ) ;
+	if( ret != QMessageBox::Yes )
+		return;
+	
+	while( ui.lstSteps->rowCount()>0 )
+		deleteStep(0);
+}
+
 void MainWindow::moveStepUp()
 {
 	QTableWidget *list = ui.lstSteps;
@@ -355,26 +416,49 @@ void MainWindow::purgeWindowTypes()
 
 void MainWindow::editSimParams()
 {
-	SimParams *simparams = new SimParams();
-	simparams->show();
+	SimParams *simparams = new SimParams(this);
+	simparams->exec();
 }
 
-/** contextMenuEvent
-  * Brings up a popup menu when step or specie lists are clicked */
-void MainWindow::contextMenuEvent(QContextMenuEvent *event)
+void MainWindow::cpdContextMenu( QPoint pos )
 {
-	QPoint pos = event->globalPos();
-	QTableWidget *list = static_cast<QTableWidget*>(qApp->widgetAt(pos));
-	if( list!=ui.lstCpds && list!=ui.lstSteps )
-		return;
-	
-	qDebug() << ":D" << list->rowCount();
-	
-	/*&& ui.lstSteps->itemAt(pos-ui.lstSteps->pos())*/
+	QMenu menu(this);
+	menu.addAction(ui.actAddCpd);
+	menu.addAction(ui.actEditCpd);
+	menu.addAction(ui.actDeleteCpd);
+	menu.addAction(ui.actDeleteAllCpds);
+	menu.exec(ui.lstCpds->mapToGlobal(pos));
+}
+void MainWindow::stepContextMenu( QPoint pos )
+{
+	QMenu menu(this);
+	menu.addAction(ui.actAddStep);
+	menu.addAction(ui.actEditStep);
+	menu.addAction(ui.actDeleteStep);
+	menu.addAction(ui.actDeleteAllSteps);
+	menu.exec(ui.lstSteps->mapToGlobal(pos));
 }
 
 // saving/loading ////
 //
+
+void MainWindow::saveToCM4()
+{
+	QString filename = "";
+	QFileDialog save(this);
+	save.setAcceptMode(QFileDialog::AcceptSave);
+	save.setDefaultSuffix("cm4");
+	save.setFilter("CheMecher4 files (*.cm4);;All files (*.*)");
+	save.setWindowTitle("CheMecher");
+	save.setDirectory(QDir::current().path()+"/../input");
+	if( !save.exec() )
+		return;
+	filename = save.selectedFiles()[0];
+	statusBar()->showMessage("Saving to " + QFileInfo(filename).fileName() + "...", 1000);
+	if( filename!="" )
+		iomgr->saveToCM4(filename);
+	//statusBar()->clearMessage();
+}
 
 void MainWindow::saveToCM3()
 {
@@ -448,6 +532,11 @@ void MainWindow::loadMechDb()
 //
 ////////////////////////////////
 
+// help menu
+void MainWindow::reportBug()
+{QDesktopServices::openUrl( QUrl("http://sourceforge.net/tracker/?func=add&group_id=313094&atid=1317696") );}
+void MainWindow::suggestFeature()
+{QDesktopServices::openUrl( QUrl("http://sourceforge.net/tracker/?func=add&group_id=313094&atid=1317699") );}
 void MainWindow::showAboutWindow()
 {
 	About *about = new About();
