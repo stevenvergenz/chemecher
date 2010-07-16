@@ -155,7 +155,7 @@ bool IOManager::saveToCM4(QString filename)
 	
 	QString *fcontents = new QString();
 	
-	//start writing
+	/************* Open the file, write headers ************/
 	QXmlStreamWriter stream(fcontents);
 	stream.setAutoFormatting(true);
 	stream.writeStartDocument();
@@ -166,7 +166,7 @@ bool IOManager::saveToCM4(QString filename)
 	
 	int i;
 	
-	//write the cpd list
+	/************ Write the Species List ***************/
 	stream.writeStartElement("CpdList");
 	for(i=0; i<mix->CpdList.size(); i++)
 	{
@@ -187,7 +187,7 @@ bool IOManager::saveToCM4(QString filename)
 	}
 	stream.writeEndElement(); //CpdList
 	
-	//write the step list
+	/******************* Write the Step List ******************/
 	stream.writeStartElement("StepList");
 	for(i=0; i<mix->StepList.size(); i++)
 	{
@@ -219,8 +219,41 @@ bool IOManager::saveToCM4(QString filename)
 	}
 	stream.writeEndElement(); //StepList
 	
-	/***************** TODO: WRITE THE ATTRIBUTE LIST *****************/
-	
+	/************** Start writing the simparams **************/
+	stream.writeStartElement("SimParams");
+
+	stream.writeEmptyElement("TimeStep");
+	stream.writeAttribute("value", QString::number(mix->timeStep));
+	stream.writeEmptyElement("ReportStep");
+	stream.writeAttribute("value", QString::number(mix->reportStep));
+	stream.writeEmptyElement("StartTime");
+	stream.writeAttribute("value", QString::number(mix->startTime));
+	stream.writeEmptyElement("EndTime");
+	stream.writeAttribute("value", QString::number(mix->endTime));
+	stream.writeEmptyElement("DebugStart");
+	stream.writeAttribute("value", QString::number(mix->debugStart));
+	stream.writeEmptyElement("DebugEnd");
+	stream.writeAttribute("value", QString::number(mix->debugEnd));
+	stream.writeEmptyElement("Precision");
+	stream.writeAttribute("value", QString::number(mix->precision));
+	stream.writeEmptyElement("Order");
+	stream.writeAttribute("value", QString::number(mix->order));
+	stream.writeEmptyElement("Method");
+	stream.writeAttribute("value", mix->method);
+	stream.writeEmptyElement("Transition");
+	stream.writeAttribute("value", mix->transition);
+	stream.writeEmptyElement("Autostep");
+	stream.writeAttribute("value", (mix->autostep ? "true" : "false"));
+	stream.writeEmptyElement("Gateband");
+	stream.writeAttribute("value", QString::number(mix->gateband));
+	stream.writeEmptyElement("ShiftTest");
+	stream.writeAttribute("value", QString::number(mix->shifttest));
+	stream.writeEmptyElement("MaxReduce");
+	stream.writeAttribute("value", QString::number(mix->maxreduce));
+	stream.writeEmptyElement("StepFactor");
+	stream.writeAttribute("value", QString::number(mix->stepfactor));
+
+	stream.writeEndElement(); //SimParams
 	
 	
 	stream.writeEndElement(); //Mechanism

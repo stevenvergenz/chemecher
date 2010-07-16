@@ -6,8 +6,7 @@ TARGET =
 DEPENDPATH += . \
     src \
     src/core \
-    src/gui \
-    src/gui/forms
+    src/gui
 INCLUDEPATH += . \
     src/gui \
     src/core
