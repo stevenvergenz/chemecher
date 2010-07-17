@@ -47,15 +47,16 @@ void Cpd::setLongName(QString s){ longname = s; emit longNameChanged(s);}
 Cpd::State Cpd::state(){ return cpd_state; }
 void Cpd::setState(Cpd::State s){ cpd_state = s; emit stateChanged((int)s);}
 void Cpd::setState(int s){ cpd_state = (State)s; emit stateChanged(s);}
-void Cpd::setState(QString s, bool& ok){
-	ok = true;
-	if     (s=="(.)") cpd_state = HOMO;
-	else if(s=="(*)") cpd_state = HETERO;
-	else if(s=="(aq)")cpd_state = AQ;
-	else if(s=="(l)") cpd_state = L;
-	else if(s=="(g)") cpd_state = G;
-	else{ ok = false; }
-	if( ok ) emit stateChanged( (int)cpd_state );
+bool Cpd::setState(QString s, bool *ok ){
+	for( int i=0; i<STATES->length(); i++ )
+		if( s==STATES[i] ) {
+			cpd_state = (State)i;
+			emit stateChanged(i);
+			if(ok!=0) (*ok)=true;
+			return true;
+		}
+	if(ok!=0) (*ok)=false;
+	return false;
 }
 
 //theshold
@@ -70,10 +71,16 @@ void Cpd::setSharpness(double s){ sharp = s; emit sharpnessChanged(s);}
 Cpd::Transition Cpd::transition(){ return trans; }
 void Cpd::setTransition(Transition t){ trans = t; emit transitionChanged((int)t);}
 void Cpd::setTransition(int t){ trans = (Transition)t; emit transitionChanged(t);}
-void Cpd::setTransition(QString s){
+bool Cpd::setTransition(QString s, bool *ok ){
 	if(s=="none") thresh = NONE;
 	else if(s=="linear") thresh = LINEAR;
 	else if(s=="atan") thresh = ATAN;
+	else {
+		if(ok!=0) (*ok)=false;
+		return false;
+	}
+	if(ok!=0) (*ok)=true;
+	return true;
 }
 
 //initial concentration

@@ -53,10 +53,10 @@ public slots:
 	void setLongName(QString n);
 	void setState(State s);
 	void setState(int s);
-	void setState(QString s, bool& ok);
+	bool setState(QString s, bool *ok = 0 );
 	void setTransition(Transition t);
 	void setTransition(int t);
-	void setTransition(QString t);
+	bool setTransition(QString t, bool *ok = 0 );
 	void setThreshold(double t);
 	void setSharpness(double s);
 	void setInitialConc(double c);

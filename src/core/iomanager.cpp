@@ -102,10 +102,10 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 	QString buffer;
 	bool ok = true;
 
+	// try to parse the name and description from the file
 	buffer = min.readLine();
 	linecounter++;
 	while( buffer.left( buffer.indexOf("'") ).simplified() == "" ) {
-		
 		if( buffer.left(6).toLower() == "'name:" ) {
 			newmix.mechName = buffer.mid(6).trimmed();
 		}
@@ -136,7 +136,7 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 		if( parts[0].length()>6 )
 			return setError( PARSE_ERROR, "Short name too long (must be no more than 7 characters)", linecounter );
 		cpd->setShortName( parts[0] );
-		cpd->setState( parts[1], ok );
+		cpd->setState( parts[1], &ok );
 		if( !ok )
 			return setError( PARSE_ERROR, "Invalid state identifier \"" + parts[1] + "\"", linecounter );
 		cpd->setThreshold( parts[2].toDouble(&ok) );
@@ -196,6 +196,20 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 		newmix.addStep( step );
 	}
 	
+	//// Parse the simulation file ////
+	
+	//open the sim file
+	if( !sfile.open( QIODevice::ReadOnly | QIODevice::Text ) )
+		return setError( FS_ERROR, "Opening file "+sim );
+	
+	//start reading
+	QTextStream sin(&sfile);
+	linecounter = 0;
+	buffer = "";
+	ok = true;
+	
+	
+	
 	mix->clone( &newmix );
 	status = LOADED_CM3;
 	return true;
@@ -231,11 +245,8 @@ bool IOManager::saveToCM4(QString filename)
 {
 	//open the simulation file
 	QFile sfile(filename);
-	if( !sfile.open( QFile::WriteOnly ) ){
-		status = FS_ERROR;
-		message = "Error opening file "+filename;
-		return false;
-	}
+	if( !sfile.open( QFile::WriteOnly ) )
+		return setError( FS_ERROR, "Error opening file "+filename );
 	
 	QString *fcontents = new QString();
 	
@@ -356,11 +367,8 @@ bool IOManager::loadFromCM4(QString filename)
 
 	//open the simulation file
 	QFile sfile(filename);
-	if( !sfile.open( QFile::ReadOnly ) ){
-		status = FS_ERROR;
-		message = "Error opening file "+filename;
-		return false;
-	}
+	if( !sfile.open( QFile::ReadOnly ) )
+		return setError( FS_ERROR, "Error opening file "+filename );
 
 	/*
 	  The doc.setContent() function actually loads the file into a tree structure composed of QDomNodes.
@@ -368,70 +376,51 @@ bool IOManager::loadFromCM4(QString filename)
 	QDomDocument doc("mech");
 	if( !doc.setContent(&sfile, &message) ){
 		sfile.close();
-		setError(PARSE_ERROR, "Could not parse document");
-		return false;
+		return setError(PARSE_ERROR, "Could not parse document");
 	}
 
 	QDomElement ele = doc.documentElement();
-	if( ele.tagName()!="Mechanism"){
-		setError(PARSE_ERROR, "Expected \"Mechanism\"");
-		return false;
-	}
+	if( ele.tagName()!="Mechanism")
+		return setError(PARSE_ERROR, "Expected \"Mechanism\"");
 	newmix.mechName = ele.attribute("name");
-	if( ele.elementsByTagName("MechDescription").isEmpty() ){
-		setError(PARSE_ERROR, "Expected \"Mechanism\"");
-		return false;
-	}
+	if( ele.elementsByTagName("MechDescription").isEmpty() )
+		return setError(PARSE_ERROR, "Expected \"Mechanism\"");
 	newmix.mechDesc = ele.elementsByTagName("MechDescription").at(0).toElement().text();
 
 	/************** Read the species ***************/
-	if( ele.elementsByTagName("CpdList").isEmpty()){
-		setError(PARSE_ERROR, "Expected \"CpdList\"");
-		return false;
-	}
+	if( ele.elementsByTagName("CpdList").isEmpty())
+		return setError(PARSE_ERROR, "Expected \"CpdList\"");
 	QDomNode cpdlist = ele.elementsByTagName("CpdList").at(0);
 	for(QDomNode cpd=cpdlist.firstChild(); !cpd.isNull(); cpd=cpd.nextSibling())
 	{
-		if( cpd.toElement().tagName()!="Cpd" ){
-			setError(PARSE_ERROR, "Expected \"Cpd\", got \""+child.toElement().tagName()+"\"");
-			return false;
-		}
+		if( cpd.toElement().tagName()!="Cpd" )
+			return setError(PARSE_ERROR, "Expected \"Cpd\", got \""+cpd.toElement().tagName()+"\"");
 		
 		// parse basic information
 		Cpd* newcpd = new Cpd(); bool ok;
 		newcpd->setShortName(cpd.toElement().attribute("name"));
-		newcpd->setState(cpd.toElement().attribute("state"), ok);
+		newcpd->setState(cpd.toElement().attribute("state"), &ok);
 		QDomNode child = cpd.firstChild();
 
 		// parse components of a compound
-		if(child.toElement().tagName()!="LongName"){
-			setError(PARSE_ERROR, "Expected \"LongName\", got \""+child.toElement().tagName()+"\"");
-			return false;
-		}
+		if(child.toElement().tagName()!="LongName")
+			return setError(PARSE_ERROR, "Expected \"LongName\", got \""+cpd.toElement().tagName()+"\"");
 		newcpd->setLongName(child.toElement().attribute("value"));
 		child = child.nextSibling();
-		if(child.toElement().tagName()!="Concentration"){
-			setError(PARSE_ERROR, "Expected \"Concentration\", got \""+child.toElement().tagName()+"\"");
-			return false;
-		}
+		if(child.toElement().tagName()!="Concentration")
+			return setError(PARSE_ERROR, "Expected \"Concentration\", got \""+child.toElement().tagName()+"\"");
 		newcpd->setInitialConc(child.toElement().attribute("value"));
 		child = child.nextSibling();
-		if(child.toElement().tagName()!="Threshold"){
-			setError(PARSE_ERROR, "Expected \"Threshold\", got \""+child.toElement().tagName()+"\"");
-			return false;
-		}
+		if(child.toElement().tagName()!="Threshold")
+			return setError(PARSE_ERROR, "Expected \"Threshold\", got \""+child.toElement().tagName()+"\"");
 		newcpd->setThreshold(child.toElement().attribute("value").toDouble());
 		child = child.nextSibling();
-		if(child.toElement().tagName()!="Sharpness"){
-			setError(PARSE_ERROR, "Expected \"Sharpness\", got \""+child.toElement().tagName()+"\"");
-			return false;
-		}
+		if(child.toElement().tagName()!="Sharpness")
+			return setError(PARSE_ERROR, "Expected \"Sharpness\", got \""+child.toElement().tagName()+"\"");
 		newcpd->setSharpness(child.toElement().attribute("value").toDouble());
 		child = child.nextSibling();
-		if(child.toElement().tagName()!="Transition"){
-			setError(PARSE_ERROR, "Expected \"Transition\", got \""+child.toElement().tagName()+"\"");
-			return false;
-		}
+		if(child.toElement().tagName()!="Transition")
+			return setError(PARSE_ERROR, "Expected \"Transition\", got \""+child.toElement().tagName()+"\"");
 		newcpd->setTransition(child.toElement().attribute("value"));
 
 		// add the new cpd to the mix
@@ -439,17 +428,13 @@ bool IOManager::loadFromCM4(QString filename)
 	}
 
 	/****************** Read the Step List *********************/
-	if( ele.elementsByTagName("StepList").isEmpty() ){
-		setError(PARSE_ERROR, "Expected \"StepList\"");
-		return false;
-	}
+	if( ele.elementsByTagName("StepList").isEmpty() )
+		return setError(PARSE_ERROR, "Expected \"StepList\"");
 	QDomNode steplist = ele.elementsByTagName("StepList").at(0);
 	for(QDomNode step=steplist.firstChild(); !step.isNull(); step=step.nextSibling())
 	{
-		if( step.toElement().tagName()!="Step" ){
-			setError(PARSE_ERROR, "Expected \"Step\", got \""+child.toElement().tagName()+"\"");
-			return false;
-		}
+		if( step.toElement().tagName()!="Step" )
+			return setError(PARSE_ERROR, "Expected \"Step\", got \""+step.toElement().tagName()+"\"");
 		
 		// parse essential data
 		Step* newstep = new Step();
