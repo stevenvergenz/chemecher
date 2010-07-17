@@ -7,6 +7,8 @@
 #include <QTextStream>
 #include <QDateTime>
 #include <QXmlStreamWriter>
+#include <QStringList>
+#include <QString>
 
 class IOManager;
 
@@ -29,10 +31,12 @@ public:
 	QString getMessage() {return message;}
 
 private:
+	QString getLine( QTextStream& txt, int &linecounter );
+	void setError( Status stat, QString errmsg, int linenum=-1 );
+	
 	Status status;
 	QString message;
-
-	QString getLineWithoutComments(QTextStream& txt);
+	
 };
 
 extern IOManager *iomgr;

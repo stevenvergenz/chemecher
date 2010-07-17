@@ -73,7 +73,9 @@ public slots:
 	
 	// saving/loading
 	void saveToCM4();
+	void loadFromCM4();
 	void saveToCM3();
+	void loadFromCM3();
 	void saveMechDb();
 	void loadMechDb();
 	

@@ -81,11 +81,13 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect(mix, SIGNAL(stepListChanged()), this, SLOT(updateStepList()));
 	
 	// file menu
-	connect(ui.actSaveAs,     SIGNAL(triggered()), this, SLOT(saveToCM4())  );
-	connect(ui.actSaveToCM3,  SIGNAL(triggered()), this, SLOT(saveToCM3())  );
-	connect(ui.actSaveMechDb, SIGNAL(triggered()), this, SLOT(saveMechDb()) );
-	connect(ui.actLoadMechDb, SIGNAL(triggered()), this, SLOT(loadMechDb()) );
-	connect(ui.actExit,       SIGNAL(triggered()), qApp, SLOT(quit()));
+	connect(ui.actSaveAs,      SIGNAL(triggered()), this, SLOT(saveToCM4())   );
+	connect(ui.actLoad,        SIGNAL(triggered()), this, SLOT(loadFromCM4()) );
+	connect(ui.actSaveToCM3,   SIGNAL(triggered()), this, SLOT(saveToCM3())   );
+	connect(ui.actLoadFromCM3, SIGNAL(triggered()), this, SLOT(loadFromCM3()) );
+	connect(ui.actSaveMechDb,  SIGNAL(triggered()), this, SLOT(saveMechDb())  );
+	connect(ui.actLoadMechDb,  SIGNAL(triggered()), this, SLOT(loadMechDb())  );
+	connect(ui.actExit,        SIGNAL(triggered()), qApp, SLOT(quit())        );
 	
 	// mechanism menu
 	connect(ui.actEditSimParams, SIGNAL(triggered()), this, SLOT(editSimParams()));
@@ -460,6 +462,11 @@ void MainWindow::saveToCM4()
 	//statusBar()->clearMessage();
 }
 
+void MainWindow::loadFromCM4()
+{
+	
+}
+
 void MainWindow::saveToCM3()
 {
 	// warn the user about CM3 format
@@ -496,7 +503,7 @@ void MainWindow::saveToCM3()
 	
 	// get the simulation filename
 	save.setDefaultSuffix( fi.suffix()=="cm3m"?"cm3s":fi.suffix() );
-	save.setFilter("CheMecher3 solution files (*.cm3s);;Text files (*.txt);;All files (*.*)");
+	save.setFilter("CheMecher3 simulation files (*.cm3s);;Text files (*.txt);;All files (*.*)");
 	save.setWindowTitle("Simulation File (Mechanism: " + QFileInfo(mech).fileName() + ")");
 	save.setDirectory(fi.absolutePath());
 	if( !save.exec() )
@@ -507,13 +514,54 @@ void MainWindow::saveToCM3()
 	// check for uniqueness
 	if( mech==sim ) {
 		QMessageBox::warning ( this, "CheMecher",
-				"Mechanism and solution files must be different!",
+				"Mechanism and simulation files must be different!",
 				QMessageBox::Ok ) ;
 		return;
 	}
 	
 	// save the file
-	iomgr->saveToCM3( mech, sim );
+	if( !iomgr->saveToCM3( mech, sim ) )
+		QMessageBox::warning ( this, "CheMecher",
+				iomgr->getMessage(),
+				QMessageBox::Ok ) ;
+}
+
+void MainWindow::loadFromCM3()
+{
+	QFileDialog load(this);
+	load.setAcceptMode(QFileDialog::AcceptOpen);
+	load.setFileMode( QFileDialog::ExistingFile );
+	QString mech, sim;
+	
+	// get the mechanism filename
+	load.setFilter("CheMecher3 mechanism files (*.cm3m);;Text files (*.txt);;All files (*.*)");
+	load.setWindowTitle("Mechanism File");
+	load.setDirectory(QDir::current().path()+"/../input");
+	if( !load.exec() )
+		return;
+	mech = load.selectedFiles()[0];
+	if( mech=="" )
+		return;
+	
+	// get the simulation filename
+	load.setFilter("CheMecher3 simulation files (*.cm3s);;Text files (*.txt);;All files (*.*)");
+	load.setWindowTitle("Simulation File (Mechanism: " + QFileInfo(mech).fileName() + ")");
+	load.setDirectory(QFileInfo(mech).absolutePath());
+	if( !load.exec() )
+		return;
+	sim = load.selectedFiles()[0];
+	if( sim=="" ) return;
+	
+	// check for uniqueness
+	if( mech==sim ) {
+		QMessageBox::warning ( this, "CheMecher",
+				"Mechanism and simulation files must be different!",
+				QMessageBox::Ok ) ;
+		return;
+	}
+	
+	// load the file
+	iomgr->loadFromCM3( mech, sim );
 }
 
 void MainWindow::saveMechDb()

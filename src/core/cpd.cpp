@@ -47,6 +47,14 @@ void Cpd::setLongName(QString s){ longname = s; emit longNameChanged(s);}
 Cpd::State Cpd::state(){ return cpd_state; }
 void Cpd::setState(Cpd::State s){ cpd_state = s; emit stateChanged((int)s);}
 void Cpd::setState(int s){ cpd_state = (State)s; emit stateChanged(s);}
+bool Cpd::setState(QString s) {
+	for( int i=0; i<6; i++ )
+		if( s==STATES[i] ) {
+			setState(i);
+			return true;
+		}
+	return false;
+}
 
 //theshold
 double Cpd::threshold(){ return thresh; }
@@ -60,6 +68,14 @@ void Cpd::setSharpness(double s){ sharp = s; emit sharpnessChanged(s);}
 Cpd::Transition Cpd::transition(){ return trans; }
 void Cpd::setTransition(Transition t){ trans = t; emit transitionChanged((int)t);}
 void Cpd::setTransition(int t){ trans = (Transition)t; emit transitionChanged(t);}
+bool Cpd::setTransition(QString t) {
+	for( int i=0; i<3; i++ )
+		if( t==TRANS[i] ) {
+			setTransition(i);
+			return true;
+		}
+	return false;
+}
 
 //initial concentration
 double  Cpd::initialConc(){ return conc; }

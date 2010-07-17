@@ -12,8 +12,7 @@ bool IOManager::saveToCM3(QString mech, QString sim)
 	//open the mechanism file
 	QFile mfile(mech);
 	if( !mfile.open( QFile::WriteOnly ) ){
-		status = FS_ERROR;
-		message = "Error opening file "+mech;
+		setError( FS_ERROR, "Opening file "+mech );
 		return false;
 	}
 
@@ -47,8 +46,7 @@ bool IOManager::saveToCM3(QString mech, QString sim)
 	//open the simulation file
 	QFile sfile(sim);
 	if( !sfile.open( QFile::WriteOnly ) ){
-		status = FS_ERROR;
-		message = "Error opening file "+sim;
+		setError( FS_ERROR, "Opening file "+sim );
 		return false;
 	}
 
@@ -89,57 +87,134 @@ bool IOManager::saveToCM3(QString mech, QString sim)
 	return true;
 }
 
-// function declaration
-QString getLine(QTextStream&,int &);
-
-bool IOManager::loadFromCM3(QString sim, QString mech)
+bool IOManager::loadFromCM3(QString mech, QString sim)
 {
 	Mix newmix;
-	QFile sfile(sim), mfile(mech);
+	QFile mfile(mech), sfile(sim);
 
 	/********************* start parsing the mech file ********************/
 
 	//open the mech file
-	if( !mfile.open( QFile::WriteOnly ) ){
-		status = FS_ERROR;
-		message = "Error opening file "+mech;
+	if( !mfile.open( QIODevice::ReadOnly | QIODevice::Text ) ){
+		setError( FS_ERROR, "Opening file "+mech );
 		return false;
 	}
-
+	
 	//start reading
 	QTextStream min(&mfile);
 	int linecounter = 0;
 	QString buffer;
 	bool ok = true;
 
-	//read the number of species
-	buffer = getLine( min, linecounter );
-	int numspecies = buffer.toInt(&ok, 10);
-	if( !ok || numspecies<1){
-		status = PARSE_ERROR;
-		message = "Error line "+QString::number(linecounter)+": positive integer expected";
+	buffer = min.readLine();
+	linecounter++;
+	while( buffer.left( buffer.indexOf("'") ).simplified() == "" ) {
+		
+		if( buffer.left(6).toLower() == "'name:" ) {
+			newmix.mechName = buffer.mid(6).trimmed();
+		}
+		if( buffer.left(6).toLower() == "'desc:" ) {
+			newmix.mechDesc = buffer.mid(6).trimmed();
+		}
+		buffer = min.readLine();
+		linecounter++;
+	}
+	
+	buffer = buffer.left( buffer.indexOf("'") ).simplified();
+	
+	//read the number of species--already done in while loop above!
+	//buffer = getLine( min, linecounter );
+	int numcpds = buffer.toInt(&ok);
+	if( !ok || numcpds<1){
+		setError( PARSE_ERROR, "Positive integer expected", linecounter );
 		return false;
 	}
-
+	
 	//read the species
-	for(int i=0; i<numspecies; i++)
+	QStringList parts;
+	for(int i=0; i<numcpds; i++)
 	{
-
+		parts = getLine( min, linecounter ).split(' ');
+		if( parts.length()!=4 ) {
+			setError( PARSE_ERROR, "Wrong number of elements", linecounter );
+			return false;
+		}
+		message = "";
+		Cpd *cpd = new Cpd();
+		if( parts[0].length()>6 )
+			setError( PARSE_ERROR, "Short name too long (must be no more than 7 characters)", linecounter );
+		cpd->setShortName( parts[0] );
+		if( !cpd->setState( parts[1] ) )
+			setError( PARSE_ERROR, "Invalid state identifier \"" + parts[1] + "\"", linecounter );
+		cpd->setThreshold( parts[2].toDouble() );
+		cpd->setSharpness( parts[3].toDouble() );
+		
+		if( message!="" )			
+			return false;
+		
+		newmix.addCpd( cpd );
 	}
-
+	message = "";
+	
+	//read the number of species--already done in while loop above!
+	//buffer = getLine( min, linecounter );
+	int numcpds = buffer.toInt(&ok);
+	if( !ok || numcpds<1){
+		setError( PARSE_ERROR, "Positive integer expected", linecounter );
+		return false;
+	}
+	
+	//read the species
+	QStringList parts;
+	for(int i=0; i<numcpds; i++)
+	{
+		parts = getLine( min, linecounter ).split(' ');
+		if( parts.length()!=4 ) {
+			setError( PARSE_ERROR, "Wrong number of elements", linecounter );
+			return false;
+		}
+		message = "";
+		Cpd *cpd = new Cpd();
+		if( parts[0].length()>6 )
+			setError( PARSE_ERROR, "Short name too long (must be no more than 7 characters)", linecounter );
+		cpd->setShortName( parts[0] );
+		if( !cpd->setState( parts[1] ) )
+			setError( PARSE_ERROR, "Invalid state identifier \"" + parts[1] + "\"", linecounter );
+		cpd->setThreshold( parts[2].toDouble() );
+		cpd->setSharpness( parts[3].toDouble() );
+		
+		if( message!="" )			
+			return false;
+		
+		newmix.addCpd( cpd );
+		qDebug() << ":D";
+	}
+	message = "";	
+	
+	mix->clone( &newmix );
 	return true;
 }
 
 // gets the next line of valid input
-QString getLine(QTextStream& txt, int &linecounter)
+QString IOManager::getLine(QTextStream& txt, int &linecounter)
 {
 	QString ret = "";
 	while( ret=="" && !txt.atEnd() ) {
 		ret = txt.readLine();
+		// removes comments and simplifies whitespace
 		ret = ret.left( ret.indexOf("'") ).simplified();
 		linecounter++;
 	}
 	return ret;
+}
+
+void IOManager::setError( Status stat, QString errmsg, int linenum )
+{
+	status = stat;
+	message = "Error";
+	if( linenum>=0 )
+		message += " (" + QString::number(linenum) + ")";
+	message += ": " + errmsg;
 }
 
 // save the currently loaded mechanism in XML format

@@ -37,7 +37,9 @@
     <addaction name="actLoad"/>
     <addaction name="actSave"/>
     <addaction name="actSaveAs"/>
+    <addaction name="separator"/>
     <addaction name="actSaveToCM3"/>
+    <addaction name="actLoadFromCM3"/>
     <addaction name="separator"/>
     <addaction name="actSaveMechDb"/>
     <addaction name="actLoadMechDb"/>
@@ -804,6 +806,11 @@
    </property>
    <property name="shortcutContext">
     <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actLoadFromCM3">
+   <property name="text">
+    <string>Load from CM3 Format...</string>
    </property>
   </action>
  </widget>
