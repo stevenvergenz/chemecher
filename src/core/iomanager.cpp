@@ -392,6 +392,11 @@ bool IOManager::loadFromCM4(QString filename)
 	QDomNode cpdlist = ele.elementsByTagName("CpdList").at(0);
 	for(QDomNode cpd=cpdlist.firstChild(); !cpd.isNull(); cpd=cpd.nextSibling())
 	{
+		if( cpd.toElement().tagName()!="Cpd" ){
+			setError(PARSE_ERROR, "Expected \"Cpd\", got \""+child.toElement().tagName()+"\"");
+			return false;
+		}
+		
 		// parse basic information
 		Cpd* newcpd = new Cpd(); bool ok;
 		newcpd->setShortName(cpd.toElement().attribute("name"));
@@ -441,7 +446,17 @@ bool IOManager::loadFromCM4(QString filename)
 	QDomNode steplist = ele.elementsByTagName("StepList").at(0);
 	for(QDomNode step=steplist.firstChild(); !step.isNull(); step=step.nextSibling())
 	{
-
+		if( step.toElement().tagName()!="Step" ){
+			setError(PARSE_ERROR, "Expected \"Step\", got \""+child.toElement().tagName()+"\"");
+			return false;
+		}
+		
+		// parse essential data
+		Step* newstep = new Step();
+		newstep->setName( step.toElement().attribute("name") );
+		
+		// parse properties of the step
+		
 	}
 
 	mix->clone(&newmix);
