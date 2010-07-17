@@ -9,15 +9,15 @@
 			<LongName>Nutrient A</LongName>
 			<State>(.)</State>
 			<InitialConcentration>100</InitialConcentration>
-			<Sharpness/><? Not necessary if empty like this ?>
-			<Threshold/><? As above, see below ?>
+			<Sharpness/><?Not necessary if empty like this ?>
+			<Threshold/><?As above, see below ?>
 		</Specie>
 		<Specie>
 			<ShortName>B</ShortName>
 			<LongName>Intermediate B</LongName>
 			<State>(.)</State>
 			<InitialConcentration>10</InitialConcentration>
-			<? Notice that the sharp and thresh values are omitted, this is fine ?>
+			<?Notice that the sharp and thresh values are omitted, this is fine ?>
 		</Specie>
 		<Specie>
 			<ShortName>C</ShortName>
@@ -25,12 +25,14 @@
 			<State>(*)</State>
 			<InitialConcentration>0</InitialConcentration>
 			<Sharpness>.85</Sharpness>
-			<Theshold>.01</Threshold>
+			<Threshold>.01</Threshold>
 		</Specie>
 	</SpeciesList>
 
 	<StepList>
 		<Step>
 			<Name>Consumption</Name>
+		</Step>
+	</StepList>
 			
 </Mechanism>

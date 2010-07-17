@@ -32,7 +32,7 @@ public:
 
 private:
 	QString getLine( QTextStream& txt, int &linecounter );
-	void setError( Status stat, QString errmsg, int linenum=-1 );
+	bool setError( Status stat, QString errmsg, int linenum=-1 );
 	
 	Status status;
 	QString message;

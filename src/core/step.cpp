@@ -47,7 +47,7 @@ bool Step::hasProduct(Cpd *cpd)
 
 // adding and removing reagents
 bool Step::addReactant( Cpd* cpd ) {
-	if( reactants.size()==3 )
+	if( reactants.size()==3 || cpd==0 )
 		return false;
 	reactants.append( cpd );
 	cpd->stoiVals[this]--;
@@ -55,7 +55,7 @@ bool Step::addReactant( Cpd* cpd ) {
 	return true;
 }
 bool Step::addProduct ( Cpd *cpd ) {
-	if( products.size()==3 )
+	if( products.size()==3 || cpd==0 )
 		return false;
 	products.append( cpd );
 	cpd->stoiVals[this]++;
@@ -64,7 +64,7 @@ bool Step::addProduct ( Cpd *cpd ) {
 }
 bool Step::setReactant( int i, Cpd* cpd )
 {
-	if( reactants.size()<i+1 )
+	if( reactants.size()<i+1 || cpd==0 )
 		return false;
 	reactants[i] = cpd;
 	emit reagentsChanged();
@@ -72,7 +72,7 @@ bool Step::setReactant( int i, Cpd* cpd )
 }
 bool Step::setProduct( int i, Cpd* cpd )
 {
-	if( products.size()<i+1 )
+	if( products.size()<i+1 || cpd==0 )
 		return false;
 	products[i] = cpd;
 	emit reagentsChanged();

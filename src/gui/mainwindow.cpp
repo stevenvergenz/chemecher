@@ -68,7 +68,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect(ui.pushMoveCpdDown, SIGNAL(clicked()), ui.actMvCpdDown, SLOT(trigger()) );
 	
 	connect(mix, SIGNAL(cpdListChanged()), this, SLOT(updateCpdList()));
-	connect(ui.lstCpds, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(setCpdInitConc(QTableWidgetItem*)) );
+	//connect(ui.lstCpds, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(setCpdInitConc(QTableWidgetItem*)) );
 	
 	// step
 	connect(ui.pushAddStep,    SIGNAL(clicked()), ui.actAddStep,    SLOT(trigger()) );
@@ -110,6 +110,9 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 /** DEBUG MODE ONLY -- DISABLE FOR ACTUAL BUILD **/
 void MainWindow::initTestMech()
 {
+	// uncomment next line to disable
+	return;
+	
 	Cpd* cpd_a = mix->addCpd(new Cpd("A", Cpd::HOMO ));
 	cpd_a->setInitialConc(1.599);
 	Cpd* cpd_b = mix->addCpd(new Cpd("B", Cpd::AQ   ));
@@ -139,7 +142,7 @@ void MainWindow::initTestMech()
   * to determine appropriate action.
   * 
   * Called in three instances (args in parentheses):
-  *   1. A compound from ui.lstCpds is double-clicked. ("EditCpd")
+  *   1. A compound from ui.lstCpds is double-clicked. ("EditCpdDClicked")
   *   2. The "Add Specie" button is clicked. ("AddCpd")
   *   3. The "Edit Specie" button is clicked. ("EditCpd")
   */
@@ -208,6 +211,7 @@ void MainWindow::deleteCpd( int i )
 			return;
 		}
 	}
+	
 }
 void MainWindow::deleteAllCpds()
 {
@@ -259,7 +263,7 @@ void MainWindow::updateCpdList()
 		QTableWidgetItem *id = new QTableWidgetItem( mix->CpdList[i]->toString() );
 		id->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
 		ui.lstCpds->setItem( i,0, id );
-		QTableWidgetItem *conc = new QTableWidgetItem( QString("%1").arg(mix->CpdList[i]->initialConc()) );
+		QTableWidgetItem *conc = new QTableWidgetItem( QString::number(mix->CpdList[i]->initialConc()) );
 		conc->setFlags( Qt::ItemIsEnabled | Qt::ItemIsEditable );\
 		conc->setTextAlignment( Qt::AlignRight );
 		ui.lstCpds->setItem( i,1, conc );
@@ -485,7 +489,7 @@ void MainWindow::saveToCM3()
 	
 	// get the mechanism filename
 	save.setDefaultSuffix("cm3m");
-	save.setFilter("CheMecher3 mechanism files (*.cm3m);;Text files (*.txt);;All files (*.*)");
+	save.setFilter("CheMecher3 mechanism files (*.cm3m *.txt);;All files (*.*)");
 	save.setWindowTitle("Mechanism File");
 	save.setDirectory(QDir::current().path()+"/../input");
 	if( !save.exec() )
@@ -503,7 +507,7 @@ void MainWindow::saveToCM3()
 	
 	// get the simulation filename
 	save.setDefaultSuffix( fi.suffix()=="cm3m"?"cm3s":fi.suffix() );
-	save.setFilter("CheMecher3 simulation files (*.cm3s);;Text files (*.txt);;All files (*.*)");
+	save.setFilter("CheMecher3 simulation files (*.cm3s *.txt);;All files (*.*)");
 	save.setWindowTitle("Simulation File (Mechanism: " + QFileInfo(mech).fileName() + ")");
 	save.setDirectory(fi.absolutePath());
 	if( !save.exec() )
@@ -534,7 +538,7 @@ void MainWindow::loadFromCM3()
 	QString mech, sim;
 	
 	// get the mechanism filename
-	load.setFilter("CheMecher3 mechanism files (*.cm3m);;Text files (*.txt);;All files (*.*)");
+	load.setFilter("CheMecher3 mechanism files (*.cm3m *.txt);;All files (*.*)");
 	load.setWindowTitle("Mechanism File");
 	load.setDirectory(QDir::current().path()+"/../input");
 	if( !load.exec() )
@@ -544,7 +548,7 @@ void MainWindow::loadFromCM3()
 		return;
 	
 	// get the simulation filename
-	load.setFilter("CheMecher3 simulation files (*.cm3s);;Text files (*.txt);;All files (*.*)");
+	load.setFilter("CheMecher3 simulation files (*.cm3s *.txt);;All files (*.*)");
 	load.setWindowTitle("Simulation File (Mechanism: " + QFileInfo(mech).fileName() + ")");
 	load.setDirectory(QFileInfo(mech).absolutePath());
 	if( !load.exec() )

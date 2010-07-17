@@ -11,10 +11,8 @@ bool IOManager::saveToCM3(QString mech, QString sim)
 	
 	//open the mechanism file
 	QFile mfile(mech);
-	if( !mfile.open( QFile::WriteOnly ) ){
-		setError( FS_ERROR, "Opening file "+mech );
-		return false;
-	}
+	if( !mfile.open( QFile::WriteOnly ) )
+		return setError( FS_ERROR, "Opening file "+mech );
 
 	//print header
 	QTextStream mOut( &mfile );
@@ -95,10 +93,8 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 	/********************* start parsing the mech file ********************/
 
 	//open the mech file
-	if( !mfile.open( QIODevice::ReadOnly | QIODevice::Text ) ){
-		setError( FS_ERROR, "Opening file "+mech );
-		return false;
-	}
+	if( !mfile.open( QIODevice::ReadOnly | QIODevice::Text ) )
+		return setError( FS_ERROR, "Opening file "+mech );
 	
 	//start reading
 	QTextStream min(&mfile);
@@ -122,74 +118,82 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 	
 	buffer = buffer.left( buffer.indexOf("'") ).simplified();
 	
-	//read the number of species--already done in while loop above!
-	//buffer = getLine( min, linecounter );
+	//read the number of species
+	//buffer = getLine( min, linecounter ); // this is already done above
 	int numcpds = buffer.toInt(&ok);
-	if( !ok || numcpds<1){
-		setError( PARSE_ERROR, "Positive integer expected", linecounter );
-		return false;
-	}
+	if( !ok || numcpds<1)
+		return setError( PARSE_ERROR, "Positive integer expected", linecounter );
 	
 	//read the species
 	QStringList parts;
 	for(int i=0; i<numcpds; i++)
 	{
 		parts = getLine( min, linecounter ).split(' ');
-		if( parts.length()!=4 ) {
-			setError( PARSE_ERROR, "Wrong number of elements", linecounter );
-			return false;
-		}
-		message = "";
+		if( parts.length()!=4 )
+			return setError( PARSE_ERROR, "Wrong number of elements", linecounter );
 		Cpd *cpd = new Cpd();
+		
 		if( parts[0].length()>6 )
-			setError( PARSE_ERROR, "Short name too long (must be no more than 7 characters)", linecounter );
+			return setError( PARSE_ERROR, "Short name too long (must be no more than 7 characters)", linecounter );
 		cpd->setShortName( parts[0] );
 		if( !cpd->setState( parts[1] ) )
-			setError( PARSE_ERROR, "Invalid state identifier \"" + parts[1] + "\"", linecounter );
-		cpd->setThreshold( parts[2].toDouble() );
-		cpd->setSharpness( parts[3].toDouble() );
-		
-		if( message!="" )			
-			return false;
+			return setError( PARSE_ERROR, "Invalid state identifier \"" + parts[1] + "\"", linecounter );
+		cpd->setThreshold( parts[2].toDouble(&ok) );
+		if( !ok || cpd->threshold()<0 )
+			return setError( PARSE_ERROR, "Positive double expected in 3rd field", linecounter );
+		cpd->setSharpness( parts[3].toDouble(&ok) );
+		if( !ok || cpd->sharpness()<0 )
+			return setError( PARSE_ERROR, "Positive double expected in 4th field", linecounter );
 		
 		newmix.addCpd( cpd );
 	}
-	message = "";
 	
-	//read the number of species--already done in while loop above!
-	//buffer = getLine( min, linecounter );
-	int numcpds = buffer.toInt(&ok);
-	if( !ok || numcpds<1){
-		setError( PARSE_ERROR, "Positive integer expected", linecounter );
-		return false;
-	}
+	// read the number of steps
+	buffer = getLine( min, linecounter );
+	int numsteps = buffer.toInt(&ok);
+	if( !ok || numsteps<1)
+		return setError( PARSE_ERROR, "Positive integer expected", linecounter );
 	
-	//read the species
-	QStringList parts;
-	for(int i=0; i<numcpds; i++)
+	// read the steps
+	for(int i=0; i<numsteps; i++)
 	{
+		// get the line and split it
 		parts = getLine( min, linecounter ).split(' ');
-		if( parts.length()!=4 ) {
-			setError( PARSE_ERROR, "Wrong number of elements", linecounter );
-			return false;
+		if( parts.length()!=3 )
+			return setError( PARSE_ERROR, "Expected three elements", linecounter );
+		
+		// declare and name the new step
+		Step *step = new Step();
+		step->setName( QString("Step %1").arg(i+1) );
+		
+		// get the lists of reactants and products
+		if( parts[0].split(">").length()!=2 )
+			return setError( PARSE_ERROR, "Improperly formed step", linecounter );
+		QStringList reactants = parts[0].split(">")[0].split("+");
+		QStringList products  = parts[0].split(">")[1].split("+");
+		
+		if( reactants.length()>3 || products.length()>3 )
+			return setError( PARSE_ERROR, "No more than three reactants or products allowed", linecounter );
+		
+		// add the reactants and products
+		for( int i=0; i<reactants.size(); i++ ) {
+			if( !step->addReactant( newmix.getCpdById(reactants[i]) ) )
+				return setError( PARSE_ERROR, "Undefined species \"" + reactants[i] + "\"", linecounter );
 		}
-		message = "";
-		Cpd *cpd = new Cpd();
-		if( parts[0].length()>6 )
-			setError( PARSE_ERROR, "Short name too long (must be no more than 7 characters)", linecounter );
-		cpd->setShortName( parts[0] );
-		if( !cpd->setState( parts[1] ) )
-			setError( PARSE_ERROR, "Invalid state identifier \"" + parts[1] + "\"", linecounter );
-		cpd->setThreshold( parts[2].toDouble() );
-		cpd->setSharpness( parts[3].toDouble() );
+		for( int i=0; i<products.size(); i++ ) {
+			if( !step->addProduct( newmix.getCpdById(products[i]) ) )
+				return setError( PARSE_ERROR, "Undefined species \"" + reactants[i] + "\"", linecounter );
+		}
 		
-		if( message!="" )			
-			return false;
+		step->setKPlus( parts[1].toDouble(&ok) );
+		if( !ok || step->kPlus()<0 )
+			return setError( PARSE_ERROR, "Positive double expected in 2rd field", linecounter );
+		step->setKMinus( parts[2].toDouble(&ok) );
+		if( !ok || step->kPlus()<0 )
+			return setError( PARSE_ERROR, "Positive double expected in 3rd field", linecounter );
 		
-		newmix.addCpd( cpd );
-		qDebug() << ":D";
+		newmix.addStep( step );
 	}
-	message = "";	
 	
 	mix->clone( &newmix );
 	return true;
@@ -208,13 +212,16 @@ QString IOManager::getLine(QTextStream& txt, int &linecounter)
 	return ret;
 }
 
-void IOManager::setError( Status stat, QString errmsg, int linenum )
+// always returns false so that an error can be set with a single statement:
+//    return setError( <stat>, <errmsg>, <linenum> );
+bool IOManager::setError( Status stat, QString errmsg, int linenum )
 {
 	status = stat;
 	message = "Error";
 	if( linenum>=0 )
 		message += " (" + QString::number(linenum) + ")";
 	message += ": " + errmsg;
+	return false;
 }
 
 // save the currently loaded mechanism in XML format

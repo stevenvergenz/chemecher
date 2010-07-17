@@ -12,6 +12,7 @@ Cpd::Cpd() { Cpd::Cpd("", Cpd::HOMO); }
 Cpd::Cpd(QString n, Cpd::State s) : QObject(), shortname(n), longname(""),
 	cpd_state(s), thresh(0), sharp(0), trans(NONE), conc(0), saved_conc(0)
 {
+	qDebug() << ":D" << conc;
 	//initialize partial_concs
 	partial_conc[0] = 0; rate[0] = 0;
 	partial_conc[1] = 0; rate[1] = 0;
