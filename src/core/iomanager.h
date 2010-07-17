@@ -6,7 +6,7 @@
 #include <QFileInfo>
 #include <QTextStream>
 #include <QDateTime>
-#include <QXmlStreamWriter>
+#include <QtXml>
 #include <QStringList>
 #include <QString>
 

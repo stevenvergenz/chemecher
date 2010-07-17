@@ -136,7 +136,8 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 		if( parts[0].length()>6 )
 			return setError( PARSE_ERROR, "Short name too long (must be no more than 7 characters)", linecounter );
 		cpd->setShortName( parts[0] );
-		if( !cpd->setState( parts[1] ) )
+		cpd->setState( parts[1], ok );
+		if( !ok )
 			return setError( PARSE_ERROR, "Invalid state identifier \"" + parts[1] + "\"", linecounter );
 		cpd->setThreshold( parts[2].toDouble(&ok) );
 		if( !ok || cpd->threshold()<0 )
@@ -196,6 +197,7 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 	}
 	
 	mix->clone( &newmix );
+	status = LOADED_CM3;
 	return true;
 }
 
@@ -337,7 +339,6 @@ bool IOManager::saveToCM4(QString filename)
 
 	stream.writeEndElement(); //SimParams
 	
-	
 	stream.writeEndElement(); //Mechanism
 	
 	//finish writing
@@ -351,7 +352,71 @@ bool IOManager::saveToCM4(QString filename)
 
 bool IOManager::loadFromCM4(QString filename)
 {
-	
-	return false;
+	Mix* newmix = new Mix();
+
+	//open the simulation file
+	QFile sfile(filename);
+	if( !sfile.open( QFile::ReadOnly ) ){
+		status = FS_ERROR;
+		message = "Error opening file "+filename;
+		return false;
+	}
+
+	QDomDocument doc("mech");
+	status = PARSE_ERROR;
+
+	if( !doc.setContent(&sfile, &message) ){
+		sfile.close();
+		return false;
+	}
+
+	QDomElement ele = doc.documentElement();
+	if( ele.tagName()!="Mechanism") return false;
+	newmix->mechName = ele.attribute("name");
+	if( ele.elementsByTagName("MechDescription").isEmpty() ) return false;
+	newmix->mechDesc = ele.elementsByTagName("MechDescription").at(0).toElement().text();
+
+	/************** Read the species ***************/
+	if( ele.elementsByTagName("CpdList").isEmpty()) return false;
+	QDomNode cpdlist = ele.elementsByTagName("CpdList").at(0);
+	for(QDomNode cpd=cpdlist.firstChild(); cpd!=NULL; cpd=cpd.nextSibling())
+	{
+		// parse basic information
+		Cpd* newcpd = new Cpd(); bool ok;
+		newcpd->setShortName(cpd.toElement().attribute("name"));
+		newcpd->setState(cpd.toElement().attribute("state"), ok);
+		QDomNode child = cpd.firstChild();
+
+		// parse components of a compound
+		if(child.toElement().elementsByTagName("LongName").isEmpty()) return false;
+		newcpd->setLongName(child.toElement().attribute("value"));
+		child = child.nextSibling();
+		if(child.toElement().elementsByTagName("Concentration").isEmpty()) return false;
+		newcpd->setInitialConc(child.toElement().attribute("value"));
+		child = child.nextSibling();
+		if(child.toElement().elementsByTagName("Threshold").isEmpty()) return false;
+		newcpd->setThreshold(child.toElement().attribute("value").toDouble());
+		child = child.nextSibling();
+		if(child.toElement().elementsByTagName("Sharpness").isEmpty()) return false;
+		newcpd->setSharpness(child.toElement().attribute("value").toDouble());
+		child = child.nextSibling();
+		if(child.toElement().elementsByTagName("Transition").isEmpty()) return false;
+		newcpd->setTransition(child.toElement().attribute("value"));
+
+		// add the new cpd to the mix
+		newmix->CpdList.append(newcpd);
+	}
+
+	/****************** Read the Step List *********************/
+	if( ele.elementsByTagName("StepList").isEmpty() ) return false;
+	QDomNode steplist = ele.elementsByTagName("StepList").at(0);
+	for(QDomNode step=steplist.firstChild(); step!=NULL; step=step.nextSibling())
+	{
+
+	}
+
+	mix->clone(newmix);
+	status = LOADED_CM4;
+	return true;
 }
 

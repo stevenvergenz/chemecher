@@ -10,7 +10,7 @@ DEPENDPATH += . \
 INCLUDEPATH += . \
     src/gui \
     src/core
-QT += sql
+QT += sql xml
 
 # Input
 HEADERS += src/core/cpd.h \

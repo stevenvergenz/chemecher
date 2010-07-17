@@ -12,7 +12,6 @@ Cpd::Cpd() { Cpd::Cpd("", Cpd::HOMO); }
 Cpd::Cpd(QString n, Cpd::State s) : QObject(), shortname(n), longname(""),
 	cpd_state(s), thresh(0), sharp(0), trans(NONE), conc(0), saved_conc(0)
 {
-	qDebug() << ":D" << conc;
 	//initialize partial_concs
 	partial_conc[0] = 0; rate[0] = 0;
 	partial_conc[1] = 0; rate[1] = 0;
@@ -48,13 +47,15 @@ void Cpd::setLongName(QString s){ longname = s; emit longNameChanged(s);}
 Cpd::State Cpd::state(){ return cpd_state; }
 void Cpd::setState(Cpd::State s){ cpd_state = s; emit stateChanged((int)s);}
 void Cpd::setState(int s){ cpd_state = (State)s; emit stateChanged(s);}
-bool Cpd::setState(QString s) {
-	for( int i=0; i<6; i++ )
-		if( s==STATES[i] ) {
-			setState(i);
-			return true;
-		}
-	return false;
+void Cpd::setState(QString s, bool& ok){
+	ok = true;
+	if     (s=="(.)") cpd_state = HOMO;
+	else if(s=="(*)") cpd_state = HETERO;
+	else if(s=="(aq)")cpd_state = AQ;
+	else if(s=="(l)") cpd_state = L;
+	else if(s=="(g)") cpd_state = G;
+	else{ ok = false; }
+	if( ok ) emit stateChanged( (int)cpd_state );
 }
 
 //theshold
@@ -69,13 +70,10 @@ void Cpd::setSharpness(double s){ sharp = s; emit sharpnessChanged(s);}
 Cpd::Transition Cpd::transition(){ return trans; }
 void Cpd::setTransition(Transition t){ trans = t; emit transitionChanged((int)t);}
 void Cpd::setTransition(int t){ trans = (Transition)t; emit transitionChanged(t);}
-bool Cpd::setTransition(QString t) {
-	for( int i=0; i<3; i++ )
-		if( t==TRANS[i] ) {
-			setTransition(i);
-			return true;
-		}
-	return false;
+void Cpd::setTransition(QString s){
+	if(s=="none") thresh = NONE;
+	else if(s=="linear") thresh = LINEAR;
+	else if(s=="atan") thresh = ATAN;
 }
 
 //initial concentration
