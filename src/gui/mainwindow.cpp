@@ -468,7 +468,25 @@ void MainWindow::saveToCM4()
 
 void MainWindow::loadFromCM4()
 {
+	QFileDialog load(this);
+	load.setAcceptMode(QFileDialog::AcceptOpen);
+	load.setFileMode( QFileDialog::ExistingFile );
+	QString mech;
 	
+	// get the mechanism filename
+	load.setFilter("CheMecher4 files (*.cm4);;All files (*.*)");
+	load.setWindowTitle("Mechanism File");
+	load.setDirectory(QDir::current().path()+"/../input");
+	if( !load.exec() )
+		return;
+	mech = load.selectedFiles()[0];
+	if( mech=="" )
+		return;
+	
+	// load the file
+	if( !iomgr->loadFromCM4( mech ) ){
+		QMessageBox::critical(this, "Chemecher 4", "Failed to load file: "+iomgr->getMessage());
+	}
 }
 
 void MainWindow::saveToCM3()

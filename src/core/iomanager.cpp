@@ -352,7 +352,7 @@ bool IOManager::saveToCM4(QString filename)
 
 bool IOManager::loadFromCM4(QString filename)
 {
-	Mix* newmix = new Mix();
+	Mix newmix;
 
 	//open the simulation file
 	QFile sfile(filename);
@@ -362,24 +362,35 @@ bool IOManager::loadFromCM4(QString filename)
 		return false;
 	}
 
+	/*
+	  The doc.setContent() function actually loads the file into a tree structure composed of QDomNodes.
+	*/
 	QDomDocument doc("mech");
-	status = PARSE_ERROR;
-
 	if( !doc.setContent(&sfile, &message) ){
 		sfile.close();
+		setError(PARSE_ERROR, "Could not parse document");
 		return false;
 	}
 
 	QDomElement ele = doc.documentElement();
-	if( ele.tagName()!="Mechanism") return false;
-	newmix->mechName = ele.attribute("name");
-	if( ele.elementsByTagName("MechDescription").isEmpty() ) return false;
-	newmix->mechDesc = ele.elementsByTagName("MechDescription").at(0).toElement().text();
+	if( ele.tagName()!="Mechanism"){
+		setError(PARSE_ERROR, "Expected \"Mechanism\"");
+		return false;
+	}
+	newmix.mechName = ele.attribute("name");
+	if( ele.elementsByTagName("MechDescription").isEmpty() ){
+		setError(PARSE_ERROR, "Expected \"Mechanism\"");
+		return false;
+	}
+	newmix.mechDesc = ele.elementsByTagName("MechDescription").at(0).toElement().text();
 
 	/************** Read the species ***************/
-	if( ele.elementsByTagName("CpdList").isEmpty()) return false;
+	if( ele.elementsByTagName("CpdList").isEmpty()){
+		setError(PARSE_ERROR, "Expected \"CpdList\"");
+		return false;
+	}
 	QDomNode cpdlist = ele.elementsByTagName("CpdList").at(0);
-	for(QDomNode cpd=cpdlist.firstChild(); cpd!=NULL; cpd=cpd.nextSibling())
+	for(QDomNode cpd=cpdlist.firstChild(); !cpd.isNull(); cpd=cpd.nextSibling())
 	{
 		// parse basic information
 		Cpd* newcpd = new Cpd(); bool ok;
@@ -388,35 +399,53 @@ bool IOManager::loadFromCM4(QString filename)
 		QDomNode child = cpd.firstChild();
 
 		// parse components of a compound
-		if(child.toElement().elementsByTagName("LongName").isEmpty()) return false;
+		if(child.toElement().tagName()!="LongName"){
+			setError(PARSE_ERROR, "Expected \"LongName\", got \""+child.toElement().tagName()+"\"");
+			return false;
+		}
 		newcpd->setLongName(child.toElement().attribute("value"));
 		child = child.nextSibling();
-		if(child.toElement().elementsByTagName("Concentration").isEmpty()) return false;
+		if(child.toElement().tagName()!="Concentration"){
+			setError(PARSE_ERROR, "Expected \"Concentration\", got \""+child.toElement().tagName()+"\"");
+			return false;
+		}
 		newcpd->setInitialConc(child.toElement().attribute("value"));
 		child = child.nextSibling();
-		if(child.toElement().elementsByTagName("Threshold").isEmpty()) return false;
+		if(child.toElement().tagName()!="Threshold"){
+			setError(PARSE_ERROR, "Expected \"Threshold\", got \""+child.toElement().tagName()+"\"");
+			return false;
+		}
 		newcpd->setThreshold(child.toElement().attribute("value").toDouble());
 		child = child.nextSibling();
-		if(child.toElement().elementsByTagName("Sharpness").isEmpty()) return false;
+		if(child.toElement().tagName()!="Sharpness"){
+			setError(PARSE_ERROR, "Expected \"Sharpness\", got \""+child.toElement().tagName()+"\"");
+			return false;
+		}
 		newcpd->setSharpness(child.toElement().attribute("value").toDouble());
 		child = child.nextSibling();
-		if(child.toElement().elementsByTagName("Transition").isEmpty()) return false;
+		if(child.toElement().tagName()!="Transition"){
+			setError(PARSE_ERROR, "Expected \"Transition\", got \""+child.toElement().tagName()+"\"");
+			return false;
+		}
 		newcpd->setTransition(child.toElement().attribute("value"));
 
 		// add the new cpd to the mix
-		newmix->CpdList.append(newcpd);
+		newmix.CpdList.append(newcpd);
 	}
 
 	/****************** Read the Step List *********************/
-	if( ele.elementsByTagName("StepList").isEmpty() ) return false;
+	if( ele.elementsByTagName("StepList").isEmpty() ){
+		setError(PARSE_ERROR, "Expected \"StepList\"");
+		return false;
+	}
 	QDomNode steplist = ele.elementsByTagName("StepList").at(0);
-	for(QDomNode step=steplist.firstChild(); step!=NULL; step=step.nextSibling())
+	for(QDomNode step=steplist.firstChild(); !step.isNull(); step=step.nextSibling())
 	{
 
 	}
 
-	mix->clone(newmix);
-	status = LOADED_CM4;
+	mix->clone(&newmix);
+	setError(LOADED_CM4, "Loaded successfully");
 	return true;
 }
 

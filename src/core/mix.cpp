@@ -100,8 +100,11 @@ Step* Mix::getStepByName(QString name)
 
 void Mix::clone(Mix* newmix)
 {
-	StepList = newmix->StepList;
-	CpdList = newmix->CpdList;
+	//deep copy both lists
+	StepList.clear();
+	StepList.append(newmix->StepList);
+	CpdList.clear();
+	CpdList.append(newmix->CpdList);
 
 	//current mix identifiers
 	mechName = newmix->mechName;
