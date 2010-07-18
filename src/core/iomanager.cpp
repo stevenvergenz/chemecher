@@ -482,13 +482,74 @@ bool IOManager::loadFromCM4(QString filename)
 		child = child.nextSibling();
 	}
 
-	// parse the parameter list
+	/****************** Read the Parameter List *********************/
 	if( ele.elementsByTagName("SimParams").isEmpty() )
 		return setError(PARSE_ERROR, "Expected \"SimParams\"");
-	QDomNode param = ele.elementsByTagName("StepList").at(0).firstChild();
+	QDomNode param = ele.elementsByTagName("SimParams").at(0).firstChild();
+	
+	if( param.toElement().tagName() != "TimeStep" )
+		return setError(PARSE_ERROR, "Expected \"TimeStep\", got \""+param.toElement().tagName()+"\"", param.lineNumber());
+	newmix.timeStep = param.toElement().attribute("value").toDouble();
+	param = param.nextSibling();
+	if( param.toElement().tagName() != "ReportStep" )
+		return setError(PARSE_ERROR, "Expected \"ReportStep\", got \""+param.toElement().tagName()+"\"", param.lineNumber());
+	newmix.reportStep = param.toElement().attribute("value").toDouble();
+	param = param.nextSibling();
+	if( param.toElement().tagName() != "StartTime" )
+		return setError(PARSE_ERROR, "Expected \"StartTime\", got \""+param.toElement().tagName()+"\"", param.lineNumber());
+	newmix.startTime = param.toElement().attribute("value").toDouble();
+	param = param.nextSibling();
+	if( param.toElement().tagName() != "EndTime" )
+		return setError(PARSE_ERROR, "Expected \"EndTime\", got \""+param.toElement().tagName()+"\"", param.lineNumber());
+	newmix.endTime = param.toElement().attribute("value").toDouble();
+	param = param.nextSibling();
+	if( param.toElement().tagName() != "DebugStart" )
+		return setError(PARSE_ERROR, "Expected \"DebugStart\", got \""+param.toElement().tagName()+"\"", param.lineNumber());
+	newmix.debugStart = param.toElement().attribute("value").toDouble();
+	param = param.nextSibling();
+	if( param.toElement().tagName() != "DebugEnd" )
+		return setError(PARSE_ERROR, "Expected \"DebugEnd\", got \""+param.toElement().tagName()+"\"", param.lineNumber());
+	newmix.debugEnd = param.toElement().attribute("value").toDouble();
+	param = param.nextSibling();
+	if( param.toElement().tagName() != "Precision" )
+		return setError(PARSE_ERROR, "Expected \"Precision\", got \""+param.toElement().tagName()+"\"", param.lineNumber());
+	newmix.precision = param.toElement().attribute("value").toDouble();
+	param = param.nextSibling();
+	if( param.toElement().tagName() != "Order" )
+		return setError(PARSE_ERROR, "Expected \"Order\", got \""+param.toElement().tagName()+"\"", param.lineNumber());
+	newmix.order = param.toElement().attribute("value").toInt();
+	param = param.nextSibling();
+	if( param.toElement().tagName() != "Method" )
+		return setError(PARSE_ERROR, "Expected \"Method\", got \""+param.toElement().tagName()+"\"", param.lineNumber());
+	newmix.method = param.toElement().attribute("value");
+	param = param.nextSibling();
+	if( param.toElement().tagName() != "Transition" )
+		return setError(PARSE_ERROR, "Expected \"Transition\", got \""+param.toElement().tagName()+"\"", param.lineNumber());
+	newmix.transition = param.toElement().attribute("value");
+	param = param.nextSibling();
+	if( param.toElement().tagName() != "Autostep" )
+		return setError(PARSE_ERROR, "Expected \"Autostep\", got \""+param.toElement().tagName()+"\"", param.lineNumber());
+	newmix.autostep = param.toElement().attribute("value")=="true";
+	param = param.nextSibling();
+	if( param.toElement().tagName() != "GateBand" )
+		return setError(PARSE_ERROR, "Expected \"GateBand\", got \""+param.toElement().tagName()+"\"", param.lineNumber());
+	newmix.gateband = param.toElement().attribute("value").toDouble();
+	param = param.nextSibling();
+	if( param.toElement().tagName() != "ShiftTest" )
+		return setError(PARSE_ERROR, "Expected \"ShiftTest\", got \""+param.toElement().tagName()+"\"", param.lineNumber());
+	newmix.shifttest = param.toElement().attribute("value").toInt();
+	param = param.nextSibling();
+	if( param.toElement().tagName() != "MaxReduce" )
+		return setError(PARSE_ERROR, "Expected \"MaxReduce\", got \""+param.toElement().tagName()+"\"", param.lineNumber());
+	newmix.maxreduce = param.toElement().attribute("value").toInt();
+	param = param.nextSibling();
+	if( param.toElement().tagName() != "StepFactor" )
+		return setError(PARSE_ERROR, "Expected \"StepFactor\", got \""+param.toElement().tagName()+"\"", param.lineNumber());
+	newmix.stepfactor = param.toElement().attribute("value").toDouble();
+	param = param.nextSibling();
 	
 	
-	
+	// finally done loading!
 	mix->clone(&newmix);
 	setError(LOADED_CM4, "Loaded successfully");
 	return true;
