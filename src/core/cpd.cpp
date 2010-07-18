@@ -48,7 +48,7 @@ Cpd::State Cpd::state(){ return cpd_state; }
 void Cpd::setState(Cpd::State s){ cpd_state = s; emit stateChanged((int)s);}
 void Cpd::setState(int s){ cpd_state = (State)s; emit stateChanged(s);}
 bool Cpd::setState(QString s, bool *ok ){
-	for( int i=0; i<STATES->length(); i++ )
+	for( int i=0; i<6; i++ )
 		if( s==STATES[i] ) {
 			cpd_state = (State)i;
 			emit stateChanged(i);

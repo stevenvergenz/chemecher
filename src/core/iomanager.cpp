@@ -532,8 +532,8 @@ bool IOManager::loadFromCM4(QString filename)
 		return setError(PARSE_ERROR, "Expected \"Autostep\", got \""+param.toElement().tagName()+"\"", param.lineNumber());
 	newmix.autostep = param.toElement().attribute("value")=="true";
 	param = param.nextSibling();
-	if( param.toElement().tagName() != "GateBand" )
-		return setError(PARSE_ERROR, "Expected \"GateBand\", got \""+param.toElement().tagName()+"\"", param.lineNumber());
+	if( param.toElement().tagName() != "Gateband" )
+		return setError(PARSE_ERROR, "Expected \"Gateband\", got \""+param.toElement().tagName()+"\"", param.lineNumber());
 	newmix.gateband = param.toElement().attribute("value").toDouble();
 	param = param.nextSibling();
 	if( param.toElement().tagName() != "ShiftTest" )
