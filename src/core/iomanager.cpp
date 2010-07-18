@@ -400,6 +400,7 @@ bool IOManager::loadFromCM4(QString filename)
 		Cpd* newcpd = new Cpd(); bool ok;
 		newcpd->setShortName(cpd.toElement().attribute("name"));
 		newcpd->setState(cpd.toElement().attribute("state"), &ok);
+		if(!ok) return setError(ERROR, "Invalid state: "+cpd.toElement().attribute("state"), cpd.lineNumber());
 		QDomNode child = cpd.firstChild();
 
 		// parse components of a compound
