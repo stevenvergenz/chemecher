@@ -381,10 +381,10 @@ bool IOManager::loadFromCM4(QString filename)
 
 	QDomElement ele = doc.documentElement();
 	if( ele.tagName()!="Mechanism")
-		return setError(PARSE_ERROR, "Expected \"Mechanism\"");
+		return setError(PARSE_ERROR, "Expected \"Mechanism\"", ele.lineNumber());
 	newmix.mechName = ele.attribute("name");
 	if( ele.elementsByTagName("MechDescription").isEmpty() )
-		return setError(PARSE_ERROR, "Expected \"Mechanism\"");
+		return setError(PARSE_ERROR, "Expected \"MechDescription\"");
 	newmix.mechDesc = ele.elementsByTagName("MechDescription").at(0).toElement().text();
 
 	/************** Read the species ***************/
@@ -404,23 +404,23 @@ bool IOManager::loadFromCM4(QString filename)
 
 		// parse components of a compound
 		if(child.toElement().tagName()!="LongName")
-			return setError(PARSE_ERROR, "Expected \"LongName\", got \""+cpd.toElement().tagName()+"\"");
+			return setError(PARSE_ERROR, "Expected \"LongName\", got \""+cpd.toElement().tagName()+"\"", child.lineNumber());
 		newcpd->setLongName(child.toElement().attribute("value"));
 		child = child.nextSibling();
 		if(child.toElement().tagName()!="Concentration")
-			return setError(PARSE_ERROR, "Expected \"Concentration\", got \""+child.toElement().tagName()+"\"");
+			return setError(PARSE_ERROR, "Expected \"Concentration\", got \""+child.toElement().tagName()+"\"", child.lineNumber());
 		newcpd->setInitialConc(child.toElement().attribute("value"));
 		child = child.nextSibling();
 		if(child.toElement().tagName()!="Threshold")
-			return setError(PARSE_ERROR, "Expected \"Threshold\", got \""+child.toElement().tagName()+"\"");
+			return setError(PARSE_ERROR, "Expected \"Threshold\", got \""+child.toElement().tagName()+"\"", child.lineNumber());
 		newcpd->setThreshold(child.toElement().attribute("value").toDouble());
 		child = child.nextSibling();
 		if(child.toElement().tagName()!="Sharpness")
-			return setError(PARSE_ERROR, "Expected \"Sharpness\", got \""+child.toElement().tagName()+"\"");
+			return setError(PARSE_ERROR, "Expected \"Sharpness\", got \""+child.toElement().tagName()+"\"", child.lineNumber());
 		newcpd->setSharpness(child.toElement().attribute("value").toDouble());
 		child = child.nextSibling();
 		if(child.toElement().tagName()!="Transition")
-			return setError(PARSE_ERROR, "Expected \"Transition\", got \""+child.toElement().tagName()+"\"");
+			return setError(PARSE_ERROR, "Expected \"Transition\", got \""+child.toElement().tagName()+"\"", child.lineNumber());
 		newcpd->setTransition(child.toElement().attribute("value"));
 
 		// add the new cpd to the mix
@@ -434,16 +434,61 @@ bool IOManager::loadFromCM4(QString filename)
 	for(QDomNode step=steplist.firstChild(); !step.isNull(); step=step.nextSibling())
 	{
 		if( step.toElement().tagName()!="Step" )
-			return setError(PARSE_ERROR, "Expected \"Step\", got \""+step.toElement().tagName()+"\"");
+			return setError(PARSE_ERROR, "Expected \"Step\", got \""+step.toElement().tagName()+"\"", step.lineNumber());
 		
 		// parse essential data
 		Step* newstep = new Step();
 		newstep->setName( step.toElement().attribute("name") );
 		
 		// parse properties of the step
+		QDomNode child = step.firstChild();
+		if( child.toElement().tagName() != "Description" )
+			return setError(PARSE_ERROR, "Expected \"Description\", got \""+child.toElement().tagName()+"\"", child.lineNumber());
+		newstep->setDesc( child.toElement().text() );
+		child = child.nextSibling();
+		if( child.toElement().tagName() != "RatePlus" )
+			return setError(PARSE_ERROR, "Expected \"RatePlus\", got \""+child.toElement().tagName()+"\"", child.lineNumber());
+		newstep->setKPlus( child.toElement().attribute("value") );
+		child = child.nextSibling();
+		if( child.toElement().tagName() != "RateMinus" )
+			return setError(PARSE_ERROR, "Expected \"RateMinus\", got \""+child.toElement().tagName()+"\"", child.lineNumber());
+		newstep->setKMinus( child.toElement().attribute("value") );
+		child = child.nextSibling();
 		
+		// parse the reactant list
+		if( child.toElement().tagName() != "ReactantList" )
+			return setError(PARSE_ERROR, "Expected \"ReactantList\", got \""+child.toElement().tagName()+"\"", child.lineNumber());
+		for(QDomNode reactant=child.firstChild(); !reactant.isNull(); reactant=reactant.nextSibling())
+		{
+			if( reactant.toElement().tagName() != "Reactant" )
+				return setError(PARSE_ERROR, "Expected \"Reactant\", got \""+reactant.toElement().tagName()+"\"", reactant.lineNumber());
+			Cpd* temp = newmix.getCpdById( reactant.toElement().attribute("id") );
+			if( temp!=NULL ) newstep->addReactant(temp);
+			else return setError(ERROR, reactant.toElement().attribute("id")+" not found!", reactant.lineNumber());
+		}
+		child = child.nextSibling();
+		
+		// parse the product list
+		if( child.toElement().tagName() != "ProductList" )
+			return setError(PARSE_ERROR, "Expected \"ProductList\", got \""+child.toElement().tagName()+"\"", child.lineNumber());
+		for(QDomNode product=child.firstChild(); !product.isNull(); product=product.nextSibling())
+		{
+			if( product.toElement().tagName() != "Product" )
+				return setError(PARSE_ERROR, "Expected \"Product\", got \""+product.toElement().tagName()+"\"", product.lineNumber());
+			Cpd* temp = newmix.getCpdById( product.toElement().attribute("id") );
+			if( temp!=NULL ) newstep->addProduct(temp);
+			else return setError(ERROR, product.toElement().attribute("id")+" not found!", product.lineNumber());
+		}
+		child = child.nextSibling();
 	}
 
+	// parse the parameter list
+	if( ele.elementsByTagName("SimParams").isEmpty() )
+		return setError(PARSE_ERROR, "Expected \"SimParams\"");
+	QDomNode param = ele.elementsByTagName("StepList").at(0).firstChild();
+	
+	
+	
 	mix->clone(&newmix);
 	setError(LOADED_CM4, "Loaded successfully");
 	return true;
