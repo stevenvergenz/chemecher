@@ -117,7 +117,20 @@ void Mix::clone(Mix* newmix)
 	endTime = newmix->endTime;
 	debugStart = newmix->debugStart;
 	debugEnd = newmix->debugEnd;
+	
+	//accuracy data
+	precision = newmix->precision;
 
+	//legacy parameters
+	order = newmix->order;
+	method = newmix->method;
+	transition = newmix->transition;
+	autostep = newmix->autostep;
+	gateband = newmix->gateband;
+	shifttest = newmix->shifttest;
+	maxreduce = newmix->maxreduce;
+	stepfactor = newmix->stepfactor;
+	
 	// sql data
 	db = newmix->db;
 

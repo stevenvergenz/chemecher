@@ -22,14 +22,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	stepMapper->setMapping( ui.actEditStep, "EditStep" );
 	connect( stepMapper, SIGNAL(mapped(QString)), this, SLOT(showStepWindow(QString)) );
 	
-	
-	// cpd list drag&drop stuff
-	//ui.lstCpds = ui.lstCpds;
-	/*ui.lstCpds = new DragListWidget(ui.fraCpds);
-	ui.lstCpds->setSizePolicy(ui.lstSteps->sizePolicy());
-	ui.cpdLayout->addWidget(ui.lstCpds, 1,0,2,2, Qt::AlignLeft);*/
-	//ui.lstCpds->show();
-	
 	///////////////////
 	// SIGNALS/SLOTS //
 	///////////////////
@@ -54,8 +46,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect( ui.actDeleteStep,     SIGNAL(triggered()), this,       SLOT(deleteStep())     );
 	connect( ui.actDeleteAllSteps, SIGNAL(triggered()), this,       SLOT(deleteAllSteps()) );
 	
-	// keyboard shortcuts
-	
 	// sim parameters
 	
 	
@@ -67,7 +57,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect(ui.lstCpds, SIGNAL(cellDoubleClicked(int,int)), this, SLOT(cpdListDoubleClicked(int,int)) );
 	connect(ui.pushMoveCpdUp,   SIGNAL(clicked()), ui.actMvCpdUp,   SLOT(trigger()) );
 	connect(ui.pushMoveCpdDown, SIGNAL(clicked()), ui.actMvCpdDown, SLOT(trigger()) );
-	
 	connect(mix, SIGNAL(cpdListChanged()), this, SLOT(updateCpdList()));
 	connect(ui.lstCpds, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(setCpdInitConc(QTableWidgetItem*)) );
 	
@@ -78,7 +67,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect(ui.lstSteps, SIGNAL(cellDoubleClicked(int,int)), ui.actEditStep, SLOT(trigger()) );
 	connect(ui.pushMoveStepUp,   SIGNAL(clicked()), ui.actMvStepUp, SLOT(trigger()) );
 	connect(ui.pushMoveStepDown, SIGNAL(clicked()), ui.actMvStepDown, SLOT(trigger()));
-	
 	connect(mix, SIGNAL(stepListChanged()), this, SLOT(updateStepList()));
 	
 	// file menu
@@ -111,6 +99,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 /** DEBUG MODE ONLY -- DISABLE FOR ACTUAL BUILD **/
 void MainWindow::initTestMech()
 {
+	return;
+	
 	// uncomment next line to disable
 	iomgr->loadFromCM3(
 			"/home/vergenz/programming/chemecher/input/TestMech.txt",
@@ -196,7 +186,7 @@ void MainWindow::showCpdWindow( QString action )
   */
 void MainWindow::cpdListDoubleClicked(int r, int c)
 {
-	if( c==0 )
+	if( c==0 && r>-1 )
 		showCpdWindow( "EditCpd" );
 }
 
@@ -278,7 +268,6 @@ void MainWindow::updateCpdList()
 		QTableWidgetItem *id = new QTableWidgetItem( mix->CpdList[i]->toString() );
 		id->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
 		ui.lstCpds->setItem( i,0, id );
-		qDebug() << mix->CpdList[i]->initialConc() << QString::number(mix->CpdList[i]->initialConc());
 		QTableWidgetItem *conc = new QTableWidgetItem( QString::number(mix->CpdList[i]->initialConc()) );
 		conc->setFlags( Qt::ItemIsEnabled | Qt::ItemIsEditable );\
 		conc->setTextAlignment( Qt::AlignRight );
@@ -296,11 +285,8 @@ void MainWindow::setCpdInitConc( QTableWidgetItem* item )
 	
 	// set variables (to make code more readable ;) )
 	Cpd *cpd = mix->getCpdById(	item->tableWidget()->item(item->row(), 0)->text() );
-	
 	bool ok = true;
 	double dispconc = item->text().toDouble(&ok);
-	
-	qDebug() << dispconc << ok;
 	
 	// if not valid
 	if( !ok || dispconc<0 ) {

@@ -713,10 +713,10 @@ bool IOManager::setError( Status stat, QString errmsg, int linenum, QString file
     given a QStringList of lines to be outputted, modifies the
     list to line up the whitespace in the lines
 	
-     pre:  A  (.) 1.94 0
+     pre:  A (.) 1.94 0
            Bo (.) 0 1.99
-           C  (aq) 0.023 0
-           D  (.) 0 0
+           C (aq) 0.023 0
+           D (.) 0 0
      post: A  (.)  1.94  0
            Bo (.)  0     1.99
            C  (aq) 0.023 0
