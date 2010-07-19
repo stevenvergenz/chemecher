@@ -75,6 +75,7 @@ bool IOManager::saveToCM3(QString mech, QString sim)
 	sOut << "'initial concentrations" << endl;
 	sOut << "'any species not listed are assumed to have an initial concentration of zero" << endl;
 	for(int i=0; i<mix->CpdList.size(); i++)
+		if(mix->CpdList[i]->initialConc() == 0) continue;
 		sOut << mix->CpdList[i]->toString()
 		<< QString().fill(' ',mix->maxCpdIdLen()+1-mix->CpdList[i]->toString().length())
 		<< mix->CpdList[i]->initialConc() << endl;
@@ -481,6 +482,9 @@ bool IOManager::loadFromCM4(QString filename)
 			else return setError(ERROR, product.toElement().attribute("id")+" not found!", product.lineNumber());
 		}
 		child = child.nextSibling();
+		
+		// lol, forgot to add the step to the mix
+		newmix.addStep( newstep );
 	}
 
 	/****************** Read the Parameter List *********************/
