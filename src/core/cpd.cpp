@@ -27,8 +27,8 @@ const QString Cpd::toString(){
 }
 
 const QString Cpd::tov3String(){
-	return shortname           + QString().fill(' ',mix->maxCpdNameLen()+1-shortname.length()) + 
-		STATES[(int)cpd_state] + QString().fill(' ',mix->maxStateLen()+1-STATES[(int)cpd_state].length()) + 
+	return shortname           + " " + //QString().fill(' ',mix->maxCpdNameLen()+1-shortname.length()) + 
+		STATES[(int)cpd_state] + " " + //QString().fill(' ',mix->maxStateLen()+1-STATES[(int)cpd_state].length()) + 
 		(isHomo() ? "0 0" : QString("%1 %2").arg(thresh).arg(sharp) );
 }
 

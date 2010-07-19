@@ -111,6 +111,10 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 void MainWindow::initTestMech()
 {
 	// uncomment next line to disable
+	iomgr->loadFromCM3(
+			"/home/vergenz/programming/chemecher/input/TestMech.txt",
+			"/home/vergenz/programming/chemecher/input/TestSim.txt");
+	
 	return;
 	
 	Cpd* cpd_a = mix->addCpd(new Cpd("A", Cpd::HOMO ));
@@ -577,13 +581,28 @@ void MainWindow::loadFromCM3()
 	// check for uniqueness
 	if( mech==sim ) {
 		QMessageBox::warning ( this, "CheMecher",
-				"Mechanism and simulation files must be different!",
-				QMessageBox::Ok ) ;
+				"Mechanism and simulation files must be different!") ;
 		return;
 	}
 	
 	// load the file
-	iomgr->loadFromCM3( mech, sim );
+	if( !iomgr->loadFromCM3( mech, sim ) ) {
+		QString title = "CheMecher";
+		switch( iomgr->getStatus() ) {
+		case IOManager::FS_ERROR:
+			title = "Filesystem Error";
+			break;
+		case IOManager::PARSE_ERROR:
+			title = "Parse Error";
+			break;
+		case IOManager::ERROR:
+			title = "Error";
+			break;
+		default:
+			break;
+		}
+		QMessageBox::critical( this, title, iomgr->getMessage() );
+	}
 }
 
 void MainWindow::saveMechDb()

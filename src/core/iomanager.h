@@ -20,7 +20,20 @@ public:
 	enum Status{ NOT_LOADED=0, LOADED_CM3, LOADED_CM4, PARSE_ERROR, FS_ERROR, ERROR };
 
 	IOManager();
-
+	
+	// store information about entries into simulation file
+	enum SimEntry_types{ v_bool, v_double, v_int, v_order, v_method, v_trans };
+	typedef struct {
+		SimEntry_types vtype;
+		union {
+			int *intval;
+			double *doubleval;
+			bool *boolval;
+			QString *stringval;
+		};
+		bool entered;
+	} SimEntry;
+	
 	bool saveToCM3(QString mech, QString sim);
 	bool loadFromCM3(QString mech, QString sim);
 
@@ -29,10 +42,12 @@ public:
 
 	Status getStatus() {return status;}
 	QString getMessage() {return message;}
+	
+	void lineUpWhitespace( QList<QString> &lines, int numcols );
 
 private:
 	QString getLine( QTextStream& txt, int &linecounter );
-	bool setError( Status stat, QString errmsg, int linenum=-1 );
+	bool setError( Status stat, QString errmsg, int linenum=-1, QString filename="" );
 	
 	Status status;
 	QString message;
