@@ -49,6 +49,7 @@ public slots:
 	
 	// cpd editing stuff
 	void showCpdWindow( QString action );
+	void cpdListDoubleClicked( int r, int c );
 	void deleteCpd( int pos = -1 );
 	void deleteAllCpds();
 	void moveCpdUp();

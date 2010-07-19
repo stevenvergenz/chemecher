@@ -63,12 +63,13 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect(ui.pushAddCpd,    SIGNAL(clicked()), ui.actAddCpd,    SLOT(trigger()) );
 	connect(ui.pushEditCpd,   SIGNAL(clicked()), ui.actEditCpd,   SLOT(trigger()) );
 	connect(ui.pushDeleteCpd, SIGNAL(clicked()), ui.actDeleteCpd, SLOT(trigger()) );
-	connect(ui.lstCpds, SIGNAL(cellDoubleClicked(int,int)), ui.actEditCpd, SLOT(trigger()) );
+	//connect(ui.lstCpds, SIGNAL(cellDoubleClicked(int,int)), ui.actEditCpd, SLOT(trigger()) );
+	connect(ui.lstCpds, SIGNAL(cellDoubleClicked(int,int)), this, SLOT(cpdListDoubleClicked(int,int)) );
 	connect(ui.pushMoveCpdUp,   SIGNAL(clicked()), ui.actMvCpdUp,   SLOT(trigger()) );
 	connect(ui.pushMoveCpdDown, SIGNAL(clicked()), ui.actMvCpdDown, SLOT(trigger()) );
 	
 	connect(mix, SIGNAL(cpdListChanged()), this, SLOT(updateCpdList()));
-	//connect(ui.lstCpds, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(setCpdInitConc(QTableWidgetItem*)) );
+	connect(ui.lstCpds, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(setCpdInitConc(QTableWidgetItem*)) );
 	
 	// step
 	connect(ui.pushAddStep,    SIGNAL(clicked()), ui.actAddStep,    SLOT(trigger()) );
@@ -189,6 +190,16 @@ void MainWindow::showCpdWindow( QString action )
 	purgeWindowTypes();
 }
 
+/** cpdListDoubleClicked
+  * Called when user double-clicks the cpd list
+  * Ensures that CpdWindow does not come up when editing concentration
+  */
+void MainWindow::cpdListDoubleClicked(int r, int c)
+{
+	if( c==0 )
+		showCpdWindow( "EditCpd" );
+}
+
 /** removeCpd
   * Removes the currently selected compound from the list.
   */
@@ -267,6 +278,7 @@ void MainWindow::updateCpdList()
 		QTableWidgetItem *id = new QTableWidgetItem( mix->CpdList[i]->toString() );
 		id->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
 		ui.lstCpds->setItem( i,0, id );
+		qDebug() << mix->CpdList[i]->initialConc() << QString::number(mix->CpdList[i]->initialConc());
 		QTableWidgetItem *conc = new QTableWidgetItem( QString::number(mix->CpdList[i]->initialConc()) );
 		conc->setFlags( Qt::ItemIsEnabled | Qt::ItemIsEditable );\
 		conc->setTextAlignment( Qt::AlignRight );
@@ -283,8 +295,18 @@ void MainWindow::setCpdInitConc( QTableWidgetItem* item )
 		return;
 	
 	// set variables (to make code more readable ;) )
-	double dispconc = item->text().toDouble();
 	Cpd *cpd = mix->getCpdById(	item->tableWidget()->item(item->row(), 0)->text() );
+	
+	bool ok = true;
+	double dispconc = item->text().toDouble(&ok);
+	
+	qDebug() << dispconc << ok;
+	
+	// if not valid
+	if( !ok || dispconc<0 ) {
+		item->setText( QString::number(cpd->initialConc()) );
+		return;
+	}
 	
 	if( dispconc != cpd->initialConc() )
 		cpd->setInitialConc( dispconc );

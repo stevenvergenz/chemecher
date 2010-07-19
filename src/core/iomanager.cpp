@@ -310,10 +310,13 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 			
 		// if it's a method
 		case v_method:
-			/** NEED TO FINISH **/
-			ok = ( true /** PUT POSSIBLE METHODS HERE **/  );
+			QStringList methods = ( QStringList()
+					<< "euler" << "modified euler" << "heun" << "ralston"
+					<< "runge-kutta" << "runge" << "kutta" << "gill"
+			);
+			ok = methods.contains(v);
 			if( !ok )
-				return setError( PARSE_ERROR, "", linecounter, QFileInfo(sim).fileName() );
+				return setError( PARSE_ERROR, "Method must be one of the following: \""+methods.join("\", \"")+"\"", linecounter, QFileInfo(sim).fileName() );
 			else
 				*ents[k].stringval = v;
 			break;

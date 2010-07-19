@@ -7,11 +7,23 @@ bool Cpd::isHomo(){ return cpd_state==HOMO || cpd_state==AQ || cpd_state==G; }
 bool Cpd::isHetero(){ return !isHomo(); }
 
 // base constructor calls the other constructor with default parameters
-Cpd::Cpd() { Cpd::Cpd("", Cpd::HOMO); }
+Cpd::Cpd() : QObject(), shortname(""), longname(""),
+cpd_state(Cpd::HOMO), thresh(0), sharp(0), trans(NONE), conc(0), saved_conc(0)
+{
+	setInitialConc(0);
+	//initialize partial_concs
+	partial_conc[0] = 0; rate[0] = 0;
+	partial_conc[1] = 0; rate[1] = 0;
+	partial_conc[2] = 0; rate[2] = 0;
+	partial_conc[3] = 0; rate[3] = 0;
+	partial_conc[4] = 0; rate[4] = 0;
+	partial_conc[5] = 0; rate[5] = 0;
+}
 
 Cpd::Cpd(QString n, Cpd::State s) : QObject(), shortname(n), longname(""),
 	cpd_state(s), thresh(0), sharp(0), trans(NONE), conc(0), saved_conc(0)
 {
+	setInitialConc(0);
 	//initialize partial_concs
 	partial_conc[0] = 0; rate[0] = 0;
 	partial_conc[1] = 0; rate[1] = 0;
