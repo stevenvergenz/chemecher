@@ -46,7 +46,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QLineEdit" name="lineEdit_2"/>
+          <widget class="QLineEdit" name="txtMechName"/>
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="label_2">
@@ -56,12 +56,12 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QLineEdit" name="lineEdit"/>
+          <widget class="QLineEdit" name="txtMechDesc"/>
          </item>
         </layout>
        </widget>
       </item>
-      <item row="1" column="0" rowspan="3">
+      <item row="1" column="0" rowspan="4">
        <widget class="QFrame" name="frame_2">
         <property name="sizePolicy">
          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
@@ -91,6 +91,9 @@
            <property name="suffix">
             <string/>
            </property>
+           <property name="decimals">
+            <number>6</number>
+           </property>
           </widget>
          </item>
          <item row="1" column="0">
@@ -107,6 +110,9 @@
            </property>
            <property name="suffix">
             <string/>
+           </property>
+           <property name="decimals">
+            <number>6</number>
            </property>
           </widget>
          </item>
@@ -209,7 +215,7 @@
         </layout>
        </widget>
       </item>
-      <item row="2" column="1">
+      <item row="3" column="1">
        <widget class="QFrame" name="frame_5">
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
@@ -219,7 +225,7 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
-          <widget class="QCheckBox" name="checkBox">
+          <widget class="QCheckBox" name="checkAutostep">
            <property name="text">
             <string>Autostep</string>
            </property>
@@ -228,7 +234,7 @@
         </layout>
        </widget>
       </item>
-      <item row="3" column="1">
+      <item row="2" column="1">
        <widget class="QFrame" name="frame_6">
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
@@ -245,9 +251,9 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QComboBox" name="comboBox">
+          <widget class="QComboBox" name="comboOrder">
            <property name="currentIndex">
-            <number>3</number>
+            <number>4</number>
            </property>
            <item>
             <property name="text">
@@ -269,6 +275,11 @@
              <string>4th</string>
             </property>
            </item>
+           <item>
+            <property name="text">
+             <string>4th Embedded</string>
+            </property>
+           </item>
           </widget>
          </item>
          <item row="1" column="0">
@@ -279,7 +290,7 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QComboBox" name="comboBox_2">
+          <widget class="QComboBox" name="comboMethod">
            <item>
             <property name="text">
              <string>Runge</string>
@@ -309,7 +320,7 @@
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Close</set>
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
    </item>
