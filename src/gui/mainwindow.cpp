@@ -8,6 +8,9 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	ui.setupUi(this);
 	mdi = ui.mdi;
 	
+	QCoreApplication::setOrganizationName("UNF Chemistry Department");
+	QCoreApplication::setApplicationName("CheMecher4");
+	
 	// misc stuff
 	setCentralWidget(ui.mdi);
 	setWindowState( windowState() | Qt::WindowMaximized );
@@ -76,9 +79,11 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect( ui.actDeleteStep,     SIGNAL(triggered()), this,       SLOT(deleteStep())     );
 	connect( ui.actDeleteAllSteps, SIGNAL(triggered()), this,       SLOT(deleteAllSteps()) );
 	connect( ui.actEditSimParams,  SIGNAL(triggered()), this,       SLOT(editSimParams())  );
-	
 	// set current mech to not new
 	newMech( false );
+	
+	// tools menu
+	connect( ui.actPrefs, SIGNAL(triggered()), this, SLOT(editPrefs()) );
 	
 	// view menu
 	connect( ui.actCascade,  SIGNAL(triggered()), ui.mdi, SLOT(cascadeSubWindows())  );
@@ -685,6 +690,12 @@ void MainWindow::loadMechDb()
 
 //
 ////////////////////////////////
+
+void MainWindow::editPrefs()
+{
+	PrefsWindow *prefs = new PrefsWindow(this);
+	prefs->exec();
+}
 
 // help menu
 void MainWindow::reportBug()

@@ -57,7 +57,7 @@
      <string>&amp;Tools</string>
     </property>
     <addaction name="actionFormatting_Wizard"/>
-    <addaction name="actionPreferences"/>
+    <addaction name="actPrefs"/>
    </widget>
    <widget class="QMenu" name="menu_Help">
     <property name="title">
@@ -542,10 +542,7 @@
     <string>Formatting Wizard...</string>
    </property>
   </action>
-  <action name="actionPreferences">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
+  <action name="actPrefs">
    <property name="text">
     <string>Preferences</string>
    </property>

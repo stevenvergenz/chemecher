@@ -26,7 +26,7 @@ HEADERS += src/core/cpd.h \
     src/gui/simparams.h \
     src/core/iomanager.h \
     src/gui/about.h \
-    src/gui/twofiledialog.h
+    src/gui/prefswindow.h
 FORMS += src/gui/cpdwindow.ui \
     src/gui/mainwindow.ui \
     src/gui/stepwindow.ui \
@@ -34,7 +34,7 @@ FORMS += src/gui/cpdwindow.ui \
     src/gui/sqlconfig.ui \
     src/gui/simparams.ui \
     src/gui/about.ui \
-    src/gui/twofiledialog.ui
+    src/gui/prefswindow.ui
 SOURCES += src/chemecher.cpp \
     src/core/cpd.cpp \
     src/core/mix.cpp \
@@ -48,4 +48,4 @@ SOURCES += src/chemecher.cpp \
     src/gui/simparams.cpp \
     src/core/iomanager.cpp \
     src/gui/about.cpp \
-    src/gui/twofiledialog.cpp
+    src/gui/prefswindow.cpp
