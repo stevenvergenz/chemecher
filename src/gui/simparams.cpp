@@ -7,24 +7,11 @@ SimParams::SimParams(QWidget *parent) :
 {
     ui->setupUi(this);
 	
-	// stores information about the fields in the form
-	doubleparams["precision"  ] = &mix->precision  ;
-	doubleparams["timestep"   ] = &mix->timeStep   ;
-	doubleparams["reportstep" ] = &mix->reportStep ;
-	doubleparams["startsime"  ] = &mix->startTime  ;
-	doubleparams["endtime"    ] = &mix->endTime    ;
-	intparams   ["debugstart" ] = &mix->debugStart ;
-	intparams   ["debugend"   ] = &mix->debugEnd   ;
-	intparams   ["gateband"   ] = &mix->gateband   ;
-	intparams   ["shifttest"  ] = &mix->shifttest  ;
-	intparams   ["maxreduce"  ] = &mix->maxreduce  ;
-	intparams   ["stepfactor" ] = &mix->stepfactor ;
-	
 	// macros to shorten validator declarations
 	#define DV(min,max) (new QDoubleValidator(min,max,30,this))
 	#define IV(min,max) (new QIntValidator(min,max,this))
 	
-	// set the validators
+	// set validators
 	ui->txtPrecision  ->setValidator( DV(0, 100      ));
 	ui->txtTimeStep   ->setValidator( DV(0, 1000000  ));
 	ui->txtReportStep ->setValidator( DV(0, 1000000  ));
@@ -38,6 +25,31 @@ SimParams::SimParams(QWidget *parent) :
 	ui->txtStepfactor ->setValidator( IV(0, 1000     ));
 	
 	// initialize fields
+	ui->txtMechName   ->setText( mix->mechName );
+	ui->txtMechDesc   ->setText( mix->mechDesc );
+	
+	ui->comboOrder->setCurrentIndex( mix->order-1 );
+	setOrder( mix->order-1 );
+	
+	// initialize the method
+	QString value = "";
+	for( int i=0; i<ui->comboMethod->count(); i++ ) {
+		value = ui->comboMethod->itemText(i).toLower();
+		if( value.right(2)=="'s" )
+			value.chop(2);
+		if( mix->method == value )
+			ui->comboMethod->setCurrentIndex( i );
+	}
+	
+	// initialize the transition
+	if( mix->transition=="none" )
+		ui->comboTrans->setCurrentIndex(0);
+	else if( mix->transition=="linear" )
+		ui->comboTrans->setCurrentIndex(1);
+	else if( mix->transition=="arctan" )
+		ui->comboTrans->setCurrentIndex(2);
+	
+	ui->grpAutostep   ->setChecked( mix->autostep );
 	ui->txtPrecision  ->setText( QString::number( mix->precision  ));
 	ui->txtTimeStep   ->setText( QString::number( mix->timeStep   ));
 	ui->txtReportStep ->setText( QString::number( mix->reportStep ));
@@ -51,6 +63,27 @@ SimParams::SimParams(QWidget *parent) :
 	ui->txtStepfactor ->setText( QString::number( mix->stepfactor ));
 	
 	// connect slots
+	connect( ui->txtMechName, SIGNAL(textChanged(QString)), mix, SLOT(setName(QString))  );
+	connect( ui->txtMechDesc, SIGNAL(textChanged(QString)), mix, SLOT(setDesc(QString))  );
+	connect( ui->comboOrder,  SIGNAL(currentIndexChanged(int)), this, SLOT(setOrder(int)) );
+	connect( ui->comboMethod, SIGNAL(currentIndexChanged(QString)), this, SLOT(setMethod(QString)) );
+	connect( ui->comboTrans,  SIGNAL(currentIndexChanged(QString)), this, SLOT(setTransition(QString)) );
+	connect( ui->grpAutostep, SIGNAL(toggled(bool)),        mix, SLOT(setAutostep(bool)) );
+	
+	// stores information about the fields in the form
+	doubleparams["precision"  ] = makeParam( &mix->precision,  ui->txtPrecision  );
+	doubleparams["timestep"   ] = makeParam( &mix->timeStep,   ui->txtTimeStep   );
+	doubleparams["reportstep" ] = makeParam( &mix->reportStep, ui->txtReportStep );
+	doubleparams["startsime"  ] = makeParam( &mix->startTime,  ui->txtStartTime  );
+	doubleparams["endtime"    ] = makeParam( &mix->endTime,    ui->txtEndTime    );
+	intparams   ["debugstart" ] = makeParam( &mix->debugStart, ui->txtDebugStart );
+	intparams   ["debugend"   ] = makeParam( &mix->debugEnd,   ui->txtDebugEnd   );
+	intparams   ["gateband"   ] = makeParam( &mix->gateband,   ui->txtGateband   );
+	intparams   ["shifttest"  ] = makeParam( &mix->shifttest,  ui->txtShifttest  );
+	intparams   ["maxreduce"  ] = makeParam( &mix->maxreduce,  ui->txtMaxreduce  );
+	intparams   ["stepfactor" ] = makeParam( &mix->stepfactor, ui->txtStepfactor );
+	
+	// set up the signal mapper
 	paramMapper = new QSignalMapper(this);
 	paramMapper->setMapping( ui->txtPrecision  , "precision"  );
 	paramMapper->setMapping( ui->txtTimeStep   , "timestep"   );
@@ -74,14 +107,75 @@ SimParams::SimParams(QWidget *parent) :
 	connect( ui->txtShifttest  , SIGNAL(textChanged(QString)), paramMapper, SLOT(map()) );
 	connect( ui->txtMaxreduce  , SIGNAL(textChanged(QString)), paramMapper, SLOT(map()) );
 	connect( ui->txtStepfactor , SIGNAL(textChanged(QString)), paramMapper, SLOT(map()) );
+	connect( paramMapper, SIGNAL(mapped(QString)), this, SLOT(setParameter(QString)) );
 	
+}
+
+void SimParams::setOrder(int index)
+{
+	// set the order
+	mix->order = index+1;
+	
+	// set the available methods
+	QStringList items;
+	switch( mix->order ) {
+	case 1:
+		items.append("Euler's");
+		break;
+	case 2:
+		items.append("Modified Euler's");
+		items.append("Heun's");
+		items.append("Ralston's");
+		break;
+	case 3:
+		items.append("Runge-Kutta");
+		break;
+	case 4:
+	case 5:
+		items.append("Runge");
+		items.append("Kutta");
+		items.append("Gill");
+		break;
+	}
+	ui->comboMethod->clear();
+	ui->comboMethod->addItems(items);
+}
+
+void SimParams::setMethod(QString value)
+{
+	value = value.toLower();
+	if( value.right(2)=="'s" )
+		value.chop(2);
+	mix->method = value;
+}
+
+void SimParams::setTransition(QString value)
+{
+	mix->transition = value.toLower().left(6);
 }
 
 void SimParams::setParameter(QString name)
 {
-	if( doubleparams.keys().contains(name) ) {
-		//*doubleparams[name] = 
-	}
+	if( doubleparams.keys().contains(name) )
+		*doubleparams[name]->doubleval = doubleparams[name]->field->text().toDouble();
+	if( intparams.keys().contains(name) )
+		*intparams[name]->intval = intparams[name]->field->text().toInt();
+}
+
+ParamInfo* SimParams::makeParam(double *dval, QLineEdit *field)
+{
+	ParamInfo* ret = new ParamInfo();
+	ret->doubleval = dval;
+	ret->field = field;
+	return ret;
+}
+
+ParamInfo* SimParams::makeParam(int *ival, QLineEdit *field)
+{
+	ParamInfo* ret = new ParamInfo();
+	ret->intval = ival;
+	ret->field = field;
+	return ret;
 }
 
 SimParams::~SimParams()

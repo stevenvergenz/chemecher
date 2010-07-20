@@ -77,6 +77,13 @@ public:
 	// sql data
 	DBHandler *db;
 	
+	QList<QStringList> availableMethods();
+	
+public slots:
+	void setAutostep( bool val );
+	void setName( QString val );
+	void setDesc( QString val );
+	
 signals:
 	void stepListChanged();
 	void cpdListChanged();

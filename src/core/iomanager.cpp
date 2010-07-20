@@ -72,15 +72,15 @@ bool IOManager::saveToCM3(QString mech, QString sim)
 	sOut << "reportstep=" << mix->reportStep << endl;
 	sOut << "maxtime=" << mix->endTime-mix->startTime
 		<< "   'from "<<mix->startTime<<" to "<<mix->endTime << endl;
-	sOut << "order=" << mix->order << endl;
+	sOut << "order=" << (mix->order>4 ? 4 : mix->order) << endl;
 	sOut << "method=" << mix->method << endl;
 	sOut << "transition=" << mix->transition << endl;
 	sOut << endl;
 	sOut << "autostep=" << (mix->autostep ? "yes" : "no") << endl;
-	sOut << "gateband=" << (mix->autostep ? QString::number(mix->gateband) : "0") << endl;
-	sOut << "shifttest=" << (mix->autostep ? QString::number(mix->shifttest) : "0") << endl;
-	sOut << "maxreduce=" << (mix->autostep ? QString::number(mix->maxreduce) : "0") << endl;
-	sOut << "stepfactor=" << (mix->autostep ? QString::number(mix->stepfactor) : "0") << endl;
+	sOut << "gateband=" << QString::number(mix->gateband) << endl;
+	sOut << "shifttest=" << QString::number(mix->shifttest) << endl;
+	sOut << "maxreduce=" << QString::number(mix->maxreduce) << endl;
+	sOut << "stepfactor=" << QString::number(mix->stepfactor) << endl;
 	sOut << endl;
 
 	//output the initial concentrations
@@ -310,19 +310,17 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 			
 		// if it's a method
 		case v_method:
-			QStringList methods = ( QStringList()
-					<< "euler" << "modified euler" << "heun" << "ralston"
-					<< "runge-kutta" << "runge" << "kutta" << "gill"
-			);
-			ok = methods.contains(v);
+			if( !ents["order"].entered )
+				return setError( PARSE_ERROR, "Method must be listed after order", linecounter, QFileInfo(sim).fileName() );
+			ok = newmix.availableMethods()[newmix.order-1].contains(v);
 			if( !ok )
-				return setError( PARSE_ERROR, "Method must be one of the following: \""+methods.join("\", \"")+"\"", linecounter, QFileInfo(sim).fileName() );
+				return setError( PARSE_ERROR, "For order=" + QString::number(newmix.order) + ", method must be one of the following: \""+newmix.availableMethods()[newmix.order-1].join("\", \"")+"\"", linecounter, QFileInfo(sim).fileName() );
 			else
 				*ents[k].stringval = v;
 			break;
 		}
 		if( !ok )
-			return setError( PARSE_ERROR, "Failed to parse value", linecounter, QFileInfo(sim).fileName() );
+			return setError( PARSE_ERROR, "Failed to parse value in key=value pair", linecounter, QFileInfo(sim).fileName() );
 		
 		// tell the program that this variable has been read
 		ents[k].entered = true;

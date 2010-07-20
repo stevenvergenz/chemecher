@@ -146,8 +146,31 @@ void MainWindow::showCpdWindow( QString action )
 	Cpd *cpd;
 	bool isnew = (action=="AddCpd");
 	
-	if( isnew )
+	if( isnew ) {
+		
+		/*
+		// count the number of unsaved "New Species" subwindows that already exist
+		int count = 0;
+		QMdiSubWindow* win = 0;
+		QList<QMdiSubWindow*> list = ui.mdi->subWindowList();
+		for( int i=0; i<list.count(); i++ )
+			if( windowtypes[list[i]]==CPDWIN
+				&& !mix->CpdList.contains( static_cast<CpdWindow*>(list[i]->widget())->base() ) ) {
+				count++;
+				win = list[i];
+			}
+		
+		// if 5 or more "New Species" windows exist, use the most recent
+		if( count>=5 ) {
+			win->showNormal();
+			win->raise();
+			win->setFocus();
+			return;
+		}
+		*/
+		
 		cpd = new Cpd();
+	}
 	else {
 		int row = ui.lstCpds->currentRow();
 		if( row < 0 )

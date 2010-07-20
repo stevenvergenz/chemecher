@@ -7,15 +7,11 @@ Mix::Mix()
 	  timeStep(0), reportStep(0),
 	  startTime(0), endTime(0),
 	  debugStart(0), debugEnd(0),
-	  precision(0),
-	  order(0)
-	/*QString method;
-	QString transition;
-	bool autostep;
-	int gateband;
-	int shifttest;
-	int maxreduce;
-	int stepfactor;*/
+	  precision(0.001),
+	  order(5), method("runge"),
+	  transition("none"),
+	  autostep(true), gateband(0),
+	  shifttest(0), maxreduce(0), stepfactor(0)
 {}
 
 QStringList Mix::cpdIdList() {
@@ -183,6 +179,23 @@ int Mix::maxStepLen() {
 			maxlen = string.length();
 	}
 	return maxlen;
+}
+
+void Mix::setAutostep(bool val)
+{autostep = val;}
+void Mix::setName( QString val )
+{mechName = val;}
+void Mix::setDesc( QString val )
+{mechDesc = val;}
+
+QList<QStringList> Mix::availableMethods()
+{
+	QList<QStringList> methods;
+	methods.append( QStringList() << "euler" );
+	methods.append( QStringList() << "modified euler" << "heun" << "ralston" );
+	methods.append( QStringList() << "runge-kutta" );
+	methods.append( QStringList() << "runge" << "kutta" << "gill" );
+	return methods;
 }
 
 void Mix::initialize()
