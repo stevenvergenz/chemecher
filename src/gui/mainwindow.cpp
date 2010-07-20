@@ -654,7 +654,23 @@ void MainWindow::loadMechDb()
 
 // help menu
 void MainWindow::reportBug()
-{QDesktopServices::openUrl( QUrl("http://sourceforge.net/tracker/?func=add&group_id=313094&atid=1317696") );}
+{
+	QMessageBox::StandardButton ret;
+	ret = QMessageBox::information( this, "CheMecher",
+			"Please, before you report a bug, make sure that it satisfies three requirements:\n\n"
+			"1) Repeatability. Make sure you can restart the program and generate the same bug again.\n\n"
+			"2) Specificity. Please give as many details as you can when you fill in the"
+			" information. We can only fix it if we know what's wrong. This means PLEASE ATTACH ANY"
+			" INPUT FILES ASSOCIATED!\n\n"
+			"3) Don't infer.  Just tell us what happened, not why you think it happened.  Odds are your"
+			" guess will just confuse us and it'll take longer to fix it.\n\n"
+			"If you've checked these three requirements, please click OK to continue, or Cancel to go back"
+			" and confirm them.",
+			QMessageBox::Ok | QMessageBox::Cancel ) ;
+	if( ret == QMessageBox::Cancel )
+		return;
+	QDesktopServices::openUrl( QUrl("http://sourceforge.net/tracker/?func=add&group_id=313094&atid=1317696") );
+}
 void MainWindow::suggestFeature()
 {QDesktopServices::openUrl( QUrl("http://sourceforge.net/tracker/?func=add&group_id=313094&atid=1317699") );}
 void MainWindow::showAboutWindow()

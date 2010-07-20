@@ -21,6 +21,31 @@ StepWindow::StepWindow(Step* base, QWidget* parent, bool isnew)
 	ui.spinKMinus->setValidator(val);
 	ui.spinKPlus->setValidator(val);
 	
+	// if the compound is new
+	if( isnew ) {
+		setWindowTitle( "New step" );
+		ui.pushValidate->setText("&Add");
+	}
+	else {
+		setWindowTitle( base->name() );
+		ui.pushValidate->setText("&Update");
+		
+		// initialize the fields
+		ui.txtName    ->setText( base->name()   );
+		ui.txtDesc    ->setText( base->desc()   );
+		ui.spinKPlus  ->setText( QString("%1").arg(base->kPlus())  );
+		ui.spinKMinus ->setText( QString("%1").arg(base->kMinus()) );
+		
+		for( int i=0; i<baseStep->reactantList().size(); i++ ) {
+			addCpd( reactants, false );
+			reactants->lstCombos.at(i)->setCurrentIndex( mix->CpdList.indexOf(baseStep->reactantList().at(i)) );
+		}
+		for( int i=0; i<baseStep->productList().size(); i++ ) {
+			addCpd( products, false );
+			products ->lstCombos.at(i)->setCurrentIndex( mix->CpdList.indexOf(baseStep-> productList().at(i)) );
+		}
+	}
+	
 	/*******************
 	 * SIGNALS & SLOTS *
 	 *******************/
@@ -32,6 +57,7 @@ StepWindow::StepWindow(Step* base, QWidget* parent, bool isnew)
 	
 	// cpd list updating
 	connect( mix, SIGNAL(cpdListChanged()), this, SLOT(updateCpdLists()) );
+	
 	updateCpdLists();
 	
 	// connect add reactants and products
@@ -49,30 +75,6 @@ StepWindow::StepWindow(Step* base, QWidget* parent, bool isnew)
 	
 	// get the combo boxes (if any) to display the list of compounds
 	updateCpdLists();
-	
-	// if the compound is new
-	if( isnew ) {
-		setWindowTitle( "New step" );
-		ui.pushValidate->setText("&Add");
-	}
-	else {
-		setWindowTitle( base->name() );
-		ui.pushValidate->setText("&Update");
-		
-		// initialize the fields
-		ui.txtName    ->setText( base->name()   );
-		ui.txtDesc    ->setText( base->desc()   );
-		ui.spinKPlus  ->setText( QString("%1").arg(base->kPlus())  );
-		ui.spinKMinus ->setText( QString("%1").arg(base->kMinus()) );
-		for( int i=0; i<baseStep->reactantList().size(); i++ ) {
-			addCpd( reactants, false );
-			reactants->lstCombos.at(i)->setCurrentIndex( mix->CpdList.indexOf(baseStep->reactantList().at(0)) );
-		}
-		for( int i=0; i<baseStep->productList().size(); i++ ) {
-			addCpd( products, false );
-			products->lstCombos[i]->setCurrentIndex( mix->CpdList.indexOf(baseStep->productList()[i]) );
-		}
-	}
 	
 	refreshReagentBoxConnections();
 	checkValidationState();
@@ -314,10 +316,10 @@ void StepWindow::updateCpdLists()
 	disconnectReagentBoxes();
 	for( int i=0; i<reactants->lstCombos.size(); i++ ) {
 		combo = reactants->lstCombos[i];
-		QString temp = combo->currentText();
 		disconnectReagentBoxes();
 		combo->clear();
 		combo->addItems(mix->cpdIdList());
+		QString temp = baseStep->reactantList()[i]->toString();
 		if( combo->findText(temp) == -1 )
 			remCpd(reactants, i);
 		else
@@ -325,9 +327,9 @@ void StepWindow::updateCpdLists()
 	}
 	for( int i=0; i<products->lstCombos.size(); i++ ) {
 		combo = products->lstCombos[i];
-		QString temp = combo->currentText();
 		combo->clear();
 		combo->addItems(mix->cpdIdList());
+		QString temp = baseStep->productList()[i]->toString();
 		if( combo->findText(temp) == -1 )
 			remCpd(products, i);
 		else

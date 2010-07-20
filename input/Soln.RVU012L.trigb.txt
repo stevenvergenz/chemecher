@@ -1,0 +1,26 @@
+'RVU012L - Simulation file for prelim test of trigger control.
+'all eleven values must be listed even if autostep is "no".
+'eleven can be in any order, and blank lines and 
+'capitalization doesn't matter.
+calcstep=.01
+reportstep=.1
+maxtime=100
+order=1          'must be between 1 and 4
+method=euler     'must be one of the eight methods from CheMecher 2
+transition=atan  'must be either "atan", "linear", or "none"
+
+autostep=yes     'must be "yes" to enable autostepping
+gateband=1
+shifttest=20
+maxreduce=10
+stepfactor=2
+
+'initial concentrations
+'non-listed species are initialized at 0
+TB(*) .005
+TB(.) 4
+LB(*) .005
+LB(.) 5
+LB-(.) 0
+X1(.) 0
+Z(.) 0

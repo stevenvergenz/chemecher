@@ -1,0 +1,19 @@
+'Trigger test mechanism RVU012L
+'# species
+7
+'Specie State SolyThreshold SolySharpness
+TB (*) 0.01 1
+TB (.) 0 0
+LB (*) 0.01 1
+LB (.) 0 0
+LB- (.) 0 0
+X1 (.) 0 0
+Z (.) 0 0
+'# steps
+5
+'elementary step equation, k+, k-
+TB(*)>TB(.) 4 1
+LB(*)>LB(.) 5 1
+TB(*)+LB(.)>TB(.) 0 0
+LB-(.)+LB(.)>Z(.) 1 0
+X1(.)>TB(.) 0 0
