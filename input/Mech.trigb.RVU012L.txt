@@ -12,8 +12,8 @@ Z (.) 0 0
 '# steps
 5
 'elementary step equation, k+, k-
-TB(*)>TB(.) 4 1
-LB(*)>LB(.) 5 1
+TB(*)>TB(.) 4 1 'name: TB1asf
+LB(*)>LB(.) 5 1 'name: Tb2la
 TB(*)+LB(.)>TB(.) 0 0
 LB-(.)+LB(.)>Z(.) 1 0
 X1(.)>TB(.) 0 0

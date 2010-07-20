@@ -32,23 +32,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect( ui.lstSteps, SIGNAL(customContextMenuRequested(QPoint)),
 			 this,        SLOT(stepContextMenu(QPoint)) );
 	
-	// actions
-	connect( ui.actAddCpd,         SIGNAL(triggered()), cpdMapper,  SLOT(map())            );
-	connect( ui.actEditCpd,        SIGNAL(triggered()), cpdMapper,  SLOT(map())            );
-	connect( ui.actMvCpdUp,        SIGNAL(triggered()), this,       SLOT(moveCpdUp())      );
-	connect( ui.actMvCpdDown,      SIGNAL(triggered()), this,       SLOT(moveCpdDown())    );
-	connect( ui.actDeleteCpd,      SIGNAL(triggered()), this,       SLOT(deleteCpd())      );
-	connect( ui.actDeleteAllCpds,  SIGNAL(triggered()), this,       SLOT(deleteAllCpds())  );
-	connect( ui.actAddStep,        SIGNAL(triggered()), stepMapper, SLOT(map())            );
-	connect( ui.actEditStep,       SIGNAL(triggered()), stepMapper, SLOT(map())            );
-	connect( ui.actMvStepUp,       SIGNAL(triggered()), this,       SLOT(moveStepUp())     );
-	connect( ui.actMvStepDown,     SIGNAL(triggered()), this,       SLOT(moveStepDown())   );
-	connect( ui.actDeleteStep,     SIGNAL(triggered()), this,       SLOT(deleteStep())     );
-	connect( ui.actDeleteAllSteps, SIGNAL(triggered()), this,       SLOT(deleteAllSteps()) );
-	
-	// sim parameters
-	
-	
 	// cpd
 	connect(ui.pushAddCpd,    SIGNAL(clicked()), ui.actAddCpd,    SLOT(trigger()) );
 	connect(ui.pushEditCpd,   SIGNAL(clicked()), ui.actEditCpd,   SLOT(trigger()) );
@@ -70,6 +53,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect(mix, SIGNAL(stepListChanged()), this, SLOT(updateStepList()));
 	
 	// file menu
+	connect(ui.actNew,         SIGNAL(triggered()), this, SLOT(newMech())     );
 	connect(ui.actSaveAs,      SIGNAL(triggered()), this, SLOT(saveToCM4())   );
 	connect(ui.actLoad,        SIGNAL(triggered()), this, SLOT(loadFromCM4()) );
 	connect(ui.actSaveToCM3,   SIGNAL(triggered()), this, SLOT(saveToCM3())   );
@@ -79,7 +63,22 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect(ui.actExit,        SIGNAL(triggered()), qApp, SLOT(quit())        );
 	
 	// mechanism menu
-	connect(ui.actEditSimParams, SIGNAL(triggered()), this, SLOT(editSimParams()));
+	connect( ui.actAddCpd,         SIGNAL(triggered()), cpdMapper,  SLOT(map())            );
+	connect( ui.actEditCpd,        SIGNAL(triggered()), cpdMapper,  SLOT(map())            );
+	connect( ui.actMvCpdUp,        SIGNAL(triggered()), this,       SLOT(moveCpdUp())      );
+	connect( ui.actMvCpdDown,      SIGNAL(triggered()), this,       SLOT(moveCpdDown())    );
+	connect( ui.actDeleteCpd,      SIGNAL(triggered()), this,       SLOT(deleteCpd())      );
+	connect( ui.actDeleteAllCpds,  SIGNAL(triggered()), this,       SLOT(deleteAllCpds())  );
+	connect( ui.actAddStep,        SIGNAL(triggered()), stepMapper, SLOT(map())            );
+	connect( ui.actEditStep,       SIGNAL(triggered()), stepMapper, SLOT(map())            );
+	connect( ui.actMvStepUp,       SIGNAL(triggered()), this,       SLOT(moveStepUp())     );
+	connect( ui.actMvStepDown,     SIGNAL(triggered()), this,       SLOT(moveStepDown())   );
+	connect( ui.actDeleteStep,     SIGNAL(triggered()), this,       SLOT(deleteStep())     );
+	connect( ui.actDeleteAllSteps, SIGNAL(triggered()), this,       SLOT(deleteAllSteps()) );
+	connect( ui.actEditSimParams,  SIGNAL(triggered()), this,       SLOT(editSimParams())  );
+	
+	// set current mech to not new
+	newMech( false );
 	
 	// view menu
 	connect( ui.actCascade,  SIGNAL(triggered()), ui.mdi, SLOT(cascadeSubWindows())  );
@@ -429,11 +428,11 @@ void MainWindow::updateStepList()
 		name->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
 		ui.lstSteps->setItem( i,0, name );
 		QTableWidgetItem *string = new QTableWidgetItem( mix->StepList[i]->toString() );
-		string->setFlags( name->flags() );
+		string->setFlags( Qt::ItemIsEnabled );
 		string->setTextAlignment( Qt::AlignRight );
 		ui.lstSteps->setItem( i,1, string );
 		if( !mix->StepList[i]->isValid() ) {
-			name->setTextColor( QColor(Qt::red) );
+			//name->setTextColor( QColor(Qt::red) );
 			string->setTextColor( QColor(Qt::red) );
 		}
 	}
@@ -480,8 +479,34 @@ void MainWindow::stepContextMenu( QPoint pos )
 	menu.exec(ui.lstSteps->mapToGlobal(pos));
 }
 
-// saving/loading ////
+// file menu ////
 //
+
+void MainWindow::newMech( bool val )
+{
+	if( mix->isActive && val ) {
+		QMessageBox::StandardButton ret;
+		ret = QMessageBox::warning( this, "CheMecher",
+				"Are you sure you want to close the current mechanism and create a new one?",
+				QMessageBox::Yes | QMessageBox::Cancel );
+		if( ret == QMessageBox::Cancel )
+			return;
+	}
+	
+	if(val) mix->clone( new Mix() );
+	mix->isActive = val;
+	foreach( QAction *act, ui.menu_Mechanism->actions() )
+		act->setEnabled(val);
+	foreach( QAction *act, ui.menu_Steps->actions() )
+		act->setEnabled(val);
+	foreach( QAction *act, ui.menu_Species->actions() )
+		act->setEnabled(val);
+	ui.dockWidget->setVisible(val);
+	ui.actSave->setEnabled(val);
+	ui.actSaveAs->setEnabled(val);
+	ui.actSaveToCM3->setEnabled(val);
+	ui.actSaveMechDb->setEnabled(val);
+}
 
 void MainWindow::saveToCM4()
 {
@@ -518,6 +543,8 @@ void MainWindow::loadFromCM4()
 	if( mech=="" )
 		return;
 	
+	newMech();
+	
 	// load the file
 	if( !iomgr->loadFromCM4( mech ) ){
 		QMessageBox::critical(this, "Chemecher 4", "Failed to load file: "+iomgr->getMessage());
@@ -544,7 +571,9 @@ void MainWindow::saveToCM3()
 	save.setDefaultSuffix("cm3m");
 	save.setFilter("CheMecher3 mechanism files (*.cm3m *.txt);;All files (*.*)");
 	save.setWindowTitle("Mechanism File");
-	save.setDirectory(QDir::current().path()+"/../input");
+	QString cp = QDir::current().path();
+	save.setDirectory( QFileInfo(cp+"/../input").exists() ? cp+"/../input" : cp );
+	save.setLabelText( QFileDialog::FileName, "Mechanism file &name:" );
 	if( !save.exec() )
 		return;
 	mech = save.selectedFiles()[0];
@@ -563,6 +592,7 @@ void MainWindow::saveToCM3()
 	save.setFilter("CheMecher3 simulation files (*.cm3s *.txt);;All files (*.*)");
 	save.setWindowTitle("Simulation File (Mechanism: " + QFileInfo(mech).fileName() + ")");
 	save.setDirectory(fi.absolutePath());
+	save.setLabelText( QFileDialog::FileName, "Simulation file &name:" );
 	if( !save.exec() )
 		return;
 	sim = save.selectedFiles()[0];
@@ -616,8 +646,11 @@ void MainWindow::loadFromCM3()
 		return;
 	}
 	
+	newMech();
+	
 	// load the file
 	if( !iomgr->loadFromCM3( mech, sim ) ) {
+		newMech(false);
 		QString title = "CheMecher";
 		switch( iomgr->getStatus() ) {
 		case IOManager::FS_ERROR:
@@ -645,6 +678,7 @@ void MainWindow::saveMechDb()
 void MainWindow::loadMechDb()
 {
 	// run the dialog box
+	newMech();
 	MechDB* dialog = new MechDB(MechDB::load, this);
 	dialog->exec();
 }
@@ -664,8 +698,8 @@ void MainWindow::reportBug()
 			" INPUT FILES ASSOCIATED!\n\n"
 			"3) Don't infer.  Just tell us what happened, not why you think it happened.  Odds are your"
 			" guess will just confuse us and it'll take longer to fix it.\n\n"
-			"If you've checked these three requirements, please click OK to continue, or Cancel to go back"
-			" and confirm them.",
+			"If you've checked these three requirements, please click OK to continue. If not, hit Cancel to go back"
+			" and check them.",
 			QMessageBox::Ok | QMessageBox::Cancel ) ;
 	if( ret == QMessageBox::Cancel )
 		return;

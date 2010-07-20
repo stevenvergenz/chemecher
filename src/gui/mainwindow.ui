@@ -78,11 +78,11 @@
     <addaction name="separator"/>
     <addaction name="actCloseAll"/>
    </widget>
-   <widget class="QMenu" name="menuSteps_Species">
+   <widget class="QMenu" name="menu_Mechanism">
     <property name="title">
      <string>Mechanism</string>
     </property>
-    <widget class="QMenu" name="menuSteps">
+    <widget class="QMenu" name="menu_Steps">
      <property name="title">
       <string>Steps...</string>
      </property>
@@ -95,7 +95,7 @@
      <addaction name="actDeleteStep"/>
      <addaction name="actDeleteAllSteps"/>
     </widget>
-    <widget class="QMenu" name="menuSpecies">
+    <widget class="QMenu" name="menu_Species">
      <property name="title">
       <string>Species...</string>
      </property>
@@ -108,14 +108,14 @@
      <addaction name="actDeleteCpd"/>
      <addaction name="actDeleteAllCpds"/>
     </widget>
-    <addaction name="menuSteps"/>
-    <addaction name="menuSpecies"/>
+    <addaction name="menu_Steps"/>
+    <addaction name="menu_Species"/>
     <addaction name="separator"/>
     <addaction name="actEditSimParams"/>
     <addaction name="actLaunchSim"/>
    </widget>
    <addaction name="menu_File"/>
-   <addaction name="menuSteps_Species"/>
+   <addaction name="menu_Mechanism"/>
    <addaction name="menu_Tools"/>
    <addaction name="menu_View"/>
    <addaction name="menu_Help"/>
@@ -465,9 +465,6 @@
    </widget>
   </widget>
   <action name="actNew">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
    <property name="text">
     <string>&amp;New Mech...</string>
    </property>
@@ -591,6 +588,9 @@
    <property name="text">
     <string>Save Mech to &amp;DB...</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actLoadMechDb">
    <property name="enabled">
@@ -598,6 +598,9 @@
    </property>
    <property name="text">
     <string>Load Mech from D&amp;B...</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
   </action>
   <action name="actSaveAs">

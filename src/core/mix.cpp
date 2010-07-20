@@ -3,7 +3,8 @@
 Mix *mix = new Mix();
 
 Mix::Mix()
-	: mechName(""), mechDesc(""),
+	: isActive( false ),
+	  mechName(""), mechDesc(""),
 	  timeStep(0), reportStep(0),
 	  startTime(0), endTime(0),
 	  debugStart(0), debugEnd(0),
@@ -12,7 +13,9 @@ Mix::Mix()
 	  transition("none"),
 	  autostep(true), gateband(0),
 	  shifttest(0), maxreduce(0), stepfactor(0)
-{}
+{
+	connect( this, SIGNAL(cpdListChanged()), this, SIGNAL(stepListChanged()) );
+}
 
 QStringList Mix::cpdIdList() {
 	QStringList ret;

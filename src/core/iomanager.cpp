@@ -172,14 +172,20 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 	// read the steps
 	for(int i=0; i<numsteps; i++)
 	{
-		// get the line and split it
-		parts = getLine( min, linecounter ).split(' ');
+		// get the line
+		buffer = getLine( min, linecounter, false );			
+		
+		// split the line
+		parts = buffer.left( buffer.indexOf("'") ).simplified().split(' ');
 		if( parts.length()!=3 )
 			return setError( PARSE_ERROR, "Expected three elements", linecounter, QFileInfo(mech).fileName() );
 		
 		// declare and name the new step
 		Step *step = new Step();
-		step->setName( QString("Step %1").arg(i+1) );
+		if( buffer.mid( buffer.indexOf("'"), 6 ) == "'name:" )
+			step->setName( buffer.mid(buffer.indexOf("'")+6).trimmed() );
+		else
+			step->setName( QString("Step %1").arg(i+1) );
 		
 		// get the lists of reactants and products
 		if( parts[0].split(">").length()!=2 )
@@ -675,13 +681,15 @@ bool IOManager::loadFromCM4(QString filename)
 }
 
 // gets the next line of valid input
-QString IOManager::getLine(QTextStream& txt, int &linecounter)
+QString IOManager::getLine(QTextStream& txt, int &linecounter, bool stripcomments)
 {
 	QString ret = "";
-	while( ret=="" && !txt.atEnd() ) {
+	while( ret.left(ret.indexOf("'"))=="" && !txt.atEnd() ) {
 		ret = txt.readLine();
 		// removes comments and simplifies whitespace
-		ret = ret.left( ret.indexOf("'") ).simplified();
+		ret = ret.simplified();
+		if( stripcomments )
+			ret = ret.left( ret.indexOf("'") );
 		linecounter++;
 	}
 	return ret;

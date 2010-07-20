@@ -132,5 +132,9 @@ QString Step::tov3String()
 	ret += QString("%1 %2")
 		   .arg(kplus)
 		   .arg(kminus);
+	
+	if( name()!="" )
+		ret += " 'name: " + name();
+	
 	return ret;
 }

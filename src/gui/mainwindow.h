@@ -72,7 +72,8 @@ public slots:
 	void cpdContextMenu ( QPoint pos );
 	void stepContextMenu( QPoint pos );
 	
-	// saving/loading
+	// file menu
+	void newMech( bool val = true );
 	void saveToCM4();
 	void loadFromCM4();
 	void saveToCM3();

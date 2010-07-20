@@ -19,6 +19,9 @@ public:
 	
 	Mix();
 	
+	// stores whether mix is in use
+	bool isActive;
+	
 	// compound functions
 	QList<Cpd*> CpdList;
 	QStringList cpdIdList();
