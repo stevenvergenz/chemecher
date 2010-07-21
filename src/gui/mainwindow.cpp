@@ -488,16 +488,24 @@ void MainWindow::stepContextMenu( QPoint pos )
 // file menu ////
 //
 
-void MainWindow::newMech( bool val )
+bool MainWindow::confirmNewMech()
 {
-	if( mix->isActive && val ) {
+	if( mix->isActive ) {
 		QMessageBox::StandardButton ret;
 		ret = QMessageBox::warning( this, "CheMecher",
-				"Are you sure you want to close the current mechanism and create a new one?",
+				"Are you sure you want to close the current mechanism?",
 				QMessageBox::Yes | QMessageBox::Cancel );
 		if( ret == QMessageBox::Cancel )
-			return;
+			return false;
 	}
+	return true;
+}
+
+void MainWindow::newMech( bool val, bool ask )
+{
+	// ask the user for confirmation
+	if( ask && !confirmNewMech() )
+		return;
 	
 	if( val ) {
 		Mix *newmix = new Mix();
@@ -538,6 +546,9 @@ void MainWindow::saveToCM4()
 
 void MainWindow::loadFromCM4()
 {
+	if( !confirmNewMech() )
+		return;
+	
 	QFileDialog load(this);
 	load.setAcceptMode(QFileDialog::AcceptOpen);
 	load.setFileMode( QFileDialog::ExistingFile );
@@ -553,7 +564,7 @@ void MainWindow::loadFromCM4()
 	if( mech=="" )
 		return;
 	
-	newMech();
+	newMech(true, false);
 	
 	// load the file
 	if( !iomgr->loadFromCM4( mech ) ){
@@ -625,6 +636,9 @@ void MainWindow::saveToCM3()
 
 void MainWindow::loadFromCM3()
 {
+	if( !confirmNewMech() )
+		return;
+	
 	QFileDialog load(this);
 	load.setAcceptMode(QFileDialog::AcceptOpen);
 	load.setFileMode( QFileDialog::ExistingFile );
@@ -656,7 +670,7 @@ void MainWindow::loadFromCM3()
 		return;
 	}
 	
-	newMech();
+	newMech(true, false);
 	
 	// load the file
 	if( !iomgr->loadFromCM3( mech, sim ) ) {

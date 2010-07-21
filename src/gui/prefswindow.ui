@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>446</width>
-    <height>152</height>
+    <height>259</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,17 +17,38 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
-     <widget class="QWidget" name="tabGeneral">
+     <widget class="QWidget" name="tabInterface">
       <attribute name="title">
-       <string>General</string>
+       <string>Interface</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="tabIO">
+      <attribute name="title">
+       <string>Input/Output</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="3" column="0">
-        <widget class="QCheckBox" name="chkLineUpWhitespace">
-         <property name="text">
-          <string>Line up whitespace when outputting to CM3 format</string>
+       <item row="1" column="0">
+        <widget class="QGroupBox" name="groupBox">
+         <property name="title">
+          <string>CheMecher 3 Format</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="chkLineUpWhitespace">
+            <property name="text">
+             <string>Line up whitespace</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="title">
+          <string>CheMecher 4 Format</string>
          </property>
         </widget>
        </item>

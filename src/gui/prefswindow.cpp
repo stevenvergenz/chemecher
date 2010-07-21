@@ -7,7 +7,7 @@ void PrefsWindow::setUpPreferences()
 	* Syntax: ADD_PREF( <key_name>, <data_type>, <widget>, <changesignal>, <initslot> );
 	*       Ex. ADD_PREF( "an_int_preference", int, ui->spinIntParam, SIGNAL(valueChanged(int)), SLOT(setValue(int)) );
 	* 
-	*   <key_name>     = The string used to refer to the key elsewhere in the program
+	*   <key_name>     = The string used to refer to the preference elsewhere in the program
 	*   <data_type>    = The type of the data
 	*       MUST BE ONE OF FOLLOWING: int, bool, double, QString
 	*   <widget>       = A pointer to the widget associated with changing the preference's value
@@ -20,7 +20,7 @@ void PrefsWindow::setUpPreferences()
 	* 
 	**/
 	
-	ADD_PREF( "io/line_up_whitespace", bool, ui->chkLineUpWhitespace, SIGNAL(toggled(bool)), SLOT(setChecked(bool)) );
+	ADD_PREF( "iocm3/line_up_whitespace", bool, ui->chkLineUpWhitespace, SIGNAL(toggled(bool)), SLOT(setChecked(bool)) );
 }
 
 PrefsWindow::PrefsWindow(QWidget *parent) :

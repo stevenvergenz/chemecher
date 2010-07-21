@@ -72,7 +72,8 @@ public slots:
 	void stepContextMenu( QPoint pos );
 	
 	// file menu
-	void newMech( bool val = true );
+	bool confirmNewMech();
+	void newMech( bool val = true, bool ask = true );
 	void saveToCM4();
 	void loadFromCM4();
 	void saveToCM3();
