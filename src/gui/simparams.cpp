@@ -182,15 +182,3 @@ SimParams::~SimParams()
 {
     delete ui;
 }
-
-void SimParams::changeEvent(QEvent *e)
-{
-    QDialog::changeEvent(e);
-    switch (e->type()) {
-    case QEvent::LanguageChange:
-        ui->retranslateUi(this);
-        break;
-    default:
-        break;
-    }
-}

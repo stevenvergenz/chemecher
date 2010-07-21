@@ -105,6 +105,7 @@ void MainWindow::initTestMech()
 {
 	return;
 	
+	/*
 	// uncomment next line to disable
 	iomgr->loadFromCM3(
 			"/home/vergenz/programming/chemecher/input/TestMech.txt",
@@ -133,7 +134,7 @@ void MainWindow::initTestMech()
 	step->addReactant( cpd_c );
 	step->addProduct ( cpd_b );
 	//step->addProduct ( cpd_c );
-	mix->addStep( step );
+	mix->addStep( step );*/
 }
 
 /** showCpdWindow
@@ -461,8 +462,8 @@ void MainWindow::purgeWindowTypes()
 
 void MainWindow::editSimParams()
 {
-	SimParams *simparams = new SimParams(this);
-	simparams->exec();
+	SimParams simparams(this);
+	simparams.exec();
 }
 
 void MainWindow::cpdContextMenu( QPoint pos )
@@ -498,7 +499,11 @@ void MainWindow::newMech( bool val )
 			return;
 	}
 	
-	if(val) mix->clone( new Mix() );
+	if( val ) {
+		Mix *newmix = new Mix();
+		mix->clone( newmix );
+		delete newmix;
+	}
 	mix->isActive = val;
 	foreach( QAction *act, ui.menu_Mechanism->actions() )
 		act->setEnabled(val);
@@ -720,6 +725,6 @@ void MainWindow::suggestFeature()
 {QDesktopServices::openUrl( QUrl("http://sourceforge.net/tracker/?func=add&group_id=313094&atid=1317699") );}
 void MainWindow::showAboutWindow()
 {
-	About *about = new About();
-	about->exec();
+	About about;
+	about.exec();
 }

@@ -17,6 +17,7 @@ public:
 	friend class MainWindow;
 	
 	CpdWindow(Cpd* base, QWidget* parent = 0, bool isnew=false );
+	~CpdWindow();
 	Cpd* base(){ return baseCpd; }
 
 public slots:
@@ -36,7 +37,7 @@ private slots:
 	//void toEditable(); //changes markup to editable
 
 private:
-	Ui::cpdWindow ui;
+	Ui::cpdWindow *ui;
 	Cpd* baseCpd;
 
 };

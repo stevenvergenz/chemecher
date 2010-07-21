@@ -35,7 +35,8 @@ bool IOManager::saveToCM3(QString mech, QString sim)
 		cpdlist.append( mix->CpdList[i]->tov3String() );
 	
 	// line up the whitespace in the cpd list
-	lineUpWhitespace( cpdlist, 4 );
+	if( QSettings().value("io/line_up_whitespace", true).toBool() )
+		lineUpWhitespace( cpdlist, 4 );
 	
 	// output it
 	for( int i=0; i<cpdlist.size(); i++ )

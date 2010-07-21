@@ -29,6 +29,7 @@ public:
 	friend class MainWindow;
 	
 	StepWindow(Step* base, QWidget* parent = 0, bool isnew=false);
+	~StepWindow();
 	
 	typedef struct {
 		QList<QComboBox*>   lstCombos;
@@ -74,7 +75,7 @@ protected:
 	void dragMoveEvent(QDragMoveEvent *event);*/
 	
 private:
-	Ui::stepWindow ui;
+	Ui::stepWindow *ui;
 	Step* baseStep;
 	ReagentBox_t *reactants, *products;
 

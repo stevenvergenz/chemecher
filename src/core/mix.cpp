@@ -28,11 +28,12 @@ Cpd* Mix::addCpd(Cpd *cpd) {
 	emit cpdListChanged();
 	return cpd;
 }
-Cpd* Mix::removeCpd(Cpd *cpd)
+void Mix::removeCpd(Cpd *cpd)
 {
 	CpdList.removeOne(cpd);
+	delete cpd;
 	emit cpdListChanged();
-	return cpd;
+	//return cpd;
 }
 void Mix::swapCpds(int first, int second)
 {
@@ -67,11 +68,12 @@ Step* Mix::addStep(Step *step) {
 	emit stepListChanged();
 	return step;
 }
-Step* Mix::removeStep(Step *step)
+void Mix::removeStep(Step *step)
 {
 	StepList.removeOne(step);
+	delete step;
 	emit stepListChanged();
-	return step;
+	//return step;
 }
 void Mix::swapSteps(int first, int second)
 {

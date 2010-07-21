@@ -36,9 +36,6 @@ public slots:
 	void setParameter( QString name );
 	ParamInfo* makeParam( double* dval, QLineEdit* field );
 	ParamInfo* makeParam( int* ival, QLineEdit* field );
-	
-protected:
-    void changeEvent(QEvent *e);
 
 private:
     Ui::SimParams *ui;

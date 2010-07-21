@@ -26,7 +26,7 @@ public:
 	QList<Cpd*> CpdList;
 	QStringList cpdIdList();
 	Cpd* addCpd(Cpd *cpd);
-	Cpd* removeCpd(Cpd *cpd);
+	void removeCpd(Cpd *cpd);
 	void swapCpds(int first, int second);
 	Cpd* getCpdById(QString id);
 	
@@ -35,7 +35,7 @@ public:
 	QStringList stepNameList();
 	QStringList stepStringList();
 	Step* addStep(Step *step);
-	Step* removeStep(Step *step);
+	void removeStep(Step *step);
 	void swapSteps(int first, int second);
 	Step* getStepByString(QString string);
 	Step* getStepByName(QString name);
