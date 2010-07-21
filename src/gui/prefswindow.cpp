@@ -4,22 +4,23 @@ void PrefsWindow::setUpPreferences()
 {
 	/** Add preferences here ********
 	* 
-	* Syntax: ADD_PREF( <key_name>, <data_type>, <widget>, <changesignal> );
-	*       Ex. ADD_PREF( "an_int_preference", int, ui->spinIntParam, SIGNAL(valueChanged(int)) );
+	* Syntax: ADD_PREF( <key_name>, <data_type>, <widget>, <changesignal>, <initslot> );
+	*       Ex. ADD_PREF( "an_int_preference", int, ui->spinIntParam, SIGNAL(valueChanged(int)), SLOT(setValue(int)) );
 	* 
 	*   <key_name>     = The string used to refer to the key elsewhere in the program
 	*   <data_type>    = The type of the data
 	*       MUST BE ONE OF FOLLOWING: int, bool, double, QString
-	*   <widget>       = The widget associated with changing the preference's value
+	*   <widget>       = A pointer to the widget associated with changing the preference's value
 	*   <changesignal> = The signal emitted from <widget> that sets the preference's value
 	*                       Note: include SIGNAL macro and data type, ex. "SIGNAL(valueChanged(int))"
+	*   <initslot>     = The slot for <widget> that is used to set initialize its value
+	*                       Note: include SLOT macro and data type, ex. "SLOT(setValue(int))"
 	* 
 	* To reference a setting later, see the documentation on QSettings::value.
+	* 
 	**/
 	
-	// not yet finished, still have to set up widget initialization
-	
-	ADD_PREF( "io/line_up_whitespace", bool, ui->chkLineUpWhitespace, SIGNAL(toggled(bool)) );
+	ADD_PREF( "io/line_up_whitespace", bool, ui->chkLineUpWhitespace, SIGNAL(toggled(bool)), SLOT(setChecked(bool)) );
 }
 
 PrefsWindow::PrefsWindow(QWidget *parent) :
@@ -32,27 +33,37 @@ PrefsWindow::PrefsWindow(QWidget *parent) :
 	prefMapper = new QSignalMapper(this);
 	connect( prefMapper, SIGNAL(mapped(QString)), this, SLOT(commitPref(QString)) );
 	
-	// set up all the user-defined preferences
+	// set up all the macro-defined preferences
 	setUpPreferences();
 	
-}
-
-/*
-void PrefsWindow::accept()
-{
-	apply(0);
-	QDialog::accept();
-}
-
-void PrefsWindow::apply( QAbstractButton *button )
-{
-	if( button!=0 && button->text()!="Apply" )
-		return;
+	// initialize the widgets
+	QSettings settings;
+	foreach( QString key, prefs.keys() ) {
+		switch( prefs[key].data_type ) {
+		case v_int:
+			connect( this, SIGNAL(initPref(int)), prefs[key].widget, prefs[key].slot );
+			emit initPref( settings.value(key, 0).toInt() );
+			disconnect( this, SIGNAL(initPref(int)), prefs[key].widget, prefs[key].slot );
+			break;
+		case v_bool:
+			connect( this, SIGNAL(initPref(bool)), prefs[key].widget, prefs[key].slot );
+			emit initPref( settings.value(key, 0).toBool() );
+			disconnect( this, SIGNAL(initPref(bool)), prefs[key].widget, prefs[key].slot );
+			break;
+		case v_double:
+			connect( this, SIGNAL(initPref(double)), prefs[key].widget, prefs[key].slot );
+			emit initPref( settings.value(key, 0).toDouble() );
+			disconnect( this, SIGNAL(initPref(double)), prefs[key].widget, prefs[key].slot );
+			break;
+		case v_QString:
+			connect( this, SIGNAL(initPref(QString)), prefs[key].widget, prefs[key].slot );
+			emit initPref( settings.value(key, 0).toString() );
+			disconnect( this, SIGNAL(initPref(QString)), prefs[key].widget, prefs[key].slot );
+			break;
+		}
+	}
 	
-	// loop through all available preferences
-	// set them
 }
-*/
 
 // sets the data for the key
 void PrefsWindow::setData( int val )
@@ -72,8 +83,8 @@ void PrefsWindow::setData( double val )
 }
 void PrefsWindow::setData( QString val )
 {
-	data_type = v_string;
-	data.stringval = new QString(val);
+	data_type = v_QString;
+	data.QStringval = new QString(val);
 }
 
 void PrefsWindow::commitPref(QString key)
@@ -92,12 +103,15 @@ void PrefsWindow::commitPref(QString key)
 		settings.setValue( key, QVariant(data.doubleval) );
 		qDebug() << data.doubleval;
 		break;
-	case v_string:
-		settings.setValue( key, QVariant(*data.stringval) );
-		qDebug() << *data.stringval;
+	case v_QString:
+		settings.setValue( key, QVariant(*data.QStringval) );
+		qDebug() << *data.QStringval;
+		delete data.QStringval;
 		break;
 	}
 }
+
+
 
 PrefsWindow::~PrefsWindow()
 {
