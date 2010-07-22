@@ -96,6 +96,10 @@ bool IOManager::saveToCM3(QString mech, QString sim)
 
 	//done writing, close file
 	sfile.close();
+	
+	// set the filename variables
+	mechfile = mech;
+	simfile  = sim;
 
 	return true;
 }
@@ -359,6 +363,11 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 	
 	mix->clone( &newmix );
 	status = LOADED_CM3;
+	
+	// set the filename variables
+	mechfile = mech;
+	simfile  = sim;
+	
 	return true;
 }
 
@@ -480,6 +489,11 @@ bool IOManager::saveToCM4(QString filename)
 	// output to the file
 	sfile.write( fcontents->toAscii() );
 	sfile.close();
+	
+	// set the filename variables
+	mechfile = filename;
+	simfile  = "";
+	
 	return true;
 }
 
@@ -678,6 +692,11 @@ bool IOManager::loadFromCM4(QString filename)
 	// finally done loading!
 	mix->clone(&newmix);
 	setError(LOADED_CM4, "Loaded successfully");
+	
+	// set the filename variables
+	mechfile = filename;
+	simfile  = "";
+	
 	return true;
 }
 

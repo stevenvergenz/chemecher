@@ -3,8 +3,7 @@
 Mix *mix = new Mix();
 
 Mix::Mix()
-	: isActive( false ),
-	  mechName(""), mechDesc(""),
+	: mechName(""), mechDesc(""),
 	  timeStep(0), reportStep(0),
 	  startTime(0), endTime(0),
 	  debugStart(0), debugEnd(0),
@@ -202,6 +201,14 @@ QList<QStringList> Mix::availableMethods()
 	methods.append( QStringList() << "runge" << "kutta" << "gill" );
 	return methods;
 }
+
+void Mix::setActive(bool val)
+{
+	active = val;
+	emit isActiveChanged(val);
+}
+bool Mix::isActive()
+{return active;}
 
 void Mix::initialize()
 {

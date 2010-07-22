@@ -44,7 +44,9 @@ public:
 	QString getMessage() {return message;}
 	
 	void lineUpWhitespace( QList<QString> &lines, int numcols );
-
+	
+	QString mechfile, simfile;
+	
 private:
 	QString getLine( QTextStream& txt, int &linecounter, bool stripcomments = true );
 	bool setError( Status stat, QString errmsg, int linenum=-1, QString filename="" );

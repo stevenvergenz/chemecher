@@ -19,9 +19,6 @@ public:
 	
 	Mix();
 	
-	// stores whether mix is in use
-	bool isActive;
-	
 	// compound functions
 	QList<Cpd*> CpdList;
 	QStringList cpdIdList();
@@ -90,6 +87,16 @@ public slots:
 signals:
 	void stepListChanged();
 	void cpdListChanged();
+	
+	void isActiveChanged( bool val );
+	
+private:
+	// stores whether mix is in use
+	bool active;
+public slots:
+	void setActive( bool val );
+public:
+	bool isActive();
 	
 };
 

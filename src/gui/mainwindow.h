@@ -19,6 +19,8 @@
 #include <QDir>
 #include <QSignalMapper>
 #include <QDesktopServices>
+#include <QPrinter>
+#include <QPrintDialog>
 
 class MainWindow;
 
@@ -72,14 +74,16 @@ public slots:
 	void stepContextMenu( QPoint pos );
 	
 	// file menu
-	bool confirmNewMech();
 	void newMech( bool val = true, bool ask = true );
+	bool confirmNewMech();
+	void save();
 	void saveToCM4();
 	void loadFromCM4();
 	void saveToCM3();
 	void loadFromCM3();
 	void saveMechDb();
 	void loadMechDb();
+	void print();
 	
 	void editPrefs();
 	

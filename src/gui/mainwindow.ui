@@ -46,7 +46,7 @@
     <addaction name="separator"/>
     <addaction name="action_Import"/>
     <addaction name="separator"/>
-    <addaction name="action_Print_Mechanism"/>
+    <addaction name="actPrint"/>
     <addaction name="action_Print_Preview"/>
     <addaction name="actionPrinting_Preferences"/>
     <addaction name="separator"/>
@@ -632,12 +632,9 @@
     <enum>Qt::ApplicationShortcut</enum>
    </property>
   </action>
-  <action name="action_Print_Mechanism">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
+  <action name="actPrint">
    <property name="text">
-    <string>&amp;Print Mechanism</string>
+    <string>&amp;Print</string>
    </property>
   </action>
   <action name="action_Print_Preview">
