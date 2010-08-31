@@ -74,6 +74,7 @@ public slots:
 	
 	// file menu
 	void newMech( bool val = true );
+	void saveOverCM4();
 	void saveToCM4();
 	void loadFromCM4();
 	void saveToCM3();

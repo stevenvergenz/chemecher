@@ -366,7 +366,7 @@ bool IOManager::saveToCM4(QString filename)
 {
 	//open the simulation file
 	QFile sfile(filename);
-	if( !sfile.open( QFile::WriteOnly ) )
+	if( !sfile.open( QFile::WriteOnly | QFile::Truncate ) )
 		return setError( FS_ERROR, "Error opening file "+filename );
 	
 	QString *fcontents = new QString();
@@ -477,7 +477,11 @@ bool IOManager::saveToCM4(QString filename)
 	stream.writeEndDocument();
 	
 	// output to the file
-	sfile.write( fcontents->toAscii() );
+	if( sfile.write( fcontents->toAscii() ) == -1 )
+	{
+		return setError(FS_ERROR, "Failed to write to file.");
+	}
+	
 	sfile.close();
 	return true;
 }

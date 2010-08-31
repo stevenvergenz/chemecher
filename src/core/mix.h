@@ -56,6 +56,7 @@ public:
 	 *************************/
 	
 	//current mix identifiers
+	QString mechFile;
 	QString mechName;
 	QString mechDesc;
 

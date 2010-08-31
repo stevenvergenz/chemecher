@@ -54,6 +54,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	
 	// file menu
 	connect(ui.actNew,         SIGNAL(triggered()), this, SLOT(newMech())     );
+	connect(ui.actSave,        SIGNAL(triggered()), this, SLOT(saveOverCM4()) );
 	connect(ui.actSaveAs,      SIGNAL(triggered()), this, SLOT(saveToCM4())   );
 	connect(ui.actLoad,        SIGNAL(triggered()), this, SLOT(loadFromCM4()) );
 	connect(ui.actSaveToCM3,   SIGNAL(triggered()), this, SLOT(saveToCM3())   );
@@ -508,6 +509,22 @@ void MainWindow::newMech( bool val )
 	ui.actSaveMechDb->setEnabled(val);
 }
 
+void MainWindow::saveOverCM4()
+{
+	// error checking
+	if( !mix->mechFile.isEmpty() ){
+		if( !iomgr->saveToCM4(mix->mechFile) )
+		{
+			QMessageBox::critical(this, "Error",
+				QString("Error $1: $2").arg(iomgr->getStatus())
+				.arg(iomgr->getMessage())
+			);
+		}
+		else statusBar()->showMessage("Saving to " + QFileInfo(mix->mechFile).fileName() + "...", 1000);
+	}
+	else saveToCM4();
+}
+
 void MainWindow::saveToCM4()
 {
 	QString filename = "";
@@ -520,9 +537,19 @@ void MainWindow::saveToCM4()
 	if( !save.exec() )
 		return;
 	filename = save.selectedFiles()[0];
-	statusBar()->showMessage("Saving to " + QFileInfo(filename).fileName() + "...", 1000);
-	if( filename!="" )
-		iomgr->saveToCM4(filename);
+	
+	// error checking
+	if( filename!="" ){
+		if( !iomgr->saveToCM4(filename) )
+		{
+			QMessageBox::critical(this, "Error",
+				QString("Error $1: $2").arg(iomgr->getStatus())
+				.arg(iomgr->getMessage())
+			);
+		}
+		else statusBar()->showMessage("Saving to " + QFileInfo(filename).fileName() + "...", 1000);
+	}
+		
 	//statusBar()->clearMessage();
 }
 
@@ -549,6 +576,7 @@ void MainWindow::loadFromCM4()
 	if( !iomgr->loadFromCM4( mech ) ){
 		QMessageBox::critical(this, "Chemecher 4", "Failed to load file: "+iomgr->getMessage());
 	}
+	else mix->mechFile = mech;
 }
 
 void MainWindow::saveToCM3()
