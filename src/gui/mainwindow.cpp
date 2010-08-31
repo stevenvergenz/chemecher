@@ -457,6 +457,7 @@ void MainWindow::purgeWindowTypes()
 
 void MainWindow::editSimParams()
 {
+	//mdi->addSubWindow(new SimParams())->show();
 	SimParams *simparams = new SimParams(this);
 	simparams->exec();
 }
@@ -494,7 +495,10 @@ void MainWindow::newMech( bool val )
 			return;
 	}
 	
-	if(val) mix->clone( new Mix() );
+	Mix* temp = new Mix();
+	if(val) mix->clone( temp );
+	delete temp;
+	
 	mix->isActive = val;
 	foreach( QAction *act, ui.menu_Mechanism->actions() )
 		act->setEnabled(val);
@@ -507,6 +511,7 @@ void MainWindow::newMech( bool val )
 	ui.actSaveAs->setEnabled(val);
 	ui.actSaveToCM3->setEnabled(val);
 	ui.actSaveMechDb->setEnabled(val);
+	if( val ) editSimParams();
 }
 
 void MainWindow::saveOverCM4()
