@@ -3,7 +3,8 @@
 Mix *mix = new Mix();
 
 Mix::Mix()
-	: mechName(""), mechDesc(""),
+	: isActive( false ),
+	  mechName(""), mechDesc(""),
 	  timeStep(0), reportStep(0),
 	  startTime(0), endTime(0),
 	  debugStart(0), debugEnd(0),
@@ -27,12 +28,11 @@ Cpd* Mix::addCpd(Cpd *cpd) {
 	emit cpdListChanged();
 	return cpd;
 }
-void Mix::removeCpd(Cpd *cpd)
+Cpd* Mix::removeCpd(Cpd *cpd)
 {
 	CpdList.removeOne(cpd);
-	delete cpd;
 	emit cpdListChanged();
-	//return cpd;
+	return cpd;
 }
 void Mix::swapCpds(int first, int second)
 {
@@ -67,12 +67,11 @@ Step* Mix::addStep(Step *step) {
 	emit stepListChanged();
 	return step;
 }
-void Mix::removeStep(Step *step)
+Step* Mix::removeStep(Step *step)
 {
 	StepList.removeOne(step);
-	delete step;
 	emit stepListChanged();
-	//return step;
+	return step;
 }
 void Mix::swapSteps(int first, int second)
 {
@@ -201,14 +200,6 @@ QList<QStringList> Mix::availableMethods()
 	methods.append( QStringList() << "runge" << "kutta" << "gill" );
 	return methods;
 }
-
-void Mix::setActive(bool val)
-{
-	active = val;
-	emit isActiveChanged(val);
-}
-bool Mix::isActive()
-{return active;}
 
 void Mix::initialize()
 {

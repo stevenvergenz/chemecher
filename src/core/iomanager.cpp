@@ -35,8 +35,7 @@ bool IOManager::saveToCM3(QString mech, QString sim)
 		cpdlist.append( mix->CpdList[i]->tov3String() );
 	
 	// line up the whitespace in the cpd list
-	if( QSettings().value("io/line_up_whitespace", true).toBool() )
-		lineUpWhitespace( cpdlist, 4 );
+	lineUpWhitespace( cpdlist, 4 );
 	
 	// output it
 	for( int i=0; i<cpdlist.size(); i++ )
@@ -96,10 +95,6 @@ bool IOManager::saveToCM3(QString mech, QString sim)
 
 	//done writing, close file
 	sfile.close();
-	
-	// set the filename variables
-	mechfile = mech;
-	simfile  = sim;
 
 	return true;
 }
@@ -363,11 +358,6 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 	
 	mix->clone( &newmix );
 	status = LOADED_CM3;
-	
-	// set the filename variables
-	mechfile = mech;
-	simfile  = sim;
-	
 	return true;
 }
 
@@ -489,11 +479,6 @@ bool IOManager::saveToCM4(QString filename)
 	// output to the file
 	sfile.write( fcontents->toAscii() );
 	sfile.close();
-	
-	// set the filename variables
-	mechfile = filename;
-	simfile  = "";
-	
 	return true;
 }
 
@@ -692,11 +677,6 @@ bool IOManager::loadFromCM4(QString filename)
 	// finally done loading!
 	mix->clone(&newmix);
 	setError(LOADED_CM4, "Loaded successfully");
-	
-	// set the filename variables
-	mechfile = filename;
-	simfile  = "";
-	
 	return true;
 }
 
@@ -774,4 +754,38 @@ void IOManager::lineUpWhitespace(QList<QString> &lines, int numcols)
 			lines[i].insert( colpos + temp.length(), QString(" ").repeated(max-temp.length()) );
 		}
 	}
+}
+
+/*
+	The following functions handle the output of runtime data
+	from the calculation loop.
+*/
+void IOManager::openRunOutputFile(QString filename)
+{
+
+}
+
+void IOManager::openDebugOutputFile(QString filename)
+{
+
+}
+
+void IOManager::openLogFile(QString filename)
+{
+
+}
+
+void IOManager::printOutputMechInfo()
+{
+
+}
+
+void IOManager::printLogMechInfo()
+{
+
+}
+
+void IOManager::printData( double curTime )
+{
+
 }

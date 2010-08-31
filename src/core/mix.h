@@ -19,11 +19,14 @@ public:
 	
 	Mix();
 	
+	// stores whether mix is in use
+	bool isActive;
+	
 	// compound functions
 	QList<Cpd*> CpdList;
 	QStringList cpdIdList();
 	Cpd* addCpd(Cpd *cpd);
-	void removeCpd(Cpd *cpd);
+	Cpd* removeCpd(Cpd *cpd);
 	void swapCpds(int first, int second);
 	Cpd* getCpdById(QString id);
 	
@@ -32,7 +35,7 @@ public:
 	QStringList stepNameList();
 	QStringList stepStringList();
 	Step* addStep(Step *step);
-	void removeStep(Step *step);
+	Step* removeStep(Step *step);
 	void swapSteps(int first, int second);
 	Step* getStepByString(QString string);
 	Step* getStepByName(QString name);
@@ -87,16 +90,6 @@ public slots:
 signals:
 	void stepListChanged();
 	void cpdListChanged();
-	
-	void isActiveChanged( bool val );
-	
-private:
-	// stores whether mix is in use
-	bool active;
-public slots:
-	void setActive( bool val );
-public:
-	bool isActive();
 	
 };
 

@@ -46,7 +46,7 @@
     <addaction name="separator"/>
     <addaction name="action_Import"/>
     <addaction name="separator"/>
-    <addaction name="actPrint"/>
+    <addaction name="action_Print_Mechanism"/>
     <addaction name="action_Print_Preview"/>
     <addaction name="actionPrinting_Preferences"/>
     <addaction name="separator"/>
@@ -57,7 +57,7 @@
      <string>&amp;Tools</string>
     </property>
     <addaction name="actionFormatting_Wizard"/>
-    <addaction name="actPrefs"/>
+    <addaction name="actionPreferences"/>
    </widget>
    <widget class="QMenu" name="menu_Help">
     <property name="title">
@@ -542,7 +542,10 @@
     <string>Formatting Wizard...</string>
    </property>
   </action>
-  <action name="actPrefs">
+  <action name="actionPreferences">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Preferences</string>
    </property>
@@ -632,9 +635,12 @@
     <enum>Qt::ApplicationShortcut</enum>
    </property>
   </action>
-  <action name="actPrint">
+  <action name="action_Print_Mechanism">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
-    <string>&amp;Print</string>
+    <string>&amp;Print Mechanism</string>
    </property>
   </action>
   <action name="action_Print_Preview">

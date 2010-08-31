@@ -3,38 +3,38 @@
 StepWindow::StepWindow(Step* base, QWidget* parent, bool isnew)
 	: QWidget(parent), baseStep(base)
 {
-	ui->setupUi(this);
+	ui.setupUi(this);
 	
 	// initialize reagent boxes;
 	reactants = new ReagentBox_t;
 	products  = new ReagentBox_t;
 	reactants->lstCombos = QList<QComboBox*>();
-	reactants->addButton = ui->pushAddReac;
-	reactants->frame     = ui->frmReacs;
-	reactants->layout    = ui->layReac;
-	products->addButton  = ui->pushAddProd;
-	products->frame      = ui->frmProds;
-	products->layout     = ui->layProd;
+	reactants->addButton = ui.pushAddReac;
+	reactants->frame     = ui.frmReacs;
+	reactants->layout    = ui.layReac;
+	products->addButton  = ui.pushAddProd;
+	products->frame      = ui.frmProds;
+	products->layout     = ui.layProd;
 	
 	// validator for k textboxes
 	QDoubleValidator *val = new QDoubleValidator(0., 1000000., 30, 0);
-	ui->spinKMinus->setValidator(val);
-	ui->spinKPlus->setValidator(val);
+	ui.spinKMinus->setValidator(val);
+	ui.spinKPlus->setValidator(val);
 	
 	// if the compound is new
 	if( isnew ) {
 		setWindowTitle( "New step" );
-		ui->pushValidate->setText("&Add");
+		ui.pushValidate->setText("&Add");
 	}
 	else {
 		setWindowTitle( base->name() );
-		ui->pushValidate->setText("&Update");
+		ui.pushValidate->setText("&Update");
 		
 		// initialize the fields
-		ui->txtName    ->setText( base->name()   );
-		ui->txtDesc    ->setText( base->desc()   );
-		ui->spinKPlus  ->setText( QString("%1").arg(base->kPlus())  );
-		ui->spinKMinus ->setText( QString("%1").arg(base->kMinus()) );
+		ui.txtName    ->setText( base->name()   );
+		ui.txtDesc    ->setText( base->desc()   );
+		ui.spinKPlus  ->setText( QString("%1").arg(base->kPlus())  );
+		ui.spinKMinus ->setText( QString("%1").arg(base->kMinus()) );
 		
 		for( int i=0; i<baseStep->reactantList().size(); i++ ) {
 			addCpd( reactants, false );
@@ -51,8 +51,8 @@ StepWindow::StepWindow(Step* base, QWidget* parent, bool isnew)
 	 *******************/
 	
 	// validation
-	connect( ui->txtName, SIGNAL(textChanged(QString)), this, SLOT(checkValidationState()) );
-	connect( ui->pushValidate, SIGNAL(clicked()), this, SLOT(validate()) );
+	connect( ui.txtName, SIGNAL(textChanged(QString)), this, SLOT(checkValidationState()) );
+	connect( ui.pushValidate, SIGNAL(clicked()), this, SLOT(validate()) );
 	connect( this, SIGNAL(validated()), mix, SIGNAL(stepListChanged()) );
 	
 	// cpd list updating
@@ -61,16 +61,16 @@ StepWindow::StepWindow(Step* base, QWidget* parent, bool isnew)
 	updateCpdLists();
 	
 	// connect add reactants and products
-	connect( ui->pushAddReac,   SIGNAL(clicked()), this, SLOT(addReac()) );
-	connect( ui->pushAddProd,   SIGNAL(clicked()), this, SLOT(addProd()) );
-	connect( ui->pushCreateCpd, SIGNAL(clicked()), this, SIGNAL(addCpdClicked()) );
+	connect( ui.pushAddReac,   SIGNAL(clicked()), this, SLOT(addReac()) );
+	connect( ui.pushAddProd,   SIGNAL(clicked()), this, SLOT(addProd()) );
+	connect( ui.pushCreateCpd, SIGNAL(clicked()), this, SIGNAL(addCpdClicked()) );
 	
 	// connect slots to keep step up to date
-	connect( ui->txtDesc,    SIGNAL(textEdited(QString)),
+	connect( ui.txtDesc,    SIGNAL(textEdited(QString)),
 			 baseStep,      SLOT(setDesc(QString))  );
-	connect( ui->spinKPlus,  SIGNAL(textEdited(QString)),
+	connect( ui.spinKPlus,  SIGNAL(textEdited(QString)),
 	         baseStep,      SLOT(setKPlus(QString))  );
-	connect( ui->spinKMinus, SIGNAL(textEdited(QString)),
+	connect( ui.spinKMinus, SIGNAL(textEdited(QString)),
 	         baseStep,      SLOT(setKMinus(QString)) );
 	
 	// get the combo boxes (if any) to display the list of compounds
@@ -80,28 +80,21 @@ StepWindow::StepWindow(Step* base, QWidget* parent, bool isnew)
 	checkValidationState();
 }
 
-StepWindow::~StepWindow()
-{
-	if( !mix->StepList.contains(baseStep) )
-		delete baseStep;
-	delete ui;
-}
-
 // makes sure name/state combo is valid, adds cpd
 void StepWindow::validate()
 {
-	QString name = ui->txtName->text();
+	QString name = ui.txtName->text();
 	
 	if( name.length()==0 ) {
 		QMessageBox::critical(this, "Error", "Name must not be empty!", QMessageBox::Ok);
-		ui->txtName->setFocus();
+		ui.txtName->setFocus();
 		return;
 	}
 	
 	/*for( int i=0; i<Cpd::STATES->size(); i++ ) {
 		if( name.contains(Cpd::STATES[i]) ) {
 			QMessageBox::critical(this, "Error", "Name cannot contain state label: " + Cpd::STATES[i], QMessageBox::Ok);
-			ui->txtName->setFocus();
+			ui.txtName->setFocus();
 			return;
 		}
 	}*/
@@ -119,36 +112,36 @@ void StepWindow::validate()
 		emit validated();
 		
 		checkValidationState();
-		ui->txtDesc->setFocus();
+		ui.txtDesc->setFocus();
 		
 		setWindowTitle( baseStep->name() );
-		ui->pushValidate->setText("&Update");
+		ui.pushValidate->setText("&Update");
 	}
 	else {
 		QMessageBox::critical(this, "Error", "Name must be unique!", QMessageBox::Ok);
-		ui->txtName->setText(baseStep->name());
-		ui->txtName->setFocus();
-		ui->txtName->setSelection(0, name.length());
+		ui.txtName->setText(baseStep->name());
+		ui.txtName->setFocus();
+		ui.txtName->setSelection(0, name.length());
 		checkValidationState();
 	}
 }
 void StepWindow::checkValidationState()
 {
-	if( ui->txtName->text()=="" || ui->txtName->text()!=baseStep->name() ) {
+	if( ui.txtName->text()=="" || ui.txtName->text()!=baseStep->name() ) {
 		setBottomEnabled(false);
-		ui->pushValidate->setEnabled(true);
+		ui.pushValidate->setEnabled(true);
 	}
 	else {
 		setBottomEnabled(true);
-		ui->pushValidate->setEnabled(false);
+		ui.pushValidate->setEnabled(false);
 	}
 }
 void StepWindow::setBottomEnabled( bool val )
 {
-	ui->lblDesc ->setEnabled(val);
-	ui->txtDesc ->setEnabled(val);
-	ui->frmKs   ->setEnabled(val);
-	ui->frmStep ->setEnabled(val);
+	ui.lblDesc ->setEnabled(val);
+	ui.txtDesc ->setEnabled(val);
+	ui.frmKs   ->setEnabled(val);
+	ui.frmStep ->setEnabled(val);
 }
 
 void StepWindow::refreshReagentBoxConnections()
@@ -343,8 +336,8 @@ void StepWindow::updateCpdLists()
 			combo->setCurrentIndex(combo->findText(temp));
 	}
 	connectReagentBoxes();
-	ui->pushAddProd->setEnabled(mix->CpdList.size()>0);
-	ui->pushAddReac->setEnabled(mix->CpdList.size()>0);
+	ui.pushAddProd->setEnabled(mix->CpdList.size()>0);
+	ui.pushAddReac->setEnabled(mix->CpdList.size()>0);
 	if( mix->CpdList.size()>0 )
 		setReagents();
 	else
@@ -366,16 +359,16 @@ void StepWindow::updateCpdLists()
 // event called when something is dropped onto the form
 void StepWindow::dropEvent(QDropEvent *event)
 {
-	QPoint pos = event->pos() - ui->fraStep->pos();
-	if (event->mimeData()->hasText() && ui->lblReac1->geometry().contains(pos)) {
+	QPoint pos = event->pos() - ui.fraStep->pos();
+	if (event->mimeData()->hasText() && ui.lblReac1->geometry().contains(pos)) {
 		
 		qDebug() << ":D";
 		
 		QString cpdid = event->mimeData()->text();
 		Cpd *cpd = mix->getCpdById(event->mimeData()->text());
 		
-		ui->lblReac1->setText(cpd->toString());
-		ui->lblReac1->setBackgroundRole(QPalette::Window);
+		ui.lblReac1->setText(cpd->toString());
+		ui.lblReac1->setBackgroundRole(QPalette::Window);
 	}
 	else
 		event->ignore();
@@ -384,16 +377,16 @@ void StepWindow::dropEvent(QDropEvent *event)
 void StepWindow::dragMoveEvent(QDragMoveEvent *event)
 {
 	// get the relative mouse position
-	QPoint pos = event->pos() - ui->fraStep->pos();
+	QPoint pos = event->pos() - ui.fraStep->pos();
 	
 	// if drag event is text and mouse is within label
-	if( event->mimeData()->hasText() && ui->lblReac1->geometry().contains(pos) ) {
+	if( event->mimeData()->hasText() && ui.lblReac1->geometry().contains(pos) ) {
 		// darken the label background
-		ui->lblReac1->setBackgroundRole(QPalette::Midlight);
+		ui.lblReac1->setBackgroundRole(QPalette::Midlight);
 	}
 	// otherwise reset the background color
 	else {
-		ui->lblReac1->setBackgroundRole(QPalette::Window);
+		ui.lblReac1->setBackgroundRole(QPalette::Window);
 	}
 }
 */

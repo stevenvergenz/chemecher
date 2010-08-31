@@ -8,9 +8,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	ui.setupUi(this);
 	mdi = ui.mdi;
 	
-	QCoreApplication::setOrganizationName("UNF Chemistry Department");
-	QCoreApplication::setApplicationName("CheMecher4");
-	
 	// misc stuff
 	setCentralWidget(ui.mdi);
 	setWindowState( windowState() | Qt::WindowMaximized );
@@ -28,21 +25,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	///////////////////
 	// SIGNALS/SLOTS //
 	///////////////////
-	
-	// stuff that's dependent on the mech being active
-	foreach( QAction *act, ui.menu_Mechanism->actions() )
-		connect( mix, SIGNAL(isActiveChanged(bool)), act, SLOT(setEnabled(bool)) );
-	foreach( QAction *act, ui.menu_Steps->actions() )
-		connect( mix, SIGNAL(isActiveChanged(bool)), act, SLOT(setEnabled(bool)) );
-	foreach( QAction *act, ui.menu_Species->actions() )
-		connect( mix, SIGNAL(isActiveChanged(bool)), act, SLOT(setEnabled(bool)) );
-	connect( mix, SIGNAL(isActiveChanged(bool)), ui.dockWidget,    SLOT(setVisible(bool)) );
-	connect( mix, SIGNAL(isActiveChanged(bool)), ui.actSave,       SLOT(setEnabled(bool)) );
-	connect( mix, SIGNAL(isActiveChanged(bool)), ui.actSaveAs,     SLOT(setEnabled(bool)) );
-	connect( mix, SIGNAL(isActiveChanged(bool)), ui.actSaveToCM3,  SLOT(setEnabled(bool)) );
-	connect( mix, SIGNAL(isActiveChanged(bool)), ui.actSaveMechDb, SLOT(setEnabled(bool)) );
-	connect( mix, SIGNAL(isActiveChanged(bool)), ui.actPrint,      SLOT(setEnabled(bool)) );
-	mix->setActive(false);
 	
 	// context menu
 	connect( ui.lstCpds,  SIGNAL(customContextMenuRequested(QPoint)),
@@ -72,14 +54,12 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	
 	// file menu
 	connect(ui.actNew,         SIGNAL(triggered()), this, SLOT(newMech())     );
-	connect(ui.actSave,        SIGNAL(triggered()), this, SLOT(save())        );
 	connect(ui.actSaveAs,      SIGNAL(triggered()), this, SLOT(saveToCM4())   );
 	connect(ui.actLoad,        SIGNAL(triggered()), this, SLOT(loadFromCM4()) );
 	connect(ui.actSaveToCM3,   SIGNAL(triggered()), this, SLOT(saveToCM3())   );
 	connect(ui.actLoadFromCM3, SIGNAL(triggered()), this, SLOT(loadFromCM3()) );
 	connect(ui.actSaveMechDb,  SIGNAL(triggered()), this, SLOT(saveMechDb())  );
 	connect(ui.actLoadMechDb,  SIGNAL(triggered()), this, SLOT(loadMechDb())  );
-	connect(ui.actPrint,       SIGNAL(triggered()), this, SLOT(print())       );
 	connect(ui.actExit,        SIGNAL(triggered()), qApp, SLOT(quit())        );
 	
 	// mechanism menu
@@ -97,8 +77,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect( ui.actDeleteAllSteps, SIGNAL(triggered()), this,       SLOT(deleteAllSteps()) );
 	connect( ui.actEditSimParams,  SIGNAL(triggered()), this,       SLOT(editSimParams())  );
 	
-	// tools menu
-	connect( ui.actPrefs, SIGNAL(triggered()), this, SLOT(editPrefs()) );
+	// set current mech to not new
+	newMech( false );
 	
 	// view menu
 	connect( ui.actCascade,  SIGNAL(triggered()), ui.mdi, SLOT(cascadeSubWindows())  );
@@ -115,10 +95,40 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	
 }
 
-/** DEBUG MODE ONLY **/
+/** DEBUG MODE ONLY -- DISABLE FOR ACTUAL BUILD **/
 void MainWindow::initTestMech()
 {
+	return;
 	
+	// uncomment next line to disable
+	iomgr->loadFromCM3(
+			"/home/vergenz/programming/chemecher/input/TestMech.txt",
+			"/home/vergenz/programming/chemecher/input/TestSim.txt");
+	
+	return;
+	
+	Cpd* cpd_a = mix->addCpd(new Cpd("A", Cpd::HOMO ));
+	cpd_a->setInitialConc(1.599);
+	Cpd* cpd_b = mix->addCpd(new Cpd("B", Cpd::AQ   ));
+	Cpd* cpd_c = mix->addCpd(new Cpd("C", Cpd::S    ));
+	
+	Step *step = new Step();
+	step->setName("Decay");
+	step->setKPlus(2.41);
+	step->setKMinus(6.8);
+	step->addReactant( cpd_a );
+	//step->addReactant( cpd_b );
+	//step->addProduct ( cpd_c );
+	mix->addStep( step );
+	
+	step = new Step();
+	step->setName("Growth");
+	step->setKPlus(5.12);
+	step->setKMinus(6.9);
+	step->addReactant( cpd_c );
+	step->addProduct ( cpd_b );
+	//step->addProduct ( cpd_c );
+	mix->addStep( step );
 }
 
 /** showCpdWindow
@@ -446,8 +456,8 @@ void MainWindow::purgeWindowTypes()
 
 void MainWindow::editSimParams()
 {
-	SimParams simparams(this);
-	simparams.exec();
+	SimParams *simparams = new SimParams(this);
+	simparams->exec();
 }
 
 void MainWindow::cpdContextMenu( QPoint pos )
@@ -472,37 +482,30 @@ void MainWindow::stepContextMenu( QPoint pos )
 // file menu ////
 //
 
-bool MainWindow::confirmNewMech()
+void MainWindow::newMech( bool val )
 {
-	if( mix->isActive() ) {
+	if( mix->isActive && val ) {
 		QMessageBox::StandardButton ret;
 		ret = QMessageBox::warning( this, "CheMecher",
-				"Are you sure you want to close the current mechanism?",
+				"Are you sure you want to close the current mechanism and create a new one?",
 				QMessageBox::Yes | QMessageBox::Cancel );
 		if( ret == QMessageBox::Cancel )
-			return false;
+			return;
 	}
-	return true;
-}
-
-void MainWindow::newMech( bool val, bool ask )
-{
-	// ask the user for confirmation
-	if( ask && !confirmNewMech() )
-		return;
 	
-	if( val ) {
-		Mix *newmix = new Mix();
-		mix->clone( newmix );
-		delete newmix;
-	}
-	mix->setActive(val);
-	
-}
-
-void MainWindow::save()
-{
-	
+	if(val) mix->clone( new Mix() );
+	mix->isActive = val;
+	foreach( QAction *act, ui.menu_Mechanism->actions() )
+		act->setEnabled(val);
+	foreach( QAction *act, ui.menu_Steps->actions() )
+		act->setEnabled(val);
+	foreach( QAction *act, ui.menu_Species->actions() )
+		act->setEnabled(val);
+	ui.dockWidget->setVisible(val);
+	ui.actSave->setEnabled(val);
+	ui.actSaveAs->setEnabled(val);
+	ui.actSaveToCM3->setEnabled(val);
+	ui.actSaveMechDb->setEnabled(val);
 }
 
 void MainWindow::saveToCM4()
@@ -525,9 +528,6 @@ void MainWindow::saveToCM4()
 
 void MainWindow::loadFromCM4()
 {
-	if( !confirmNewMech() )
-		return;
-	
 	QFileDialog load(this);
 	load.setAcceptMode(QFileDialog::AcceptOpen);
 	load.setFileMode( QFileDialog::ExistingFile );
@@ -543,7 +543,7 @@ void MainWindow::loadFromCM4()
 	if( mech=="" )
 		return;
 	
-	newMech(true, false);
+	newMech();
 	
 	// load the file
 	if( !iomgr->loadFromCM4( mech ) ){
@@ -615,9 +615,6 @@ void MainWindow::saveToCM3()
 
 void MainWindow::loadFromCM3()
 {
-	if( !confirmNewMech() )
-		return;
-	
 	QFileDialog load(this);
 	load.setAcceptMode(QFileDialog::AcceptOpen);
 	load.setFileMode( QFileDialog::ExistingFile );
@@ -649,7 +646,7 @@ void MainWindow::loadFromCM3()
 		return;
 	}
 	
-	newMech(true, false);
+	newMech();
 	
 	// load the file
 	if( !iomgr->loadFromCM3( mech, sim ) ) {
@@ -686,31 +683,8 @@ void MainWindow::loadMechDb()
 	dialog->exec();
 }
 
-void MainWindow::print()
-{
-	if( !mix->isActive() )
-		return;
-	
-	QPrinter printer;
-
-	QPrintDialog *dialog = new QPrintDialog(&printer, this);
-	dialog->setWindowTitle(tr("Print Document"));
-	if( dialog->exec() != QDialog::Accepted )
-		return;
-	
-	
-	
-	statusBar()->showMessage( "Printing! :D" );
-}
-
 //
 ////////////////////////////////
-
-void MainWindow::editPrefs()
-{
-	PrefsWindow *prefs = new PrefsWindow(this);
-	prefs->exec();
-}
 
 // help menu
 void MainWindow::reportBug()
@@ -735,6 +709,6 @@ void MainWindow::suggestFeature()
 {QDesktopServices::openUrl( QUrl("http://sourceforge.net/tracker/?func=add&group_id=313094&atid=1317699") );}
 void MainWindow::showAboutWindow()
 {
-	About about;
-	about.exec();
+	About *about = new About();
+	about->exec();
 }

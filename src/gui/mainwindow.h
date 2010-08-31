@@ -19,8 +19,7 @@
 #include <QDir>
 #include <QSignalMapper>
 #include <QDesktopServices>
-#include <QPrinter>
-#include <QPrintDialog>
+#include <QKeySequence>
 
 class MainWindow;
 
@@ -28,10 +27,10 @@ class MainWindow;
 #include "cpdwindow.h"
 #include "mechdb.h"
 #include "mix.h"
+//#include "draglistwidget.h"
 #include "iomanager.h"
 #include "about.h"
 #include "simparams.h"
-#include "prefswindow.h"
 
 #include "ui_mainwindow.h"
 
@@ -74,18 +73,13 @@ public slots:
 	void stepContextMenu( QPoint pos );
 	
 	// file menu
-	void newMech( bool val = true, bool ask = true );
-	bool confirmNewMech();
-	void save();
+	void newMech( bool val = true );
 	void saveToCM4();
 	void loadFromCM4();
 	void saveToCM3();
 	void loadFromCM3();
 	void saveMechDb();
 	void loadMechDb();
-	void print();
-	
-	void editPrefs();
 	
 	void reportBug();
 	void suggestFeature();
@@ -95,6 +89,7 @@ signals:
 
 private:
 	Ui::mainWindow ui;
+	//QTableWidget *lstCpds;
 	
 	QSignalMapper *stepMapper, *cpdMapper;
 	

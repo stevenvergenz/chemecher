@@ -44,9 +44,16 @@ public:
 	QString getMessage() {return message;}
 	
 	void lineUpWhitespace( QList<QString> &lines, int numcols );
-	
-	QString mechfile, simfile;
-	
+
+	// functions to manage data output in the midst of calculation
+
+	void openRunOutputFile(QString filename);
+	void openDebugOutputFile(QString filename);
+	void openLogFile(QString filename);
+	void printOutputMechInfo();
+	void printLogMechInfo();
+	void printData( double curTime );
+
 private:
 	QString getLine( QTextStream& txt, int &linecounter, bool stripcomments = true );
 	bool setError( Status stat, QString errmsg, int linenum=-1, QString filename="" );
