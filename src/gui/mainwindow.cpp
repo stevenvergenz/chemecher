@@ -53,7 +53,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect(mix, SIGNAL(stepListChanged()), this, SLOT(updateStepList()));
 	
 	// file menu
-	connect(ui.actNew,         SIGNAL(triggered()), this, SLOT(newMech())     );
+	connect(ui.actNew,         SIGNAL(triggered()), this, SLOT(newClick())     );
 	connect(ui.actSave,        SIGNAL(triggered()), this, SLOT(saveOverCM4()) );
 	connect(ui.actSaveAs,      SIGNAL(triggered()), this, SLOT(saveToCM4())   );
 	connect(ui.actLoad,        SIGNAL(triggered()), this, SLOT(loadFromCM4()) );
@@ -484,6 +484,12 @@ void MainWindow::stepContextMenu( QPoint pos )
 // file menu ////
 //
 
+// simple container function for newMech + simparams
+void MainWindow::newclick()
+{
+	newMech(); editSimParams();
+}
+
 void MainWindow::newMech( bool val )
 {
 	if( mix->isActive && val ) {
@@ -511,7 +517,6 @@ void MainWindow::newMech( bool val )
 	ui.actSaveAs->setEnabled(val);
 	ui.actSaveToCM3->setEnabled(val);
 	ui.actSaveMechDb->setEnabled(val);
-	if( val ) editSimParams();
 }
 
 void MainWindow::saveOverCM4()
@@ -575,7 +580,7 @@ void MainWindow::loadFromCM4()
 	if( mech=="" )
 		return;
 	
-	newMech();
+	newMech( );
 	
 	// load the file
 	if( !iomgr->loadFromCM4( mech ) ){
