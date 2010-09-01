@@ -485,7 +485,7 @@ void MainWindow::stepContextMenu( QPoint pos )
 //
 
 // simple container function for newMech + simparams
-void MainWindow::newclick()
+void MainWindow::newClick()
 {
 	newMech(); editSimParams();
 }
