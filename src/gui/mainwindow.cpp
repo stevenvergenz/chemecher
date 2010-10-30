@@ -766,7 +766,8 @@ void MainWindow::showAboutWindow()
 
 void MainWindow::testFIO()
 {
-	iomgr->openRunOutputFile("test1.txt");
+        if( !iomgr->openRunOutputFile("test1.txt") )
+            QMessageBox::warning(this, "Error", "The file failed to open.");
 	iomgr->printMechSummary(iomgr->data);
 	iomgr->printData(0);
 }

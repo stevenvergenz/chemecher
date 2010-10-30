@@ -773,15 +773,16 @@ void IOManager::lineUpWhitespace(QList<QString> &lines, int numcols)
 bool IOManager::openRunOutputFile(QString filename)
 {
     //open the simulation file
-	QFile out(filename);
-	if( !out.open( QFile::WriteOnly ) )
+        QFile* out = new QFile(filename);
+        if( !out->open( QFile::WriteOnly ) )
 		return setError( FS_ERROR, "Error opening file "+filename );
 
 	// open text buffer
-	data.setDevice(&out);
+        data.setDevice(out);
 
 	// set formatting properties
 	data << qSetFieldWidth(outputPrecision+6) << right << forcepoint << fixed;
+        data << "Opened correctly" << endl;
 
 	return true;
 }
@@ -816,8 +817,20 @@ void IOManager::printMechSummary(QTextStream& fout)
 
 void IOManager::printData( double curTime )
 {
-	// print the column headers
+	// print the column headers if need be
 	if( curTime == 0 ){
 		data << "Time:";
+		for(int i=0; i<mix->CpdList.size(); i++){
+			data << mix->CpdList[i]->toString();
+		}
+		data << endl;
+	}
+
+	// print the timestamp for this step
+	data << curTime;
+
+	// print the concentrations of all species
+	for(int i=0; i<mix->CpdList.size(); i++){
+		data << mix->CpdList[i]->savedConc();
 	}
 }
