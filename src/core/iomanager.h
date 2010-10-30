@@ -20,6 +20,7 @@ public:
 	enum Status{ NOT_LOADED=0, LOADED_CM3, LOADED_CM4, PARSE_ERROR, FS_ERROR, ERROR };
 
 	IOManager();
+	~IOManager();
 	
 	// store information about entries into simulation file
 	enum SimEntry_types{ v_bool, v_double, v_int, v_order, v_method, v_trans };
@@ -47,17 +48,23 @@ public:
 
 	// functions to manage data output in the midst of calculation
 
-	void openRunOutputFile(QString filename);
-	void openDebugOutputFile(QString filename);
-	void openLogFile(QString filename);
-	void printOutputMechInfo();
-	void printLogMechInfo();
+	bool openRunOutputFile(QString filename);
+	bool openDebugOutputFile(QString filename);
+	bool openLogFile(QString filename);
+
+	void printMechSummary(QTextStream& fout);
 	void printData( double curTime );
+
+	// public file pointers (just in case)
+	QTextStream data, log, debug;
 
 private:
 	QString getLine( QTextStream& txt, int &linecounter, bool stripcomments = true );
 	bool setError( Status stat, QString errmsg, int linenum=-1, QString filename="" );
 	
+
+	int outputPrecision;
+
 	Status status;
 	QString message;
 	

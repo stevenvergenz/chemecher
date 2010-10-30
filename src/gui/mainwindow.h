@@ -31,6 +31,7 @@ class MainWindow;
 #include "iomanager.h"
 #include "about.h"
 #include "simparams.h"
+#include "formatwizard.h"
 
 #include "ui_mainwindow.h"
 
@@ -83,10 +84,13 @@ public slots:
 	void saveMechDb();
 	void loadMechDb();
 	
+	void showFormattingWizard();
 	void reportBug();
 	void suggestFeature();
 	void showAboutWindow();
-	
+
+	void testFIO();
+
 signals:
 
 private:

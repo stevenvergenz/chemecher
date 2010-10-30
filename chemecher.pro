@@ -25,14 +25,16 @@ HEADERS += src/core/cpd.h \
     src/gui/sqlconfig.h \
     src/gui/simparams.h \
     src/core/iomanager.h \
-    src/gui/about.h 
+    src/gui/about.h \
+    src/gui/formatwizard.h
 FORMS += src/gui/cpdwindow.ui \
     src/gui/mainwindow.ui \
     src/gui/stepwindow.ui \
     src/gui/mechdb.ui \
     src/gui/sqlconfig.ui \
     src/gui/simparams.ui \
-    src/gui/about.ui 
+    src/gui/about.ui \
+    src/gui/formatwizard.ui
 SOURCES += src/chemecher.cpp \
     src/core/cpd.cpp \
     src/core/mix.cpp \
@@ -45,4 +47,5 @@ SOURCES += src/chemecher.cpp \
     src/gui/sqlconfig.cpp \
     src/gui/simparams.cpp \
     src/core/iomanager.cpp \
-    src/gui/about.cpp 
+    src/gui/about.cpp \
+    src/gui/formatwizard.cpp

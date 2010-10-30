@@ -81,6 +81,10 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	// set current mech to not new
 	newMech( false );
 	
+	// tools menu
+	connect( ui.actionFormatting_Wizard, SIGNAL(triggered()), this, SLOT(showFormattingWizard()));
+	connect( ui.actionTest_FIO,          SIGNAL(triggered()), this, SLOT(testFIO())             );
+	
 	// view menu
 	connect( ui.actCascade,  SIGNAL(triggered()), ui.mdi, SLOT(cascadeSubWindows())  );
 	connect( ui.actTile,     SIGNAL(triggered()), ui.mdi, SLOT(tileSubWindows())     );
@@ -721,6 +725,15 @@ void MainWindow::loadMechDb()
 	dialog->exec();
 }
 
+/***********************
+Show the formatting wizard
+************************/
+void MainWindow::showFormattingWizard()
+{
+	FormatWizard* wizard = new FormatWizard(this);
+	wizard->show();
+}
+
 //
 ////////////////////////////////
 
@@ -749,4 +762,11 @@ void MainWindow::showAboutWindow()
 {
 	About *about = new About();
 	about->exec();
+}
+
+void MainWindow::testFIO()
+{
+	iomgr->openRunOutputFile("test1.txt");
+	iomgr->printMechSummary(iomgr->data);
+	iomgr->printData(0);
 }

@@ -38,6 +38,7 @@ public:
 
 	bool isHomo();
 	bool isHetero();
+	void saveConc();
 
 	/*    Getters    */
 	QString shortName();
@@ -47,6 +48,8 @@ public:
 	double sharpness();
 	Transition transition();
 	double initialConc();
+	double savedConc();
+	double conc();
 
 public slots:
 	void setShortName(QString n);
@@ -61,6 +64,7 @@ public slots:
 	void setSharpness(double s);
 	void setInitialConc(double c);
 	void setInitialConc(QString c);
+	void setConc(double c);
 
 signals:
 	void shortNameChanged(QString);
@@ -78,7 +82,7 @@ private:
 	double sharp;
 	Transition trans;
 	double partial_conc[6];
-	double conc, saved_conc;
+	double cur_conc, saved_conc;
 	double rate[6];
 
 

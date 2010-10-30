@@ -26,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>709</width>
-     <height>25</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -51,13 +51,6 @@
     <addaction name="actionPrinting_Preferences"/>
     <addaction name="separator"/>
     <addaction name="actExit"/>
-   </widget>
-   <widget class="QMenu" name="menu_Tools">
-    <property name="title">
-     <string>&amp;Tools</string>
-    </property>
-    <addaction name="actionFormatting_Wizard"/>
-    <addaction name="actionPreferences"/>
    </widget>
    <widget class="QMenu" name="menu_Help">
     <property name="title">
@@ -113,6 +106,14 @@
     <addaction name="separator"/>
     <addaction name="actEditSimParams"/>
     <addaction name="actLaunchSim"/>
+   </widget>
+   <widget class="QMenu" name="menu_Tools">
+    <property name="title">
+     <string>&amp;Tools</string>
+    </property>
+    <addaction name="actionFormatting_Wizard"/>
+    <addaction name="actionPreferences"/>
+    <addaction name="actionTest_FIO"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Mechanism"/>
@@ -536,7 +537,7 @@
   </action>
   <action name="actionFormatting_Wizard">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Formatting Wizard...</string>
@@ -820,6 +821,11 @@
   <action name="actLoadFromCM3">
    <property name="text">
     <string>Load from CM3 Format...</string>
+   </property>
+  </action>
+  <action name="actionTest_FIO">
+   <property name="text">
+    <string>Test FIO!</string>
    </property>
   </action>
  </widget>

@@ -3,7 +3,13 @@
 IOManager *iomgr = new IOManager();
 
 IOManager::IOManager()
-{}
+{
+	outputPrecision = 6;
+}
+IOManager::~IOManager()
+{
+	data.device()->close();
+}
 
 bool IOManager::saveToCM3(QString mech, QString sim)
 {
@@ -764,32 +770,54 @@ void IOManager::lineUpWhitespace(QList<QString> &lines, int numcols)
 	The following functions handle the output of runtime data
 	from the calculation loop.
 */
-void IOManager::openRunOutputFile(QString filename)
+bool IOManager::openRunOutputFile(QString filename)
 {
+    //open the simulation file
+	QFile out(filename);
+	if( !out.open( QFile::WriteOnly ) )
+		return setError( FS_ERROR, "Error opening file "+filename );
 
+	// open text buffer
+	data.setDevice(&out);
+
+	// set formatting properties
+	data << qSetFieldWidth(outputPrecision+6) << right << forcepoint << fixed;
+
+	return true;
 }
 
-void IOManager::openDebugOutputFile(QString filename)
+bool IOManager::openDebugOutputFile(QString filename)
 {
+	QFile out(filename);
+	if( !out.open( QFile::WriteOnly ) )
+		return setError( FS_ERROR, "Error opening file "+filename );
 
+	// set text buffer
+	debug.setDevice(&out);
+
+	return true;
 }
 
-void IOManager::openLogFile(QString filename)
+bool IOManager::openLogFile(QString filename)
 {
+	QFile out(filename);
+	if( !out.open( QFile::WriteOnly | QFile::Append ) )
+		return setError( FS_ERROR, "Error opening file "+filename );
 
+	log.setDevice(&out);
+
+	return true;
 }
 
-void IOManager::printOutputMechInfo()
+void IOManager::printMechSummary(QTextStream& fout)
 {
-
-}
-
-void IOManager::printLogMechInfo()
-{
-
+	fout << "This is a piece of data!" << endl;
 }
 
 void IOManager::printData( double curTime )
 {
-
+	// print the column headers
+	if( curTime == 0 ){
+		data << "Time:";
+	}
 }
