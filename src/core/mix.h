@@ -51,6 +51,7 @@ public:
 	void calculateRKF();
 	void calculateLegacy();
 	
+	
 	/*************************
 	 * Simulation parameters *
 	 *************************/

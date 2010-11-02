@@ -184,12 +184,9 @@ int Mix::maxStepLen() {
 	return maxlen;
 }
 
-void Mix::setAutostep(bool val)
-{autostep = val;}
-void Mix::setName( QString val )
-{mechName = val;}
-void Mix::setDesc( QString val )
-{mechDesc = val;}
+void Mix::setAutostep(bool val){autostep = val;}
+void Mix::setName( QString val ){mechName = val;}
+void Mix::setDesc( QString val ){mechDesc = val;}
 
 QList<QStringList> Mix::availableMethods()
 {
@@ -213,5 +210,91 @@ void Mix::calculateRKF()
 
 void Mix::calculateLegacy()
 {
-
+	// declare local variables
+	double curTime = 0, prevTime = startTime;
+	bool overflow = false;
+	int expon = 0; shiftCnt = 0;
+	int curOrder = 0, maxOrder = order;
+	int dTime = 0;
+	
+	// print the log header for this calculation run
+	iomgr->log << endl;
+	iomgr->printMechSummary( iomgr->log );
+	
+	// print initial concentrations to the output file
+	iomgr->printData(0);
+	
+	/*************************************************
+	#             MAIN PROCESSING LOOP               #
+	*************************************************/
+	do { // time loop
+	
+		// save previous concentrations
+		for(int i=0; i<CpdList.size(); i++){
+			CpdList[i]->saveConc();
+		}
+		
+DownStep:
+		
+		// autostepping mechanism
+		if( autostep ){
+			dTime = pow(timeStep*stepfactor, -expon);
+		}
+		else{
+			dTime = timeStep;
+		}
+		
+		// increment time
+		curTime = prevTime + dTime;
+		
+		for( curOrder=1; curOrder<=maxOrder; curOrder++)
+		{
+			// calculate the rates
+			for(int i=0; i<StepList.size(); i++){
+				StepList[i]->calcRates();
+			}
+			
+			// calculate concentrations based on rates
+			for(int i=0; i<CpdList.size(); i++){
+			
+			}
+		}
+		
+	// finish time loop
+	} while( curTime < endTime && !overflow );
+	/*************************************************
+	#         FINISH MAIN PROCESSING LOOP            #
+	*************************************************/
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
