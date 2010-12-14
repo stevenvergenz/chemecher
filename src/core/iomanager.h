@@ -48,14 +48,15 @@ public:
 
 	// functions to manage data output in the midst of calculation
 
-	bool openRunOutputFile(QString filename);
-	bool openDebugOutputFile(QString filename);
-	bool openLogFile(QString filename);
+	bool openRunOutputFile();
+	bool openDebugOutputFile();
+	bool openLogFile();
 
 	void printMechSummary(QTextStream& fout);
 	void printData( double curTime );
 
 	// public file pointers (just in case)
+	QString outputFile, logFile, debugFile;
 	QTextStream data, log, debug;
 	void setTimeFormat(QTextStream& fp);
 	void setDataFormat(QTextStream& fp);

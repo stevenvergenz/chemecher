@@ -771,10 +771,10 @@ void IOManager::lineUpWhitespace(QList<QString> &lines, int numcols)
 	The following functions handle the output of runtime data
 	from the calculation loop.
 */
-bool IOManager::openRunOutputFile(QString filename)
+bool IOManager::openRunOutputFile()
 {
-    //open the simulation file
-        QFile* out = new QFile(filename);
+	//open the simulation file
+        QFile* out = new QFile(outputFile);
         if( !out->open( QFile::WriteOnly ) )
 		return setError( FS_ERROR, "Error opening file "+filename );
 
@@ -782,14 +782,14 @@ bool IOManager::openRunOutputFile(QString filename)
         data.setDevice(out);
 
 	// set formatting properties
-    data << "Opened correctly" << endl;
+	data << "Opened correctly" << endl;
 
 	return true;
 }
 
-bool IOManager::openDebugOutputFile(QString filename)
+bool IOManager::openDebugOutputFile()
 {
-	QFile out(filename);
+	QFile out(debugFile);
 	if( !out.open( QFile::WriteOnly ) )
 		return setError( FS_ERROR, "Error opening file "+filename );
 
@@ -799,9 +799,9 @@ bool IOManager::openDebugOutputFile(QString filename)
 	return true;
 }
 
-bool IOManager::openLogFile(QString filename)
+bool IOManager::openLogFile()
 {
-	QFile out(filename);
+	QFile out(logFile);
 	if( !out.open( QFile::WriteOnly | QFile::Append ) )
 		return setError( FS_ERROR, "Error opening file "+filename );
 

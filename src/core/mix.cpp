@@ -203,12 +203,12 @@ void Mix::initialize()
 
 }
 
-void Mix::calculateRKF()
+bool Mix::calculateRKF()
 {
 
 }
 
-void Mix::calculateLegacy()
+bool Mix::calculateLegacy()
 {
 	// declare local variables
 	double curTime = 0, prevTime = startTime;

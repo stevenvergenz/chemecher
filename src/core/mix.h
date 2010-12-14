@@ -48,8 +48,8 @@ public:
 	
 	void clone(Mix* newmix);
 	void initialize();
-	void calculateRKF();
-	void calculateLegacy();
+	bool calculateRKF();
+	bool calculateLegacy();
 	
 	
 	/*************************
