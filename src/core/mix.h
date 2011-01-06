@@ -10,6 +10,7 @@ class Mix;
 #include "step.h"
 #include "cpd.h"
 #include "dbhandler.h"
+#include "iomanager.h"
 
 class Mix : public QObject
 {

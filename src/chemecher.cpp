@@ -14,7 +14,7 @@ int main(int argc, char** argv)
 	bool isCLI = false;
 	
 	// parse over the arguments for the initialization param
-	for(int i=0; i<argc; i++){
+	for(int i=1; i<argc; i++){
 		if( strcmp(argv[i], "--non-interactive")==0 ){
 			isCLI = true;
 			break;
@@ -42,6 +42,7 @@ int main(int argc, char** argv)
 	}
 }
 
+
 // secondary main function
 // handles the few basic operations required to begin calculation
 int mainNoGUI(int argc, char** argv)
@@ -49,16 +50,12 @@ int mainNoGUI(int argc, char** argv)
 	QString input, output;
 
 	// get the two necessary arguments: input and output files
-	for(int i=0; i<argc; i++){
-		if( argv[i][0] != '-' ){
-			if( !input.isEmpty() )
-				output = argv[i];
-			else	input = argv[i];
-		}
-		else {
-			cout << "Unrecognized third argument!" << endl;
-			printUsage();
-		}
+	for(int i=1; i<argc; i++){
+		if( argv[i][0] == '-' ) continue;
+
+		if( !input.isEmpty() )
+			output = argv[i];
+		else input = argv[i];
 	}
 	if( input.isEmpty() || output.isEmpty() ){
 		cout << "Must specify both an input and an output file!" << endl;
@@ -67,12 +64,13 @@ int mainNoGUI(int argc, char** argv)
 
 	// parse input
 	if( !iomgr->loadFromCM4(input) ){
-		cerr << "Error parsing input: " << iomgr->getMessage() << endl;
+		cout << "Input filename: " << input.toStdString() << endl;
+		cout << "Error parsing input: " << iomgr->getMessage().toStdString() << endl;
 		return 1;
 	}
 
 	// set up the output files
-	iomgr->runFile = output;
+	iomgr->outputFile = output;
 	iomgr->debugFile = "";
 	iomgr->logFile = "CheMechLog.txt";
 
@@ -85,3 +83,4 @@ void printUsage()
 	cout << "Chemecher 4.0.0, developed for the University of North Florida" << endl;
 	cout << "Usage: chemecher [--help] [--non-interactive] <input filename> <output filename>" << endl;
 }
+

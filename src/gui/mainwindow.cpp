@@ -96,9 +96,24 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect(ui.actAbout,          SIGNAL(triggered()), this, SLOT(showAboutWindow()) );
 	connect(ui.actAboutQt,        SIGNAL(triggered()), qApp, SLOT(aboutQt())         );
 	
-	initTestMech();
+	// check for cli arguments: input and output files
+	for(int i=0; i<qApp->arguments().size(); i++){
+		if( qApp->arguments().at(i).startsWith("--") ) continue;
+
+		if( !mix->isActive ){
+			iomgr->loadFromCM4(qApp->arguments().at(i));
+		}
+		else if( iomgr->outputFile.isEmpty() ){
+			iomgr->outputFile = qApp->arguments().at(i);
+		}
+		else {
+			QMessageBox::critical(this, "CLI Parsing Error",
+				"Too many arguments to chemecher.");
+		}
+
+	} // for each argument
 	
-}
+} // constructor
 
 /** DEBUG MODE ONLY -- DISABLE FOR ACTUAL BUILD **/
 void MainWindow::initTestMech()
@@ -766,8 +781,9 @@ void MainWindow::showAboutWindow()
 
 void MainWindow::testFIO()
 {
-        if( !iomgr->openRunOutputFile("test1.txt") )
-            QMessageBox::warning(this, "Error", "The file failed to open.");
+	iomgr->outputFile = "test1.txt";
+	if( !iomgr->openRunOutputFile() )
+		QMessageBox::warning(this, "Error", "The file failed to open.");
 	iomgr->printMechSummary(iomgr->data);
 	iomgr->printData(0);
 }

@@ -205,13 +205,18 @@ void Mix::initialize()
 
 bool Mix::calculateRKF()
 {
-
+	return true;
 }
 
 bool Mix::calculateLegacy()
 {
+	iomgr->openRunOutputFile();
+	iomgr->printMechSummary( iomgr->data );
+	iomgr->printData(0);
+	iomgr->data.device()->close();
+
 	// declare local variables
-	double curTime = 0, prevTime = startTime;
+/*	double curTime = 0, prevTime = startTime;
 	bool overflow = false;
 	int expon = 0; shiftCnt = 0;
 	int curOrder = 0, maxOrder = order;
@@ -224,9 +229,9 @@ bool Mix::calculateLegacy()
 	// print initial concentrations to the output file
 	iomgr->printData(0);
 	
-	/*************************************************
-	#             MAIN PROCESSING LOOP               #
-	*************************************************/
+	//*************************************************
+	//             MAIN PROCESSING LOOP               #
+	//*************************************************
 	do { // time loop
 	
 		// save previous concentrations
@@ -262,8 +267,11 @@ DownStep:
 		
 	// finish time loop
 	} while( curTime < endTime && !overflow );
-	/*************************************************
-	#         FINISH MAIN PROCESSING LOOP            #
-	*************************************************/
+	//*************************************************
+	//         FINISH MAIN PROCESSING LOOP            #
+	//*************************************************
+	*/
+
+	return true;
 }
 
