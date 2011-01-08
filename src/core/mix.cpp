@@ -210,67 +210,43 @@ bool Mix::calculateRKF()
 
 bool Mix::calculateLegacy()
 {
-	iomgr->openRunOutputFile();
+/*	iomgr->openRunOutputFile();
 	iomgr->printMechSummary( iomgr->data );
 	iomgr->printData(0);
-	iomgr->data.device()->close();
+	iomgr->data.device()->close();*/
 
-	// declare local variables
-/*	double curTime = 0, prevTime = startTime;
-	bool overflow = false;
-	int expon = 0; shiftCnt = 0;
-	int curOrder = 0, maxOrder = order;
-	int dTime = 0;
-	
-	// print the log header for this calculation run
-	iomgr->log << endl;
+	bool overflow; // is set if a concentration reaches too high
+	double time; // goes from mix.startTime to mix.endTime
+
+	// open the appropriate files: log, output, and debug
+	iomgr->openLogFile();
 	iomgr->printMechSummary( iomgr->log );
-	
-	// print initial concentrations to the output file
-	iomgr->printData(0);
-	
-	//*************************************************
-	//             MAIN PROCESSING LOOP               #
-	//*************************************************
-	do { // time loop
-	
-		// save previous concentrations
-		for(int i=0; i<CpdList.size(); i++){
-			CpdList[i]->saveConc();
-		}
-		
-DownStep:
-		
-		// autostepping mechanism
-		if( autostep ){
-			dTime = pow(timeStep*stepfactor, -expon);
-		}
-		else{
-			dTime = timeStep;
-		}
-		
-		// increment time
-		curTime = prevTime + dTime;
-		
-		for( curOrder=1; curOrder<=maxOrder; curOrder++)
-		{
-			// calculate the rates
-			for(int i=0; i<StepList.size(); i++){
-				StepList[i]->calcRates();
-			}
-			
-			// calculate concentrations based on rates
-			for(int i=0; i<CpdList.size(); i++){
-			
-			}
-		}
-		
-	// finish time loop
-	} while( curTime < endTime && !overflow );
-	//*************************************************
-	//         FINISH MAIN PROCESSING LOOP            #
-	//*************************************************
-	*/
+	iomgr->openRunOutputFile();
+
+	// print the column headers and initial concentrations
+	iomgr->printData( 0 );
+
+	/////////////////////////////////////////////////////////
+	//               MAIN CALCULATION LOOP                 //
+	/////////////////////////////////////////////////////////
+
+	time = mix->startTime;
+	while( time <= mix->endTime || overflow )
+	{
+
+
+
+
+
+	} // time loop
+
+	// print the mech summary to the data file
+	iomgr->data << endl;
+	iomgr->printMechSummary( iomgr->data );
+
+	// close the appropriate files
+	iomgr->data.device()->close();
+	iomgr->log.device()->close();
 
 	return true;
 }
