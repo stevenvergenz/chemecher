@@ -97,12 +97,18 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect(ui.actAboutQt,        SIGNAL(triggered()), qApp, SLOT(aboutQt())         );
 	
 	// check for cli arguments: input and output files
-	for(int i=0; i<qApp->arguments().size(); i++){
+	for(int i=1; i<qApp->arguments().size(); i++){
 		if( qApp->arguments().at(i).startsWith("--") ) continue;
 
+		// if there is no input file loaded
 		if( !mix->isActive ){
-			iomgr->loadFromCM4(qApp->arguments().at(i));
+			newMech();
+			// load the file
+			if( !iomgr->loadFromCM4( qApp->arguments().at(i) ) ){
+				QMessageBox::critical(this, "Chemecher 4", "Failed to load file: "+iomgr->getMessage());
+			}
 		}
+		// if there is no output file loaded
 		else if( iomgr->outputFile.isEmpty() ){
 			iomgr->outputFile = qApp->arguments().at(i);
 		}
@@ -114,42 +120,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	} // for each argument
 	
 } // constructor
-
-/** DEBUG MODE ONLY -- DISABLE FOR ACTUAL BUILD **/
-void MainWindow::initTestMech()
-{
-	return;
-	
-	// uncomment next line to disable
-	iomgr->loadFromCM3(
-			"/home/vergenz/programming/chemecher/input/TestMech.txt",
-			"/home/vergenz/programming/chemecher/input/TestSim.txt");
-	
-	return;
-	
-	Cpd* cpd_a = mix->addCpd(new Cpd("A", Cpd::HOMO ));
-	cpd_a->setInitialConc(1.599);
-	Cpd* cpd_b = mix->addCpd(new Cpd("B", Cpd::AQ   ));
-	Cpd* cpd_c = mix->addCpd(new Cpd("C", Cpd::S    ));
-	
-	Step *step = new Step();
-	step->setName("Decay");
-	step->setKPlus(2.41);
-	step->setKMinus(6.8);
-	step->addReactant( cpd_a );
-	//step->addReactant( cpd_b );
-	//step->addProduct ( cpd_c );
-	mix->addStep( step );
-	
-	step = new Step();
-	step->setName("Growth");
-	step->setKPlus(5.12);
-	step->setKMinus(6.9);
-	step->addReactant( cpd_c );
-	step->addProduct ( cpd_b );
-	//step->addProduct ( cpd_c );
-	mix->addStep( step );
-}
 
 /** showCpdWindow
   * Displays a specie editing window. Uses a signal mapper

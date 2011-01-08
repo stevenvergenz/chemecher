@@ -41,12 +41,9 @@ class MainWindow : public QMainWindow
 
 public:
 	MainWindow(QWidget* parent = 0);
-	
 	QMdiArea* mdi;
 
 public slots:
-	
-	void initTestMech();
 	
 	// cpd editing stuff
 	void showCpdWindow( QString action );
