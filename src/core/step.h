@@ -38,6 +38,10 @@ public:
 	QString toString( QString equChar = "=" );
 	QString tov3String();
 
+	// calculation intermediates
+	double velocityPlus[5];
+	double velocityMinus[5];
+
 public slots:
 	void checkReagents();
 	

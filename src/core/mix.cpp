@@ -218,19 +218,19 @@ bool Mix::calculateLegacy()
 	bool overflow       = false;	// is set if a concentration reaches too high
 	double time	        = startTime;// goes from mix.startTime to mix.endTime
 	double timePrev     = 0;		// the timestep before the previous
-	double newTimestep  = timeStep; // the timestep after autostepping
 	double dTime        = 0;		// handles the increment amount, adjusted when autostepping
 	double hBal         = 0;		// ensures a smooth Transition if atan is set
+	double ra           = 0;        // a calculation intermediate for step velocity
 	int exp             = 0;		// handles rate of change in timestep
 	int shiftCount      = 0;		// the number of times dT has been stepped from original
 	int maxOrder		= mix->order; // placeholder for class property
 	int order           = 0;		// loop variable for each order
-	QHash<Cpd*, double> conc;    // stores the current step's concentrations
-	QHash<Cpd*, double> prevConc;	// stores the reference concentrations from last step
+	QList<Cpd*>::const_iterator acpd;
+	QList<Step*>::const_iterator astep;
 
 	// populate concentration set with initial concentrations
-	for( int i=0; i<CpdList.size(); i++ ){
-		conc[ CpdList[i] ] = CpdList[i]->initialConc();
+	for( acpd = CpdList.constBegin(); acpd != CpdList.constEnd(); acpd++ ){
+		(*acpd)->finalConc = (*acpd)->prevConc;
 	}
 
 	// open the appropriate files: log, output, and debug
@@ -239,7 +239,7 @@ bool Mix::calculateLegacy()
 	iomgr->openRunOutputFile();
 
 	// print the column headers and initial concentrations
-	iomgr->printData( 0, conc );
+	iomgr->printData( 0 );
 
 	/////////////////////////////////////////////////////////
 	//               MAIN CALCULATION LOOP                 //
@@ -247,21 +247,20 @@ bool Mix::calculateLegacy()
 
 	while( time <= endTime && !overflow )
 	{
-
 		// save the calculated concentrations and time
-		prevConc.clear();
-		QHash<Cpd*, double>::const_iterator i = conc.constBegin();
-		while (i != conc.constEnd()) {
-			prevConc[i.key()] = i.value();
-			++i;
-		}
+		for( QList<Cpd*>::const_iterator i = CpdList.constBegin(); i != CpdList.constEnd(); i++ )
+			(*i)->prevConc = (*i)->finalConc;
+
 		timePrev = time;
 
 DownStep:	// autostep reentry point
 
 		// create the new timestep
-		if( autostep ){ dTime = timeStep * pow( stepfactor, -exp ); }
-		else          { dTime = timeStep;                           }
+		if( autostep ){
+			dTime = timeStep * pow( stepfactor, -exp );
+			shiftCount++;
+		}
+		else dTime = timeStep;
 
 		// increment time
 		time += dTime;
@@ -271,19 +270,65 @@ DownStep:	// autostep reentry point
 		{
 
 			// calculate the forward and reverse rates for each step
-			for( int stepIdx = 0; stepIdx < StepList.size(); stepIdx++ )
+
+			for( astep = StepList.begin(); astep != StepList.end(); astep++ )
 			{
 				// calculate the forward rate
-				QList<Cpd*> reactants = StepList.value(stepIdx)->reactantList();
-				for( int i=0; i< reactants.size(); i++ )
-				{
-					if( reactants[i]->isHomo() ){
+				ra = (*astep)->kPlus();
 
+				for( acpd = (*astep)->reactantList().begin(); acpd != (*astep)->reactantList().end(); acpd++ )
+				{
+					if( (*acpd)->isHomo() ){
+						// for homogeneous states (easier)
+						if( order > 1 )
+							ra *= (*acpd)->partialConc[order-1];
+						else
+							ra *= (*acpd)->prevConc;
+					}
+					else
+					{
+						// for heterogeneous states
 					}
 				}
+				// store the calculated velocity in the step
+				(*astep)->velocityPlus[order] = ra;
 
+				// calculate the reverse rate
+				ra = (*astep)->kMinus();
+				for( acpd = (*astep)->productList().begin(); acpd != (*astep)->productList().end(); acpd++ )
+				{
+					if( (*acpd)->isHomo() ){
+						// for homogeneous states (easier)
+						if( order > 1 )
+							ra *= (*acpd)->partialConc[order-1];
+						else
+							ra *= (*acpd)->prevConc;
+					}
+					else
+					{
+						// for heterogeneous states
+					}
+				}
+				// store the calculated velocity in the step
+				(*astep)->velocityMinus[order] = ra;
 
-			} // end each specie loop
+			} // end each step loop
+
+			// after determining rates, calculate concentrations
+			for( acpd = CpdList.constBegin(); acpd != CpdList.constEnd(); acpd++ )
+			{
+				// calculate rate for each specie
+				ra = 0;
+				for( QMap<Step*,int>::const_iterator i = (*acpd)->stoiVals.constBegin(); i != (*acpd)->stoiVals.constEnd(); i++ )
+				{
+					ra += i.value() *
+							( i.key()->velocityPlus[order] - i.key()->velocityMinus[order] );
+				}
+				(*acpd)->rate[order] = ra;
+
+				// more stuff here
+
+			} // end for each cpd
 
 		} // end order loop
 

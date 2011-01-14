@@ -53,7 +53,7 @@ public:
 	bool openLogFile();
 
 	void printMechSummary(QTextStream& fout);
-	void printData( double curTime, QHash<Cpd*, double> concs );
+	void printData( double curTime );
 
 	// public file pointers (just in case)
 	QString outputFile, logFile, debugFile;

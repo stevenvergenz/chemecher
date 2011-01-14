@@ -48,6 +48,12 @@ public:
 	Transition transition();
 	double initialConc();
 
+	// calculation intermediates
+	double partialConc[5];
+	double prevConc;
+	double finalConc;
+	double rate[5];
+
 public slots:
 	void setShortName(QString n);
 	void setLongName(QString n);
