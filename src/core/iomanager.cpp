@@ -889,7 +889,7 @@ void IOManager::printMechSummary(QTextStream& ofp)
 
 }
 
-void IOManager::printData( double curTime )
+void IOManager::printData( double curTime, QHash<Cpd*, double> concs )
 {
 	// print the column headers if need be
 	if( curTime == 0 ){
@@ -910,6 +910,6 @@ void IOManager::printData( double curTime )
 	// print the concentrations of all species
 	setDataFormat(data);
 	for(int i=0; i<mix->CpdList.size(); i++){
-		data << mix->CpdList[i]->savedConc();
+		data << concs.value( mix->CpdList[i], 0 );
 	}
 }

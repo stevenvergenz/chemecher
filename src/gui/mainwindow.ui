@@ -26,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>709</width>
-     <height>23</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -113,7 +113,6 @@
     </property>
     <addaction name="actionFormatting_Wizard"/>
     <addaction name="actionPreferences"/>
-    <addaction name="actionTest_FIO"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Mechanism"/>
@@ -278,18 +277,6 @@
            <attribute name="verticalHeaderDefaultSectionSize">
             <number>20</number>
            </attribute>
-           <attribute name="verticalHeaderVisible">
-            <bool>false</bool>
-           </attribute>
-           <attribute name="verticalHeaderDefaultSectionSize">
-            <number>20</number>
-           </attribute>
-           <attribute name="horizontalHeaderStretchLastSection">
-            <bool>true</bool>
-           </attribute>
-           <attribute name="horizontalHeaderHighlightSections">
-            <bool>false</bool>
-           </attribute>
            <column>
             <property name="text">
              <string>Name</string>
@@ -433,18 +420,6 @@
            </attribute>
            <attribute name="verticalHeaderDefaultSectionSize">
             <number>20</number>
-           </attribute>
-           <attribute name="verticalHeaderVisible">
-            <bool>false</bool>
-           </attribute>
-           <attribute name="verticalHeaderDefaultSectionSize">
-            <number>20</number>
-           </attribute>
-           <attribute name="horizontalHeaderStretchLastSection">
-            <bool>true</bool>
-           </attribute>
-           <attribute name="horizontalHeaderHighlightSections">
-            <bool>false</bool>
            </attribute>
            <column>
             <property name="text">

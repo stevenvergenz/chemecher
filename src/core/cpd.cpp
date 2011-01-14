@@ -8,29 +8,15 @@ bool Cpd::isHetero(){ return !isHomo(); }
 
 // base constructor calls the other constructor with default parameters
 Cpd::Cpd() : QObject(), shortname(""), longname(""),
-cpd_state(Cpd::HOMO), thresh(0), sharp(0), trans(NONE), cur_conc(0), saved_conc(0)
+cpd_state(Cpd::HOMO), thresh(0), sharp(0), trans(NONE)
 {
 	setInitialConc(0);
-	//initialize partial_concs
-	partial_conc[0] = 0; rate[0] = 0;
-	partial_conc[1] = 0; rate[1] = 0;
-	partial_conc[2] = 0; rate[2] = 0;
-	partial_conc[3] = 0; rate[3] = 0;
-	partial_conc[4] = 0; rate[4] = 0;
-	partial_conc[5] = 0; rate[5] = 0;
 }
 
 Cpd::Cpd(QString n, Cpd::State s) : QObject(), shortname(n), longname(""),
-	cpd_state(s), thresh(0), sharp(0), trans(NONE), cur_conc(0), saved_conc(0)
+	cpd_state(s), thresh(0), sharp(0), trans(NONE), init_conc(0)
 {
 	setInitialConc(0);
-	//initialize partial_concs
-	partial_conc[0] = 0; rate[0] = 0;
-	partial_conc[1] = 0; rate[1] = 0;
-	partial_conc[2] = 0; rate[2] = 0;
-	partial_conc[3] = 0; rate[3] = 0;
-	partial_conc[4] = 0; rate[4] = 0;
-	partial_conc[5] = 0; rate[5] = 0;
 }
 
 const QString Cpd::toString(){
@@ -96,11 +82,7 @@ bool Cpd::setTransition(QString s, bool *ok ){
 }
 
 //initial concentration
-double  Cpd::initialConc(){ return saved_conc; }
-void Cpd::setInitialConc(double c ){ saved_conc = c; emit initialConcChanged(c);}
-void Cpd::setInitialConc(QString c){ saved_conc = c.toDouble(); emit initialConcChanged(saved_conc);}
+double  Cpd::initialConc(){ return init_conc; }
+void Cpd::setInitialConc(double c ){ init_conc = c; emit initialConcChanged(c);}
+void Cpd::setInitialConc(QString c){ init_conc = c.toDouble(); emit initialConcChanged(init_conc);}
 
-void Cpd::saveConc(){ saved_conc = cur_conc; }
-double Cpd::savedConc(){ return saved_conc; }
-double Cpd::conc(){ return cur_conc; }
-void Cpd::setConc(double c){ cur_conc = c; }

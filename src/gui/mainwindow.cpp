@@ -83,8 +83,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	
 	// tools menu
 	connect( ui.actionFormatting_Wizard, SIGNAL(triggered()), this, SLOT(showFormattingWizard()));
-	connect( ui.actionTest_FIO,          SIGNAL(triggered()), this, SLOT(testFIO())             );
-	
+
 	// view menu
 	connect( ui.actCascade,  SIGNAL(triggered()), ui.mdi, SLOT(cascadeSubWindows())  );
 	connect( ui.actTile,     SIGNAL(triggered()), ui.mdi, SLOT(tileSubWindows())     );
@@ -747,13 +746,4 @@ void MainWindow::showAboutWindow()
 {
 	About *about = new About();
 	about->exec();
-}
-
-void MainWindow::testFIO()
-{
-	iomgr->outputFile = "test1.txt";
-	if( !iomgr->openRunOutputFile() )
-		QMessageBox::warning(this, "Error", "The file failed to open.");
-	iomgr->printMechSummary(iomgr->data);
-	iomgr->printData(0);
 }

@@ -49,9 +49,9 @@ public:
 	
 	void clone(Mix* newmix);
 	void initialize();
+
 	bool calculateRKF();
 	bool calculateLegacy();
-	
 	
 	/*************************
 	 * Simulation parameters *

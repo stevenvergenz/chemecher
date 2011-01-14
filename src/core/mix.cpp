@@ -215,8 +215,23 @@ bool Mix::calculateLegacy()
 	iomgr->printData(0);
 	iomgr->data.device()->close();*/
 
-	bool overflow; // is set if a concentration reaches too high
-	double time; // goes from mix.startTime to mix.endTime
+	bool overflow       = false;	// is set if a concentration reaches too high
+	double time	        = startTime;// goes from mix.startTime to mix.endTime
+	double timePrev     = 0;		// the timestep before the previous
+	double newTimestep  = timeStep; // the timestep after autostepping
+	double dTime        = 0;		// handles the increment amount, adjusted when autostepping
+	double hBal         = 0;		// ensures a smooth Transition if atan is set
+	int exp             = 0;		// handles rate of change in timestep
+	int shiftCount      = 0;		// the number of times dT has been stepped from original
+	int maxOrder		= mix->order; // placeholder for class property
+	int order           = 0;		// loop variable for each order
+	QHash<Cpd*, double> conc;    // stores the current step's concentrations
+	QHash<Cpd*, double> prevConc;	// stores the reference concentrations from last step
+
+	// populate concentration set with initial concentrations
+	for( int i=0; i<CpdList.size(); i++ ){
+		conc[ CpdList[i] ] = CpdList[i]->initialConc();
+	}
 
 	// open the appropriate files: log, output, and debug
 	iomgr->openLogFile();
@@ -224,21 +239,59 @@ bool Mix::calculateLegacy()
 	iomgr->openRunOutputFile();
 
 	// print the column headers and initial concentrations
-	iomgr->printData( 0 );
+	iomgr->printData( 0, conc );
 
 	/////////////////////////////////////////////////////////
 	//               MAIN CALCULATION LOOP                 //
 	/////////////////////////////////////////////////////////
 
-	time = mix->startTime;
-	while( time <= mix->endTime || overflow )
+	while( time <= endTime && !overflow )
 	{
 
+		// save the calculated concentrations and time
+		prevConc.clear();
+		QHash<Cpd*, double>::const_iterator i = conc.constBegin();
+		while (i != conc.constEnd()) {
+			prevConc[i.key()] = i.value();
+			++i;
+		}
+		timePrev = time;
+
+DownStep:	// autostep reentry point
+
+		// create the new timestep
+		if( autostep ){ dTime = timeStep * pow( stepfactor, -exp ); }
+		else          { dTime = timeStep;                           }
+
+		// increment time
+		time += dTime;
+
+		// begin order loop
+		for( order=1; order<=maxOrder; order++ )
+		{
+
+			// calculate the forward and reverse rates for each step
+			for( int stepIdx = 0; stepIdx < StepList.size(); stepIdx++ )
+			{
+				// calculate the forward rate
+				QList<Cpd*> reactants = StepList.value(stepIdx)->reactantList();
+				for( int i=0; i< reactants.size(); i++ )
+				{
+					if( reactants[i]->isHomo() ){
+
+					}
+				}
 
 
+			} // end each specie loop
 
+		} // end order loop
 
 	} // time loop
+
+	/////////////////////////////////////////////////////////
+	//                END CALCULATION LOOP                 //
+	/////////////////////////////////////////////////////////
 
 	// print the mech summary to the data file
 	iomgr->data << endl;

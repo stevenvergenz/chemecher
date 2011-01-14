@@ -86,8 +86,6 @@ public slots:
 	void suggestFeature();
 	void showAboutWindow();
 
-	void testFIO();
-
 signals:
 
 private:
