@@ -910,6 +910,6 @@ void IOManager::printData( double curTime )
 	// print the concentrations of all species
 	setDataFormat(data);
 	for(int i=0; i<mix->CpdList.size(); i++){
-		data << CpdList[i]->finalConc;
+		data << mix->CpdList[i]->finalConc;
 	}
 }

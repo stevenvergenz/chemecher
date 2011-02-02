@@ -94,6 +94,11 @@ signals:
 	void stepListChanged();
 	void cpdListChanged();
 	
+private:
+	double hBal(Cpd* acpd);
+	bool setCalcConstants();
+	double a[5][4];
+	double b[5];
 };
 
 extern Mix *mix;

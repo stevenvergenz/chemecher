@@ -53,6 +53,7 @@ public:
 	double prevConc;
 	double finalConc;
 	double rate[5];
+	QMap<Step*,int> stoiVals;
 
 public slots:
 	void setShortName(QString n);
@@ -88,7 +89,6 @@ private:
 	//QList<StepPair*> reactantset;
 	//QList<StepPair*> productset;
 	
-	QMap<Step*,int> stoiVals;
 	
 };
 
