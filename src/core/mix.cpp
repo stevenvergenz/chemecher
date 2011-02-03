@@ -210,36 +210,48 @@ bool Mix::calculateRKF()
 
 bool Mix::calculateLegacy()
 {
-/*	iomgr->openRunOutputFile();
+	// debugging fio
+	/*iomgr->openRunOutputFile();
+	iomgr->openLogFile();
 	iomgr->printMechSummary( iomgr->data );
+	iomgr->printMechSummary( iomgr->log );
 	iomgr->printData(0);
-	iomgr->data.device()->close();*/
-
+	iomgr->data.device()->close();
+	return true;*/
+	
+	cout << "State of A: " << (int)CpdList.at(0)->state() << endl;
+	cout << "Is it homo? " << CpdList.at(0)->isHomo() << endl;
+	
+	// begin true calculation
 	bool overflow       = false;	// is set if a concentration reaches too high
-	double time	        = startTime;// goes from mix.startTime to mix.endTime
+	double time	    = startTime;// goes from mix.startTime to mix.endTime
 	double timePrev     = 0;		// the timestep before the previous
 	double lastReport   = 0;		// the last time the concentration was printed
 	double dTime        = 0;		// handles the increment amount, adjusted when autostepping
-	double hBal         = 0;		// ensures a smooth Transition if atan is set
 	int exp             = 0;		// handles rate of change in timestep
 	int shiftCount      = 0;		// the number of times dT has been stepped from original
-	int maxOrder		= mix->order; // placeholder for class property
+	int maxOrder	    = mix->order; // placeholder for class property
 	int order           = 0;		// loop variable for each order
 	QList<Cpd*>::const_iterator acpd;
 	QList<Step*>::const_iterator astep;
 
 	// populate concentration set with initial concentrations
 	for( acpd = CpdList.constBegin(); acpd != CpdList.constEnd(); acpd++ ){
-		(*acpd)->finalConc = (*acpd)->prevConc;
+		(*acpd)->prevConc = (*acpd)->initialConc();
+		(*acpd)->finalConc = (*acpd)->initialConc();
 	}
 
 	// open the appropriate files: log, output, and debug
-	iomgr->openLogFile();
+	if( !iomgr->openLogFile() ){
+		cout << "Could not open log file, exiting!" << endl;
+		return false;
+	}
 	iomgr->printMechSummary( iomgr->log );
 	iomgr->openRunOutputFile();
 
 	// set constants based on order and method
 	if( !setCalcConstants() ){
+		cout << "Could not initialize constants, exiting!" << endl;
 		return false;
 	}
 	
@@ -281,7 +293,10 @@ DownStep:	// autostep reentry point
 
 				for( acpd = (*astep)->reactantList().begin(); acpd != (*astep)->reactantList().end(); acpd++ )
 				{
-					if( (*acpd)->isHomo() ){
+					cout << "In loop homo test for " << (*acpd)->toString().toStdString()
+					        << " " << (*acpd)->isHomo() << endl;
+					
+					if( (*acpd)->isHomo()!=0 ){
 						// for homogeneous states (easier)
 						if( order > 1 )
 							ra *= (*acpd)->partialConc[order-1];

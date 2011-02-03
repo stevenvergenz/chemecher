@@ -789,23 +789,23 @@ bool IOManager::openRunOutputFile()
 
 bool IOManager::openDebugOutputFile()
 {
-	QFile out(debugFile);
-	if( !out.open( QFile::WriteOnly ) )
+	QFile* out = new QFile(debugFile);
+	if( !out->open( QFile::WriteOnly ) )
 		return setError( FS_ERROR, "Error opening file "+debugFile );
 
 	// set text buffer
-	debug.setDevice(&out);
+	debug.setDevice(out);
 
 	return true;
 }
 
 bool IOManager::openLogFile()
 {
-	QFile out(logFile);
-	if( !out.open( QFile::WriteOnly | QFile::Append ) )
+	QFile* out = new QFile(logFile);
+	if( !out->open( QFile::WriteOnly | QFile::Append ) )
 		return setError( FS_ERROR, "Error opening file "+logFile );
 
-	log.setDevice(&out);
+	log.setDevice(out);
 
 	return true;
 }
@@ -835,7 +835,7 @@ void IOManager::setDataFormat(QTextStream& fp)
 void IOManager::printMechSummary(QTextStream& ofp)
 {
 	// output the general information
-	ofp << reset << endl 
+	ofp << reset << endl
 		<< QString("Mechanism %1, %2")
 			.arg(mix->mechName).arg(mix->mechDesc) << endl
 		<< QString("Run on %1")

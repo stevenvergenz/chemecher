@@ -48,18 +48,29 @@ int main(int argc, char** argv)
 int mainNoGUI(int argc, char** argv)
 {
 	QString input, output;
-
+	int argcount = 0;
+	
 	// get the two necessary arguments: input and output files
 	for(int i=1; i<argc; i++){
 		if( argv[i][0] == '-' ) continue;
 
-		if( !input.isEmpty() )
+		argcount++;
+		if( argcount == 1 )
+			input = argv[i];
+		else if( argcount == 2 )
 			output = argv[i];
-		else input = argv[i];
+		else{
+			cout << "Too many filename arguments!" << endl;
+			printUsage();
+			return 1;
+		}
 	}
-	if( input.isEmpty() || output.isEmpty() ){
+	
+	// make sure that both arguments were specified
+	if( argcount < 2 ){
 		cout << "Must specify both an input and an output file!" << endl;
 		printUsage();
+		return 1;
 	}
 
 	// parse input
@@ -73,7 +84,8 @@ int mainNoGUI(int argc, char** argv)
 	iomgr->outputFile = output;
 	iomgr->debugFile = "";
 	iomgr->logFile = "CheMechLog.txt";
-
+	cout << "Run started" << endl;
+		
 	// begin calculation!
 	return mix->calculateLegacy();
 }

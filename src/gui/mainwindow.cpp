@@ -103,6 +103,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 		if( !mix->isActive ){
 			newMech();
 			// load the file
+			iomgr->outputFile = qApp->arguments().at(i);
 			if( !iomgr->loadFromCM4( qApp->arguments().at(i) ) ){
 				QMessageBox::critical(this, "Chemecher 4", "Failed to load file: "+iomgr->getMessage());
 			}
