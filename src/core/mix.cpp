@@ -219,9 +219,6 @@ bool Mix::calculateLegacy()
 	iomgr->data.device()->close();
 	return true;*/
 	
-	cout << "State of A: " << (int)CpdList.at(0)->state() << endl;
-	cout << "Is it homo? " << CpdList.at(0)->isHomo() << endl;
-	
 	// begin true calculation
 	bool overflow       = false;	// is set if a concentration reaches too high
 	double time	    = startTime;// goes from mix.startTime to mix.endTime
@@ -232,11 +229,11 @@ bool Mix::calculateLegacy()
 	int shiftCount      = 0;		// the number of times dT has been stepped from original
 	int maxOrder	    = mix->order; // placeholder for class property
 	int order           = 0;		// loop variable for each order
-	QList<Cpd*>::const_iterator acpd;
-	QList<Step*>::const_iterator astep;
+	QList<Cpd*>::iterator acpd;
+	QList<Step*>::iterator astep;
 
 	// populate concentration set with initial concentrations
-	for( acpd = CpdList.constBegin(); acpd != CpdList.constEnd(); acpd++ ){
+	for( acpd = CpdList.begin(); acpd != CpdList.end(); acpd++ ){
 		(*acpd)->prevConc = (*acpd)->initialConc();
 		(*acpd)->finalConc = (*acpd)->initialConc();
 	}
@@ -262,10 +259,11 @@ bool Mix::calculateLegacy()
 	//               MAIN CALCULATION LOOP                 //
 	/////////////////////////////////////////////////////////
 
+	cout << "Entering time loop" << endl;
 	while( time <= endTime && !overflow )
 	{
 		// save the calculated concentrations and time
-		for( QList<Cpd*>::const_iterator i = CpdList.constBegin(); i != CpdList.constEnd(); i++ )
+		for( QList<Cpd*>::iterator i = CpdList.begin(); i != CpdList.end(); i++ )
 			(*i)->prevConc = (*i)->finalConc;
 
 		timePrev = time;
@@ -283,47 +281,38 @@ DownStep:	// autostep reentry point
 		time += dTime;
 
 		// begin order loop
+		cout << "Entering order loop" << endl;
 		for( order=1; order<=maxOrder; order++ )
 		{
 			// calculate the forward and reverse rates for each step
+			cout << "Calculating rates" << endl;
 			for( astep = StepList.begin(); astep != StepList.end(); astep++ )
 			{
 				// calculate the forward rate
 				double ra = (*astep)->kPlus();
-
-				for( acpd = (*astep)->reactantList().begin(); acpd != (*astep)->reactantList().end(); acpd++ )
+				QList<Cpd*> tempList = (*astep)->reactantList();
+				for( acpd = tempList.begin(); acpd != tempList.end(); acpd++ )
 				{
-					cout << "In loop homo test for " << (*acpd)->toString().toStdString()
-					        << " " << (*acpd)->isHomo() << endl;
+					double bal = hBal( *acpd );
 					
-					if( (*acpd)->isHomo()!=0 ){
-						// for homogeneous states (easier)
-						if( order > 1 )
-							ra *= (*acpd)->partialConc[order-1];
-						else
-							ra *= (*acpd)->prevConc;
-					}
-					else {
-						// for heterogeneous states
-					}
+					if( order > 1 )
+						ra *= ( bal + (1-bal)*(*acpd)->partialConc[order-1] );
+					else
+						ra *= ( bal + (1-bal)*(*acpd)->prevConc );
 				}
 				// store the calculated velocity in the step
 				(*astep)->velocityPlus[order] = ra;
 
 				// calculate the reverse rate
 				ra = (*astep)->kMinus();
-				for( acpd = (*astep)->productList().begin(); acpd != (*astep)->productList().end(); acpd++ )
+				tempList = (*astep)->productList();
+				for( acpd = tempList.begin(); acpd != tempList.end(); acpd++ )
 				{
-					if( (*acpd)->isHomo() ){
-						// for homogeneous states (easier)
-						if( order > 1 )
-							ra *= (*acpd)->partialConc[order-1];
-						else
-							ra *= (*acpd)->prevConc;
-					}
-					else {
-						// for heterogeneous states
-					}
+					double bal = hBal( *acpd );
+					if( order > 1 )
+						ra *= ( bal + (1-bal)*(*acpd)->partialConc[order-1] );
+					else
+						ra *= ( bal + (1-bal)*(*acpd)->prevConc );
 				}
 				// store the calculated velocity in the step
 				(*astep)->velocityMinus[order] = ra;
@@ -331,11 +320,13 @@ DownStep:	// autostep reentry point
 			} // end each step loop
 
 			// after determining rates, calculate concentrations
-			for( acpd = CpdList.constBegin(); acpd != CpdList.constEnd(); acpd++ )
+			cout << "Calculating concentrations" << endl;
+			for( acpd = CpdList.begin(); acpd != CpdList.end(); acpd++ )
 			{
 				// calculate rate for each specie
 				double ra = 0;
-				for( QMap<Step*,int>::const_iterator i = (*acpd)->stoiVals.constBegin(); i != (*acpd)->stoiVals.constEnd(); i++ )
+				for( QMap<Step*,int>::const_iterator i = (*acpd)->stoiVals.constBegin(); 
+					i != (*acpd)->stoiVals.constEnd(); i++ )
 				{
 					ra += i.value() * ( i.key()->velocityPlus[order] - i.key()->velocityMinus[order]  );
 				}
@@ -382,7 +373,7 @@ DownStep:	// autostep reentry point
 		// print final concentrations to file
 		if( time - lastReport >= reportStep ){
 			iomgr->printData(time);
-			lastReport += timeStep;
+			lastReport += reportStep;
 		}
 		
 	} // time loop
@@ -402,9 +393,40 @@ DownStep:	// autostep reentry point
 	return true;
 }
 
-double Mix::hBal(Cpd* acpd)
+double Mix::hBal(Cpd* cpd)
 {
-	return 0.0;
+	// there need be no diminishing returns on homogeneous cpds
+	if( cpd->isHomo() ) return 0;
+	
+	// determine the return on heterogeneous cpds based on transition type
+	switch(cpd->transition()){
+	case Cpd::NONE:
+		return 1;
+		break;
+		
+	case Cpd::LINEAR:
+		if( cpd->prevConc > cpd->threshold() ) return 1;
+		else if( cpd->prevConc > 0 )
+			return cpd->prevConc / cpd->threshold();
+		else return 0;
+		break;
+		
+	case Cpd::ATAN:
+		if( cpd->prevConc > cpd->threshold() ) return 1;
+		else if( cpd->prevConc > 0 )
+		{
+			double pi = 3.14159265359;
+			return (((qAtan(cpd->sharpness() * (cpd->prevConc / cpd->threshold() - 0.5)) * (2 / pi) + 1) / 2) -
+			((qAtan(cpd->sharpness() * (-0.5)) * (2 / pi) + 1) / 2)) / 
+			(((qAtan(cpd->sharpness() * (0.5)) * (2 / pi) + 1) / 2) - 
+			((qAtan(cpd->sharpness() * (-0.5)) * (2 / pi) + 1) / 2));
+		}
+		else return 0;
+		break;
+		
+	default:
+		return 1;
+	};
 }
 
 bool Mix::setCalcConstants()

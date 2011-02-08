@@ -912,4 +912,5 @@ void IOManager::printData( double curTime )
 	for(int i=0; i<mix->CpdList.size(); i++){
 		data << mix->CpdList[i]->finalConc;
 	}
+	data << endl;
 }
