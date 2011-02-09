@@ -82,7 +82,7 @@ int mainNoGUI(int argc, char** argv)
 
 	// set up the output files
 	iomgr->outputFile = output;
-	iomgr->debugFile = "";
+	iomgr->debugFile = "debug.out";
 	iomgr->logFile = "CheMechLog.txt";
 	cout << "Run started" << endl;
 		

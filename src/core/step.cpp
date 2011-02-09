@@ -4,6 +4,17 @@ Step::Step() : QObject(), stepname(""), kplus(0), kminus(0)
 {
 	connect( mix, SIGNAL(cpdListChanged()), this, SLOT(checkReagents()) );
 	mix->connect( this, SIGNAL(reagentsChanged()), mix, SIGNAL(stepListChanged()) );
+	
+	velocityPlus[0] = 0;
+	velocityPlus[1] = 0;
+	velocityPlus[2] = 0;
+	velocityPlus[3] = 0;
+	velocityPlus[4] = 0;
+	velocityMinus[0] = 0;
+	velocityMinus[1] = 0;
+	velocityMinus[2] = 0;
+	velocityMinus[3] = 0;
+	velocityMinus[4] = 0;
 }
 
 void Step::checkReagents()

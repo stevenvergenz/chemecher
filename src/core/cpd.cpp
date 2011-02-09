@@ -11,12 +11,34 @@ Cpd::Cpd() : QObject(), shortname(""), longname(""),
 cpd_state(Cpd::HOMO), thresh(0), sharp(0), trans(NONE)
 {
 	setInitialConc(0);
+	prevConc = 0;
+	partialConc[0] = 0;
+	partialConc[1] = 0;
+	partialConc[2] = 0;
+	partialConc[3] = 0;
+	partialConc[4] = 0;
+	rate[0] = 0;
+	rate[1] = 0;
+	rate[2] = 0;
+	rate[3] = 0;
+	rate[4] = 0;
 }
 
 Cpd::Cpd(QString n, Cpd::State s) : QObject(), shortname(n), longname(""),
 	cpd_state(s), thresh(0), sharp(0), trans(NONE), init_conc(0)
 {
 	setInitialConc(0);
+	prevConc = 0;
+	partialConc[0] = 0;
+	partialConc[1] = 0;
+	partialConc[2] = 0;
+	partialConc[3] = 0;
+	partialConc[4] = 0;
+	rate[0] = 0;
+	rate[1] = 0;
+	rate[2] = 0;
+	rate[3] = 0;
+	rate[4] = 0;
 }
 
 const QString Cpd::toString(){

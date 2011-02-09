@@ -781,9 +781,6 @@ bool IOManager::openRunOutputFile()
 	// open text buffer
         data.setDevice(out);
 
-	// set formatting properties
-	data << "Opened correctly" << endl;
-
 	return true;
 }
 

@@ -1,12 +1,13 @@
 'comments available by using the apostrophe character
-4 'number of species to be defined
+'number of species followed by each specie and its high and low gate values
+4
 'name state tHigh sharpVal
 A (.) 0 0
 B (.) 0 0
 C (.) 0 0
 D (.) 0 0
-
-3 'number of steps
+'number of steps
+3
 'step then k values
 'reac1+reac2+reac3>prod1+prod2+prod3 k+ k-
 A(.)>B(.) 15 .15

@@ -245,6 +245,7 @@ bool Mix::calculateLegacy()
 	}
 	iomgr->printMechSummary( iomgr->log );
 	iomgr->openRunOutputFile();
+	iomgr->openDebugOutputFile();
 
 	// set constants based on order and method
 	if( !setCalcConstants() ){
@@ -259,15 +260,13 @@ bool Mix::calculateLegacy()
 	//               MAIN CALCULATION LOOP                 //
 	/////////////////////////////////////////////////////////
 
-	cout << "Entering time loop" << endl;
 	while( time <= endTime && !overflow )
 	{
 		// save the calculated concentrations and time
 		for( QList<Cpd*>::iterator i = CpdList.begin(); i != CpdList.end(); i++ )
 			(*i)->prevConc = (*i)->finalConc;
-
 		timePrev = time;
-
+		
 DownStep:	// autostep reentry point
 
 		// create the new timestep
@@ -281,11 +280,9 @@ DownStep:	// autostep reentry point
 		time += dTime;
 
 		// begin order loop
-		cout << "Entering order loop" << endl;
 		for( order=1; order<=maxOrder; order++ )
 		{
 			// calculate the forward and reverse rates for each step
-			cout << "Calculating rates" << endl;
 			for( astep = StepList.begin(); astep != StepList.end(); astep++ )
 			{
 				// calculate the forward rate
@@ -309,6 +306,7 @@ DownStep:	// autostep reentry point
 				for( acpd = tempList.begin(); acpd != tempList.end(); acpd++ )
 				{
 					double bal = hBal( *acpd );
+					
 					if( order > 1 )
 						ra *= ( bal + (1-bal)*(*acpd)->partialConc[order-1] );
 					else
@@ -320,7 +318,6 @@ DownStep:	// autostep reentry point
 			} // end each step loop
 
 			// after determining rates, calculate concentrations
-			cout << "Calculating concentrations" << endl;
 			for( acpd = CpdList.begin(); acpd != CpdList.end(); acpd++ )
 			{
 				// calculate rate for each specie
@@ -328,6 +325,7 @@ DownStep:	// autostep reentry point
 				for( QMap<Step*,int>::const_iterator i = (*acpd)->stoiVals.constBegin(); 
 					i != (*acpd)->stoiVals.constEnd(); i++ )
 				{
+					//cout << (*acpd)->toString().toStdString() << " " << i.value() << endl;
 					ra += i.value() * ( i.key()->velocityPlus[order] - i.key()->velocityMinus[order]  );
 				}
 				(*acpd)->rate[order] = ra;
@@ -336,7 +334,7 @@ DownStep:	// autostep reentry point
 				double ca = 0;
 				if( order < maxOrder ){
 					for( int i=1; i<=order; i++){
-						ca = ca + a[order+1][i-1] * (*acpd)->rate[i];
+						ca += a[order][i-1] * (*acpd)->rate[i];
 					}
 					ca = ca * dTime + (*acpd)->prevConc;
 					(*acpd)->partialConc[order] = ca;
@@ -344,11 +342,14 @@ DownStep:	// autostep reentry point
 				
 				// sum up the final concentration
 				if( ca > 1000000000.0 ) overflow = true;
+				if(time==.01){
+					cout << dTime << " " << b[order] << " " << (*acpd)->rate[order] << endl;
+				}
 				(*acpd)->finalConc += dTime * b[order] * (*acpd)->rate[order];
 				
 			} // end for each cpd
 		} // end order loop
-
+		
 		// autostep mechanism here
 		if( autostep ){
 			for( acpd=CpdList.begin(); acpd!=CpdList.end(); acpd++ ){
@@ -373,6 +374,26 @@ DownStep:	// autostep reentry point
 		// print final concentrations to file
 		if( time - lastReport >= reportStep ){
 			iomgr->printData(time);
+			
+			// debug info
+			iomgr->debug << QString("[%1]: V+ %2 %3 %4 %5")
+			                .arg(time)
+			                .arg(StepList.at(0)->velocityPlus[1])
+			                .arg(StepList.at(0)->velocityPlus[2])
+			                .arg(StepList.at(0)->velocityPlus[3])
+			                .arg(StepList.at(0)->velocityPlus[4])
+			<< endl << QString("\tAr %1 %2 %3 %4")
+					.arg(CpdList.at(0)->rate[1])
+					.arg(CpdList.at(0)->rate[2])
+					.arg(CpdList.at(0)->rate[3])
+					.arg(CpdList.at(0)->rate[4])
+			<< endl << QString("\tAc %1 %2 %3 %4")
+					.arg(CpdList.at(0)->partialConc[1])
+					.arg(CpdList.at(0)->partialConc[2])
+					.arg(CpdList.at(0)->partialConc[3])
+					.arg(CpdList.at(0)->partialConc[4])
+			<< endl;
+			
 			lastReport += reportStep;
 		}
 		
@@ -389,7 +410,8 @@ DownStep:	// autostep reentry point
 	// close the appropriate files
 	iomgr->data.device()->close();
 	iomgr->log.device()->close();
-
+	iomgr->debug.device()->close();
+	
 	return true;
 }
 
@@ -445,50 +467,50 @@ bool Mix::setCalcConstants()
 		// modified euler
 		if( method == methods.at(1).at(0) ){
 			b[1] = 0; a[1][0] = 1;
-			b[2] = 1; a[2][0] = 1; a[2][1] = 1/2;
+			b[2] = 1; a[2][0] = 1; a[2][1] = (double)1/2;
 		}
 		// heun
 		else if( method == methods.at(1).at(1) ){
-			b[1] = 1/2; a[1][0] = 1;
-			b[2] = 1/2; a[2][0] = 1; a[2][1] = 1;
+			b[1] = (double)1/2; a[1][0] = 1;
+			b[2] = (double)1/2; a[2][0] = 1; a[2][1] = 1;
 		}
 		// ralston
 		else if( method == methods.at(1).at(2) ){
-			b[1] = 1/3; a[1][0] = 1; 
-			b[2] = 2/3; a[2][0] = 1; a[2][1] = 3/4;
+			b[1] = (double)1/3; a[1][0] = 1; 
+			b[2] = (double)2/3; a[2][0] = 1; a[2][1] = (double)3/4;
 		}
 		else return false;
 		break;
 	case 3:
 		// runge-kutta
 		if( method == methods.at(2).at(0) ){
-			b[1] = 1/6; a[1][0] = 1; 
-			b[2] = 2/3; a[2][0] = 1; a[2][1] = 1/2;
-			b[3] = 1/6; a[3][0] = 1; a[3][1] = -1; a[3][2] = 2;
+			b[1] = (double)1/6; a[1][0] = 1; 
+			b[2] = (double)2/3; a[2][0] = 1; a[2][1] = (double)1/2;
+			b[3] = (double)1/6; a[3][0] = 1; a[3][1] = -1; a[3][2] = 2;
 		}
 		else return false;
 		break;
 	case 4:
 		// runge
 		if( method == methods.at(3).at(0) ){
-			b[1] = 1/6; a[1][0] = 1;
-			b[2] = 1/3; a[2][0] = 1; a[2][1] = 1/2;
-			b[3] = 1/3; a[3][0] = 1; a[3][1] = 0; a[3][2] = 1/2;
-			b[4] = 1/6; a[4][0] = 1; a[4][1] = 0; a[4][2] = 0; a[4][3] = 1;
+			b[1] = (double)1/6; a[1][0] = 1;
+			b[2] = (double)1/3; a[2][0] = 1; a[2][1] = (double)1/2;
+			b[3] = (double)1/3; a[3][0] = 1; a[3][1] = 0; a[3][2] = (double)1/2;
+			b[4] = (double)1/6; a[4][0] = 1; a[4][1] = 0; a[4][2] = 0; a[4][3] = 1;
 		}
 		// kutta
 		else if( method == methods.at(3).at(1) ){
-			b[1] = 1/8; a[1][0] = 1;
-			b[2] = 3/8; a[2][0] = 1; a[2][1] = 1/3;
-			b[3] = 3/8; a[3][0] = 1; a[3][1] =-1/3; a[3][2] = 1;
-			b[4] = 1/8; a[4][0] = 1; a[4][1] = 1;   a[4][2] =-1; a[4][3] = 1;
+			b[1] = (double)1/8; a[1][0] = 1;
+			b[2] = (double)3/8; a[2][0] = 1; a[2][1] = (double)1/3;
+			b[3] = (double)3/8; a[3][0] = 1; a[3][1] =(double)-1/3; a[3][2] = 1;
+			b[4] = (double)1/8; a[4][0] = 1; a[4][1] = 1;   a[4][2] =-1; a[4][3] = 1;
 		}
 		// gill
 		else if( method == methods.at(3).at(2) ){
-			b[1] = 1/6; a[1][0] = 1;
-			b[2] = (2-sqrt(2))/6; a[2][0] = 1; a[2][1] = 1/2;
+			b[1] = (double)1/6; a[1][0] = 1;
+			b[2] = (2-sqrt(2))/6; a[2][0] = 1; a[2][1] = (double)1/2;
 			b[3] = (2+sqrt(2))/6; a[3][0] = 1; a[3][1] = (sqrt(2)-1)/2; a[3][2] = (2-sqrt(2))/2;
-			b[4] = 1/6; a[4][0] = 1; a[4][1] = 0; a[4][2] = -sqrt(2)/2; a[4][3] = (2+sqrt(2))/2;
+			b[4] = (double)1/6; a[4][0] = 1; a[4][1] = 0; a[4][2] = -sqrt(2)/2; a[4][3] = (2+sqrt(2))/2;
 		}
 		else return false;
 		break;
