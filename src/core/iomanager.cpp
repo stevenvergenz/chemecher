@@ -825,7 +825,7 @@ void IOManager::setDataFormat(QTextStream& fp)
 	fp << qSetFieldWidth(6+outputPrecision)
 		<< qSetPadChar(' ') 
 		<< qSetRealNumberPrecision(outputPrecision)
-		<< left << fixed << forcepoint;
+		<< right << fixed << forcepoint;
 
 }
 

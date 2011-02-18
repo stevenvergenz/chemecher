@@ -327,21 +327,21 @@
             <item>
              <widget class="QPushButton" name="pushAddCpd">
               <property name="text">
-               <string>Add Specie...</string>
+               <string>Add Species</string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QPushButton" name="pushEditCpd">
               <property name="text">
-               <string>Edit Specie...</string>
+               <string>Edit Species</string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QPushButton" name="pushDeleteCpd">
               <property name="text">
-               <string>Delete Specie</string>
+               <string>Delete Species</string>
               </property>
              </widget>
             </item>
