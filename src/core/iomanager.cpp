@@ -814,7 +814,7 @@ void IOManager::setTimeFormat(QTextStream& fp)
 	fp << qSetFieldWidth(6+timePrecision)
 		<< qSetPadChar(' ') 
 		<< qSetRealNumberPrecision(timePrecision)
-		<< right << fixed << forcepoint;
+		<< left << fixed << forcepoint;
 
 }
 
@@ -825,7 +825,7 @@ void IOManager::setDataFormat(QTextStream& fp)
 	fp << qSetFieldWidth(6+outputPrecision)
 		<< qSetPadChar(' ') 
 		<< qSetRealNumberPrecision(outputPrecision)
-		<< right << fixed << forcepoint;
+		<< left << fixed << forcepoint;
 
 }
 

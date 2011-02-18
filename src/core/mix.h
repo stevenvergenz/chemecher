@@ -14,16 +14,17 @@ class Mix;
 #include "dbhandler.h"
 #include "iomanager.h"
 
-class Mix : public QObject
+class Mix : public QThread
 {
 Q_OBJECT
 public:
 	friend class Step;
 	
 	Mix();
+	void run();
 	
-	// stores whether mix is in use
-	bool isActive;
+	bool isActive;	// stores whether mix is in use
+	bool calcSuccess; // stores retval of calculation
 	
 	// compound functions
 	QList<Cpd*> CpdList;
@@ -68,7 +69,9 @@ public:
 	double timeStep, reportStep;
 	double startTime, endTime;
 	int debugStart, debugEnd;
-
+	double time;
+	bool cancel;
+	
 	//accuracy data
 	double precision;
 
@@ -101,6 +104,8 @@ private:
 	bool setCalcConstants();
 	double a[5][4];
 	double b[5];
+	
+	
 };
 
 extern Mix *mix;

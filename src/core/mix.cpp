@@ -5,14 +5,15 @@ Mix *mix = new Mix();
 Mix::Mix()
 	: isActive( false ),
 	  mechName(""), mechDesc(""),
-	  timeStep(0), reportStep(0),
-	  startTime(0), endTime(0),
+	  timeStep(.01), reportStep(.1),
+	  startTime(0), endTime(100),
 	  debugStart(0), debugEnd(0),
+          time(0), cancel(false),
 	  precision(0.001),
-	  order(5), method("runge"),
+	  order(1), method("euler"),
 	  transition("none"),
-	  autostep(true), gateband(0),
-	  shifttest(0), maxreduce(0), stepfactor(0)
+	  autostep(true), gateband(.1),
+	  shifttest(20), maxreduce(8), stepfactor(2)
 {
 	connect( this, SIGNAL(cpdListChanged()), this, SIGNAL(stepListChanged()) );
 }
@@ -210,18 +211,8 @@ bool Mix::calculateRKF()
 
 bool Mix::calculateLegacy()
 {
-	// debugging fio
-	/*iomgr->openRunOutputFile();
-	iomgr->openLogFile();
-	iomgr->printMechSummary( iomgr->data );
-	iomgr->printMechSummary( iomgr->log );
-	iomgr->printData(0);
-	iomgr->data.device()->close();
-	return true;*/
-	
 	// begin true calculation
 	bool overflow       = false;	// is set if a concentration reaches too high
-	double time	    = startTime;// goes from mix.startTime to mix.endTime
 	double timePrev     = 0;		// the timestep before the previous
 	double lastReport   = 0;		// the last time the concentration was printed
 	double dTime        = 0;		// handles the increment amount, adjusted when autostepping
@@ -260,7 +251,7 @@ bool Mix::calculateLegacy()
 	//               MAIN CALCULATION LOOP                 //
 	/////////////////////////////////////////////////////////
 
-	while( time <= endTime && !overflow )
+	while( time <= endTime && !overflow && !cancel )
 	{
 		// save the calculated concentrations and time
 		for( QList<Cpd*>::iterator i = CpdList.begin(); i != CpdList.end(); i++ )
@@ -376,7 +367,7 @@ DownStep:	// autostep reentry point
 			iomgr->printData(time);
 			
 			// debug info
-			iomgr->debug << QString("[%1]: V+ %2 %3 %4 %5")
+			/*iomgr->debug << QString("[%1]: V+ %2 %3 %4 %5")
 			                .arg(time)
 			                .arg(StepList.at(0)->velocityPlus[1])
 			                .arg(StepList.at(0)->velocityPlus[2])
@@ -392,7 +383,7 @@ DownStep:	// autostep reentry point
 					.arg(CpdList.at(0)->partialConc[2])
 					.arg(CpdList.at(0)->partialConc[3])
 					.arg(CpdList.at(0)->partialConc[4])
-			<< endl;
+			<< endl;*/
 			
 			lastReport += reportStep;
 		}
@@ -403,10 +394,15 @@ DownStep:	// autostep reentry point
 	//                END CALCULATION LOOP                 //
 	/////////////////////////////////////////////////////////
 
+	if( cancel ){
+		iomgr->log << "Run aborted." << endl;
+		iomgr->data << "Run aborted." << endl;
+	}
+	
 	// print the mech summary to the data file
 	iomgr->data << endl;
 	iomgr->printMechSummary( iomgr->data );
-
+	
 	// close the appropriate files
 	iomgr->data.device()->close();
 	iomgr->log.device()->close();
@@ -519,4 +515,14 @@ bool Mix::setCalcConstants()
 	}
 	
 	return true;
+}
+
+void Mix::run()
+{
+	if( order<5 ){
+		calcSuccess = calculateLegacy();
+	}
+	else{
+		calcSuccess = calculateRKF();
+	}
 }

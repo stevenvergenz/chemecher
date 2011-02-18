@@ -77,7 +77,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect( ui.actDeleteStep,     SIGNAL(triggered()), this,       SLOT(deleteStep())     );
 	connect( ui.actDeleteAllSteps, SIGNAL(triggered()), this,       SLOT(deleteAllSteps()) );
 	connect( ui.actEditSimParams,  SIGNAL(triggered()), this,       SLOT(editSimParams())  );
-	
+	connect( ui.actRunSim,         SIGNAL(triggered()), this,       SLOT(launchSimulator()));
+	        
 	// set current mech to not new
 	newMech( false );
 	
@@ -103,7 +104,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 		if( !mix->isActive ){
 			newMech();
 			// load the file
-			iomgr->outputFile = qApp->arguments().at(i);
+			mix->mechFile = qApp->arguments().at(i);
 			if( !iomgr->loadFromCM4( qApp->arguments().at(i) ) ){
 				QMessageBox::critical(this, "Chemecher 4", "Failed to load file: "+iomgr->getMessage());
 			}
@@ -449,6 +450,12 @@ void MainWindow::editSimParams()
 	//mdi->addSubWindow(new SimParams())->show();
 	SimParams *simparams = new SimParams(this);
 	simparams->exec();
+}
+
+void MainWindow::launchSimulator()
+{
+	RunWindow* runwindow = new RunWindow();
+	runwindow->show();
 }
 
 void MainWindow::cpdContextMenu( QPoint pos )

@@ -27,7 +27,7 @@ class MainWindow;
 #include "cpdwindow.h"
 #include "mechdb.h"
 #include "mix.h"
-//#include "draglistwidget.h"
+#include "runwindow.h"
 #include "iomanager.h"
 #include "about.h"
 #include "simparams.h"
@@ -66,6 +66,7 @@ public slots:
 	void updateEditButtonEnabled();
 	
 	void editSimParams();
+	void launchSimulator();
 	
 	void cpdContextMenu ( QPoint pos );
 	void stepContextMenu( QPoint pos );
