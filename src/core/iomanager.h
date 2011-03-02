@@ -16,6 +16,7 @@ class IOManager;
 
 class IOManager : public QObject
 {
+Q_OBJECT
 public:
 	enum Status{ NOT_LOADED=0, LOADED_CM3, LOADED_CM4, PARSE_ERROR, FS_ERROR, ERROR };
 
@@ -60,12 +61,16 @@ public:
 	QTextStream data, log, debug;
 	void setTimeFormat(QTextStream& fp);
 	void setDataFormat(QTextStream& fp);
+	
+public slots:
+	void setOutputFile(QString s){ outputFile = s; }
+	void setLogFile(QString s)   { logFile = s;    }
+	void setDebugFile(QString s) { debugFile = s;  }
 
 private:
 	QString getLine( QTextStream& txt, int &linecounter, bool stripcomments = true );
 	bool setError( Status stat, QString errmsg, int linenum=-1, QString filename="" );
 	
-
 	int outputPrecision, timePrecision;
 
 	Status status;

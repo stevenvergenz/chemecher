@@ -73,7 +73,7 @@
    </widget>
    <widget class="QMenu" name="menu_Mechanism">
     <property name="title">
-     <string>Mechanism</string>
+     <string>&amp;Mechanism</string>
     </property>
     <widget class="QMenu" name="menu_Steps">
      <property name="title">
@@ -103,9 +103,7 @@
     </widget>
     <addaction name="menu_Steps"/>
     <addaction name="menu_Species"/>
-    <addaction name="separator"/>
-    <addaction name="actEditSimParams"/>
-    <addaction name="actRunSim"/>
+    <addaction name="actionProperties"/>
    </widget>
    <widget class="QMenu" name="menu_Tools">
     <property name="title">
@@ -114,7 +112,15 @@
     <addaction name="actionFormatting_Wizard"/>
     <addaction name="actionPreferences"/>
    </widget>
+   <widget class="QMenu" name="menu_Simulation">
+    <property name="title">
+     <string>&amp;Simulation</string>
+    </property>
+    <addaction name="actEditSimParams"/>
+    <addaction name="actRunSim"/>
+   </widget>
    <addaction name="menu_File"/>
+   <addaction name="menu_Simulation"/>
    <addaction name="menu_Mechanism"/>
    <addaction name="menu_Tools"/>
    <addaction name="menu_View"/>
@@ -695,7 +701,7 @@
   </action>
   <action name="actAddCpd">
    <property name="text">
-    <string>Add Specie</string>
+    <string>Add Species</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>
@@ -706,7 +712,7 @@
   </action>
   <action name="actEditCpd">
    <property name="text">
-    <string>Edit Specie</string>
+    <string>Edit Species</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+E</string>
@@ -717,7 +723,7 @@
   </action>
   <action name="actDeleteCpd">
    <property name="text">
-    <string>Delete Specie</string>
+    <string>Delete Species</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>
@@ -773,7 +779,7 @@
   </action>
   <action name="actMvCpdUp">
    <property name="text">
-    <string>Move Specie Up</string>
+    <string>Move Species Up</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Up</string>
@@ -784,7 +790,7 @@
   </action>
   <action name="actMvCpdDown">
    <property name="text">
-    <string>Move Specie Down</string>
+    <string>Move Species Down</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Down</string>
@@ -801,6 +807,11 @@
   <action name="actionTest_FIO">
    <property name="text">
     <string>Test FIO!</string>
+   </property>
+  </action>
+  <action name="actionProperties">
+   <property name="text">
+    <string>Properties...</string>
    </property>
   </action>
  </widget>

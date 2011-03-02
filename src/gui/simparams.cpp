@@ -19,14 +19,14 @@ SimParams::SimParams(QWidget *parent) :
 	ui->txtEndTime    ->setValidator( DV(0, 10000000 ));
 	ui->txtDebugStart ->setValidator( IV(0, 1000000  ));
 	ui->txtDebugEnd   ->setValidator( IV(0, 10000000 ));
-	ui->txtGateband   ->setValidator( IV(0, 1000     ));
-	ui->txtShifttest  ->setValidator( IV(0, 1000     ));
-	ui->txtMaxreduce  ->setValidator( IV(0, 10000000 ));
-	ui->txtStepfactor ->setValidator( IV(0, 1000     ));
+	ui->txtGateband   ->setValidator( DV(0, 1000     ));
+	ui->txtShifttest  ->setValidator( IV(0, 100      ));
+	ui->txtMaxreduce  ->setValidator( IV(0, 10       ));
+	ui->txtStepfactor ->setValidator( DV(0, 10       ));
 	
 	// initialize fields
-	ui->txtMechName   ->setText( mix->mechName );
-	ui->txtMechDesc   ->setText( mix->mechDesc );
+	//ui->txtMechName   ->setText( mix->mechName );
+	//ui->txtMechDesc   ->setText( mix->mechDesc );
 	
 	ui->comboOrder->setCurrentIndex( mix->order-1 );
 	setOrder( mix->order-1 );
@@ -49,7 +49,7 @@ SimParams::SimParams(QWidget *parent) :
 	else if( mix->transition=="arctan" )
 		ui->comboTrans->setCurrentIndex(2);
 	
-	ui->grpAutostep   ->setChecked( mix->autostep );
+	ui->groupAutostep ->setChecked( mix->autostep );
 	ui->txtPrecision  ->setText( QString::number( mix->precision  ));
 	ui->txtTimeStep   ->setText( QString::number( mix->timeStep   ));
 	ui->txtReportStep ->setText( QString::number( mix->reportStep ));
@@ -61,14 +61,15 @@ SimParams::SimParams(QWidget *parent) :
 	ui->txtShifttest  ->setText( QString::number( mix->shifttest  ));
 	ui->txtMaxreduce  ->setText( QString::number( mix->maxreduce  ));
 	ui->txtStepfactor ->setText( QString::number( mix->stepfactor ));
+	ui->txtOutfile    ->setText( iomgr->outputFile );
+	ui->txtLogfile    ->setText( iomgr->logFile );
+	ui->txtDebugfile  ->setText( iomgr->debugFile );
 	
 	// connect slots
-	connect( ui->txtMechName, SIGNAL(textChanged(QString)), mix, SLOT(setName(QString))  );
-	connect( ui->txtMechDesc, SIGNAL(textChanged(QString)), mix, SLOT(setDesc(QString))  );
 	connect( ui->comboOrder,  SIGNAL(currentIndexChanged(int)), this, SLOT(setOrder(int)) );
 	connect( ui->comboMethod, SIGNAL(currentIndexChanged(QString)), this, SLOT(setMethod(QString)) );
 	connect( ui->comboTrans,  SIGNAL(currentIndexChanged(QString)), this, SLOT(setTransition(QString)) );
-	connect( ui->grpAutostep, SIGNAL(toggled(bool)),        mix, SLOT(setAutostep(bool)) );
+	connect( ui->groupAutostep, SIGNAL(toggled(bool)),        this, SLOT(setAutostep(bool)) );
 	
 	// stores information about the fields in the form
 	doubleparams["precision"  ] = makeParam( &mix->precision,  ui->txtPrecision  );
@@ -78,10 +79,10 @@ SimParams::SimParams(QWidget *parent) :
 	doubleparams["endtime"    ] = makeParam( &mix->endTime,    ui->txtEndTime    );
 	intparams   ["debugstart" ] = makeParam( &mix->debugStart, ui->txtDebugStart );
 	intparams   ["debugend"   ] = makeParam( &mix->debugEnd,   ui->txtDebugEnd   );
-	intparams   ["gateband"   ] = makeParam( &mix->gateband,   ui->txtGateband   );
+	doubleparams["gateband"   ] = makeParam( &mix->gateband,   ui->txtGateband   );
 	intparams   ["shifttest"  ] = makeParam( &mix->shifttest,  ui->txtShifttest  );
 	intparams   ["maxreduce"  ] = makeParam( &mix->maxreduce,  ui->txtMaxreduce  );
-	intparams   ["stepfactor" ] = makeParam( &mix->stepfactor, ui->txtStepfactor );
+	doubleparams["stepfactor" ] = makeParam( &mix->stepfactor, ui->txtStepfactor );
 	
 	// set up the signal mapper
 	paramMapper = new QSignalMapper(this);
@@ -109,6 +110,20 @@ SimParams::SimParams(QWidget *parent) :
 	connect( ui->txtStepfactor , SIGNAL(textChanged(QString)), paramMapper, SLOT(map()) );
 	connect( paramMapper, SIGNAL(mapped(QString)), this, SLOT(setParameter(QString)) );
 	
+	// connect the browse buttons
+	browseMapper = new QSignalMapper(this);
+	browseMapper->setMapping( ui->outputBrowse, "output" );
+	browseMapper->setMapping( ui->logBrowse,    "log"    );
+	browseMapper->setMapping( ui->debugBrowse,  "debug"  );
+	connect( ui->outputBrowse , SIGNAL(clicked()), browseMapper, SLOT(map()) );
+	connect( ui->logBrowse    , SIGNAL(clicked()), browseMapper, SLOT(map()) );
+	connect( ui->debugBrowse  , SIGNAL(clicked()), browseMapper, SLOT(map()) );
+	connect( browseMapper , SIGNAL(mapped(QString)), this, SLOT(browseFile(QString)) );
+	
+	// connect the output files
+	connect( ui->txtOutfile,   SIGNAL(textChanged(QString)), iomgr, SLOT(setOutputFile(QString)) );
+	connect( ui->txtLogfile,   SIGNAL(textChanged(QString)), iomgr, SLOT(setLogFile(QString))    );
+	connect( ui->txtDebugfile, SIGNAL(textChanged(QString)), iomgr, SLOT(setDebugFile(QString))  );
 }
 
 void SimParams::setOrder(int index)
@@ -131,14 +146,61 @@ void SimParams::setOrder(int index)
 		items.append("Runge-Kutta");
 		break;
 	case 4:
-	case 5:
 		items.append("Runge");
 		items.append("Kutta");
 		items.append("Gill");
 		break;
+	case 5:
+		items.append("Runge-Kutta-Fehlberg");
+		break;
 	}
 	ui->comboMethod->clear();
 	ui->comboMethod->addItems(items);
+	
+	updateAutostep();
+}
+
+void SimParams::setAutostep(bool state)
+{
+	// update the mix object
+	mix->setAutostep(state);
+	updateAutostep();
+}
+
+void SimParams::updateAutostep()
+{
+	//std::cout << "autostep: " << mix->autostep << std::endl;
+	
+	// toggle the precision field with the autostep fields
+	if( mix->order == 5 ){
+		// enable precision fields
+		ui->lblPrecision->setEnabled(true);
+		ui->txtPrecision->setEnabled(true);
+		ui->groupAutostep->setCheckable(false);
+	} 
+	else {
+		// disable precision fields
+		ui->lblPrecision->setEnabled(false);
+		ui->txtPrecision->setEnabled(false);
+		if( !ui->groupAutostep->isCheckable() ){
+			ui->groupAutostep->setCheckable(true);
+		}
+	}
+	
+	// enable now (maybe) useful fields
+	if( mix->order != 5 && mix->autostep ){
+		ui->lblGateband->setEnabled(true);    ui->txtGateband->setEnabled(true);
+		ui->lblMaxreduce->setEnabled(true);   ui->txtMaxreduce->setEnabled(true);
+		ui->lblShifttest->setEnabled(true);   ui->txtShifttest->setEnabled(true);
+		ui->lblStepfactor->setEnabled(true);  ui->txtStepfactor->setEnabled(true);
+	}
+	else {
+		// disable useless fields
+		ui->lblGateband->setEnabled(false);   ui->txtGateband->setEnabled(false);
+		ui->lblMaxreduce->setEnabled(false);  ui->txtMaxreduce->setEnabled(false);
+		ui->lblShifttest->setEnabled(false);  ui->txtShifttest->setEnabled(false);
+		ui->lblStepfactor->setEnabled(false); ui->txtStepfactor->setEnabled(false);
+	}
 }
 
 void SimParams::setMethod(QString value)
@@ -152,6 +214,24 @@ void SimParams::setMethod(QString value)
 void SimParams::setTransition(QString value)
 {
 	mix->transition = value.toLower().left(6);
+}
+
+void SimParams::browseFile(QString field)
+{
+	QFileDialog dlg;
+	
+	// set up the file dialog
+	dlg.setDefaultSuffix("*.txt");
+	dlg.setNameFilter("All files (*)");
+	if( field=="log" ) dlg.setAcceptMode(QFileDialog::AcceptOpen);
+	else               dlg.setAcceptMode(QFileDialog::AcceptSave);
+	
+	// run the file dialog
+	if( dlg.exec() == QDialog::Accepted ){
+		if(field=="output") ui->txtOutfile  ->setText( dlg.selectedFiles().at(0) );
+		if(field=="log"   ) ui->txtLogfile  ->setText( dlg.selectedFiles().at(0) );
+		if(field=="debug" ) ui->txtDebugfile->setText( dlg.selectedFiles().at(0) );
+	}
 }
 
 void SimParams::setParameter(QString name)

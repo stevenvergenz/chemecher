@@ -2,10 +2,11 @@
 
 IOManager *iomgr = new IOManager();
 
-IOManager::IOManager()
+IOManager::IOManager() : QObject()
 {
 	outputPrecision = 6;
 	timePrecision = 3;
+	logFile = "CheMechLog.txt";
 }
 IOManager::~IOManager()
 {
@@ -246,10 +247,10 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 	t.doubleval = &newmix.reportStep; ents["reportstep"] = t;
 	t.doubleval = &newmix.endTime;    ents["maxtime"]    = t;
 	t.vtype = v_int;
-	t.intval = &newmix.gateband;      ents["gateband"]   = t;
+	t.doubleval = &newmix.gateband;   ents["gateband"]   = t;
 	t.intval = &newmix.shifttest;     ents["shifttest"]  = t;
 	t.intval = &newmix.maxreduce;     ents["maxreduce"]  = t;
-	t.intval = &newmix.stepfactor;    ents["stepfactor"] = t;
+	t.doubleval = &newmix.stepfactor; ents["stepfactor"] = t;
 	t.vtype = v_bool;
 	t.boolval = &newmix.autostep;     ents["autostep"]   = t;
 	t.vtype = v_order;

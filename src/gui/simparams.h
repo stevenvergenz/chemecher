@@ -7,8 +7,10 @@
 #include <QSignalMapper>
 #include <QMap>
 #include <QLineEdit>
+#include <QFileDialog>
 
 #include "mix.h"
+#include <iostream>
 
 namespace Ui {
     class SimParams;
@@ -32,6 +34,9 @@ public slots:
 	void setOrder( int index );
 	void setMethod( QString value );
 	void setTransition( QString value );
+	void setAutostep( bool state );
+	void updateAutostep();
+	void browseFile(QString field);
 	
 	void setParameter( QString name );
 	ParamInfo* makeParam( double* dval, QLineEdit* field );
@@ -43,6 +48,7 @@ protected:
 private:
     Ui::SimParams *ui;
 	QSignalMapper *paramMapper;
+	QSignalMapper *browseMapper;
 	
 	QMap<QString,ParamInfo*> intparams;
 	QMap<QString,ParamInfo*> doubleparams;

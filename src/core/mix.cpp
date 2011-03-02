@@ -196,6 +196,7 @@ QList<QStringList> Mix::availableMethods()
 	methods.append( QStringList() << "modified euler" << "heun" << "ralston" );
 	methods.append( QStringList() << "runge-kutta" );
 	methods.append( QStringList() << "runge" << "kutta" << "gill" );
+	methods.append( QStringList() << "rkf" );
 	return methods;
 }
 
@@ -231,12 +232,18 @@ bool Mix::calculateLegacy()
 
 	// open the appropriate files: log, output, and debug
 	if( !iomgr->openLogFile() ){
-		cout << "Could not open log file, exiting!" << endl;
+		cout << iomgr->getMessage().toStdString() << endl;
 		return false;
 	}
 	iomgr->printMechSummary( iomgr->log );
-	iomgr->openRunOutputFile();
-	iomgr->openDebugOutputFile();
+	if( !iomgr->openRunOutputFile() ){
+		cout << iomgr->getMessage().toStdString() << endl;
+		return false;
+	}
+	
+	if( !iomgr->openDebugOutputFile() ){
+		cout << "Warning: could not open debug file." << endl;
+	}
 
 	// set constants based on order and method
 	if( !setCalcConstants() ){
@@ -406,7 +413,8 @@ DownStep:	// autostep reentry point
 	// close the appropriate files
 	iomgr->data.device()->close();
 	iomgr->log.device()->close();
-	iomgr->debug.device()->close();
+	if( iomgr->debug.device() != NULL )
+		iomgr->debug.device()->close();
 	
 	return true;
 }

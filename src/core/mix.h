@@ -80,10 +80,10 @@ public:
 	QString method;
 	QString transition;
 	bool autostep;
-	int gateband;
+	double gateband;
 	int shifttest;
 	int maxreduce;
-	int stepfactor;
+	double stepfactor;
 	
 	// sql data
 	DBHandler *db;

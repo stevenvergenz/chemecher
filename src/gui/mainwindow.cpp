@@ -76,9 +76,12 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 	connect( ui.actMvStepDown,     SIGNAL(triggered()), this,       SLOT(moveStepDown())   );
 	connect( ui.actDeleteStep,     SIGNAL(triggered()), this,       SLOT(deleteStep())     );
 	connect( ui.actDeleteAllSteps, SIGNAL(triggered()), this,       SLOT(deleteAllSteps()) );
+	connect( ui.actionProperties,  SIGNAL(triggered()), this,       SLOT(showMechProperties()));
+	
+	// simulation menu
 	connect( ui.actEditSimParams,  SIGNAL(triggered()), this,       SLOT(editSimParams())  );
 	connect( ui.actRunSim,         SIGNAL(triggered()), this,       SLOT(launchSimulator()));
-	        
+	
 	// set current mech to not new
 	newMech( false );
 	
@@ -724,6 +727,19 @@ void MainWindow::showFormattingWizard()
 {
 	FormatWizard* wizard = new FormatWizard(this);
 	wizard->show();
+}
+
+void MainWindow::showMechProperties()
+{
+	MechProperties prop(this);
+	prop.setName(mix->mechName);
+	prop.setDescription(mix->mechDesc);
+	
+	// commit only if "OK" is hit
+	if(prop.exec() == QDialog::Accepted){
+		mix->setName(prop.name());
+		mix->setDesc(prop.description());
+	}
 }
 
 //

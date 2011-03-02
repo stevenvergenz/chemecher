@@ -27,7 +27,8 @@ HEADERS += src/core/cpd.h \
     src/core/iomanager.h \
     src/gui/about.h \
     src/gui/formatwizard.h \
-    src/gui/runwindow.h
+    src/gui/runwindow.h \
+    src/gui/mechproperties.h
 FORMS += src/gui/cpdwindow.ui \
     src/gui/mainwindow.ui \
     src/gui/stepwindow.ui \
@@ -36,7 +37,8 @@ FORMS += src/gui/cpdwindow.ui \
     src/gui/simparams.ui \
     src/gui/about.ui \
     src/gui/formatwizard.ui \
-    src/gui/runwindow.ui
+    src/gui/runwindow.ui \
+    src/gui/mechproperties.ui
 SOURCES += src/chemecher.cpp \
     src/core/cpd.cpp \
     src/core/mix.cpp \
@@ -51,4 +53,5 @@ SOURCES += src/chemecher.cpp \
     src/core/iomanager.cpp \
     src/gui/about.cpp \
     src/gui/formatwizard.cpp \
-    src/gui/runwindow.cpp
+    src/gui/runwindow.cpp \
+    src/gui/mechproperties.cpp
