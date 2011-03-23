@@ -10,6 +10,9 @@
 #include <QStringList>
 #include <QString>
 
+#include <stdio.h>
+using namespace std;
+
 class IOManager;
 
 #include "mix.h"
