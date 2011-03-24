@@ -185,7 +185,7 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 	              "([A-Za-z][A-Za-z0-9\\-\\+]*\\((?:\\.|\\*|s|l|g|aq)\\))\\s*"
 	              "(?:\\+\\s*([A-Za-z][A-Za-z0-9\\-\\+]*\\((?:\\.|\\*|s|l|g|aq)\\))\\s*)?"
 	              "(?:\\+\\s*([A-Za-z][A-Za-z0-9\\-\\+]*\\((?:\\.|\\*|s|l|g|aq)\\))\\s*)?"
-	              "(\\d+(?:\\.\\d*)?)\\s*(\\d+(?:\\.\\d*)?)"
+	              "\\s(\\S+)\\s+(\\S+)\\s"
 	);
 	
 	// read the steps
