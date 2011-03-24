@@ -178,11 +178,15 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 		return setError( PARSE_ERROR, "Positive integer expected", linecounter, QFileInfo(mech).fileName() );
 	
 	// set up the valid regular expression
-	QRegExp regex( "^([A-Za-z\\-]+\\([\\.|\\*|s|l|g|aq]\\))\\s*"
-	              "(?:\\+\\s*([A-Za-z\\-]+\\([\\.|\\*|s|l|g|aq]\\))\\s*){0,2}(\\>)\\s*"
-	              "([A-Za-z\\-]+\\([\\.|\\*|s|l|g|aq]\\))\\s*"
-	              "(?:\\+\\s*([A-Za-z\\-]+\\([\\.|\\*|s|l|g|aq]\\))\\s*){0,2}\\s*"
-	              "(\\d+(?:\\.\\d*)?)\\s*(\\d+(?:\\.\\d*)?)" );
+	QRegExp regex( "^([A-Za-z][A-Za-z0-9\\-\\+]*\\((?:\\.|\\*|s|l|g|aq)\\))\\s*"
+	              "(?:\\+\\s*([A-Za-z][A-Za-z0-9\\-\\+]*\\((?:\\.|\\*|s|l|g|aq)\\))\\s*)?"
+	              "(?:\\+\\s*([A-Za-z][A-Za-z0-9\\-\\+]*\\((?:\\.|\\*|s|l|g|aq)\\))\\s*)?"
+	              "(\\>)\\s*"
+	              "([A-Za-z][A-Za-z0-9\\-\\+]*\\((?:\\.|\\*|s|l|g|aq)\\))\\s*"
+	              "(?:\\+\\s*([A-Za-z][A-Za-z0-9\\-\\+]*\\((?:\\.|\\*|s|l|g|aq)\\))\\s*)?"
+	              "(?:\\+\\s*([A-Za-z][A-Za-z0-9\\-\\+]*\\((?:\\.|\\*|s|l|g|aq)\\))\\s*)?"
+	              "(\\d+(?:\\.\\d*)?)\\s*(\\d+(?:\\.\\d*)?)"
+	);
 	
 	// read the steps
 	for(int i=0; i<numsteps; i++)
@@ -190,19 +194,14 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 		// get the line
 		buffer = getLine( min, linecounter, false );			
 		int pos = regex.indexIn(buffer);
-		QStringList contents = regex.capturedTexts().removeAll("");
+		QStringList contents = regex.capturedTexts();
+		contents.removeAll("");
 		
 		if(pos==-1){
-			return setError( PARSE_ERROR, regex.errorString(), regex.numCaptures(), QFileInfo(mech).fileName() );
+			return setError( PARSE_ERROR, "Invalid step definition", linecounter, QFileInfo(mech).fileName() );
 		}
-		for(int temp = 0; temp<regex.captureCount(); temp++)
+		for(int temp = 0; temp<=regex.captureCount(); temp++)
 			cout << regex.cap(temp).toStdString() << endl;
-		
-		// split the line
-		/*parts = buffer.left( buffer.indexOf("'") ).simplified().split(' ');
-		if( parts.length()!=3 )
-			return setError( PARSE_ERROR, "Expected three elements", linecounter, QFileInfo(mech).fileName() );
-		*/
 		
 		// declare and name the new step
 		Step *step = new Step();
@@ -211,39 +210,41 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 		else
 			step->setName( QString("Step %1").arg(i+1) );
 		
-		// get the lists of reactants and products
-		/*if( parts[0].split(">").length()!=2 )
-			return setError( PARSE_ERROR, "Improperly formed step", linecounter, QFileInfo(mech).fileName() );
-		QStringList reactants = parts[0].split(">")[0].split("+");
-		QStringList products  = parts[0].split(">")[1].split("+");
-		
-		if( reactants.length()>3 || products.length()>3 )
-			return setError( PARSE_ERROR, "No more than three reactants or products allowed", linecounter, QFileInfo(mech).fileName() );
-		*/
-		
 		// add the reactants and products
-		int i=1;
-		while(contents.at(i)!=">") {
-			if( !step->addReactant( newmix.getCpdById(contents.at(i)) ) )
-				return setError( PARSE_ERROR, QString("Undefined species \"%1\" at col %2")
-				.arg(contents.at(i)).arg(i), linecounter, QFileInfo(mech).fileName() );
-			i++;
-		}
-		i++;
-		while( !contents.at(i).at(0).isNumber() ) {
-			if( !step->addProduct( newmix.getCpdById(regex.cap(i)) ) )
-				return setError( PARSE_ERROR, QString("Undefined species \"%1\" at col %2")
-				.arg(contents.at(i)).arg(i), linecounter, QFileInfo(mech).fileName() );
-			i++;
-		}
+		bool prodFlag = false; int matchIdx = 1;
+		for(matchIdx=1; matchIdx<contents.size()-2; matchIdx++)
+		{
+			// change from adding reactants to adding products
+			if( contents.at(matchIdx) == ">" ){
+				prodFlag = true;
+				continue;
+			}
+			
+			// add reactants
+			if( !prodFlag ){
+				if( !step->addReactant( newmix.getCpdById(contents.at(matchIdx)) ) ){
+					return setError( PARSE_ERROR, QString("Undefined species \"%1\" at col %2")
+					.arg(contents.at(matchIdx)).arg(matchIdx), linecounter, QFileInfo(mech).fileName() );
+				}
+			}
+			// add products
+			else{
+				if( !step->addProduct( newmix.getCpdById(contents.at(matchIdx)) ) ){
+					return setError( PARSE_ERROR, QString("Undefined species \"%1\" at col %2")
+					.arg(contents.at(matchIdx)).arg(matchIdx), linecounter, QFileInfo(mech).fileName() );
+				}
+			}
+		} // step parsing loop
 		
-		step->setKPlus( regex.cap(i++).toDouble(&ok) );
+		// get the k+ and k- values
+		step->setKPlus( contents.at(matchIdx++).toDouble(&ok) );
 		if( !ok || step->kPlus()<0 )
 			return setError( PARSE_ERROR, "Positive double expected in positive rate field", linecounter, QFileInfo(mech).fileName() );
-		step->setKMinus( regex.cap(i++).toDouble(&ok) );
+		step->setKMinus( contents.at(matchIdx++).toDouble(&ok) );
 		if( !ok || step->kPlus()<0 )
 			return setError( PARSE_ERROR, "Positive double expected in negative rate field", linecounter, QFileInfo(mech).fileName() );
 		
+		// add the newly populated step to the list
 		newmix.addStep( step );
 	}
 	

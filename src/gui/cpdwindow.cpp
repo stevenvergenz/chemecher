@@ -56,9 +56,12 @@ void CpdWindow::validate()
 {
 	QString name = ui.txtShortName->text();
 	int state = ui.comboState->currentIndex();
-	
-	if( name.length()==0 ) {
-		QMessageBox::critical(this, "Error", "Name must not be empty!", QMessageBox::Ok);
+	QRegExp regex("^[A-Za-z][A-Za-z0-9\\-\\+]*$");
+	if( regex.indexIn(name)==-1 ) {
+		QMessageBox::critical(this, "Error", 
+			"Name is not valid! Names may contain letters, numbers, and +/-, "
+			"and must begin with a letter.",
+			QMessageBox::Ok);
 		ui.txtShortName->setFocus();
 		return;
 	}
