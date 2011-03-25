@@ -289,6 +289,7 @@ DownStep:	// autostep reentry point
 				for( acpd = tempList.begin(); acpd != tempList.end(); acpd++ )
 				{
 					double bal = hBal( *acpd );
+					//cout << QString("T=%1 S=%2 H=%3").arg(time).arg((*acpd)->toString()).arg(bal).toStdString() << endl;
 					
 					if( order > 1 )
 						ra *= ( bal + (1-bal)*(*acpd)->partialConc[order-1] );
@@ -323,7 +324,6 @@ DownStep:	// autostep reentry point
 				for( QMap<Step*,int>::const_iterator i = (*acpd)->stoiVals.constBegin(); 
 					i != (*acpd)->stoiVals.constEnd(); i++ )
 				{
-					//cout << (*acpd)->toString().toStdString() << " " << i.value() << endl;
 					ra += i.value() * ( i.key()->velocityPlus[order] - i.key()->velocityMinus[order]  );
 				}
 				(*acpd)->rate[order] = ra;
@@ -340,9 +340,6 @@ DownStep:	// autostep reentry point
 				
 				// sum up the final concentration
 				if( ca > 1000000000.0 ) overflow = true;
-				if(time==.01){
-					cout << dTime << " " << b[order] << " " << (*acpd)->rate[order] << endl;
-				}
 				(*acpd)->finalConc += dTime * b[order] * (*acpd)->rate[order];
 				
 			} // end for each cpd
@@ -372,26 +369,6 @@ DownStep:	// autostep reentry point
 		// print final concentrations to file
 		if( time - lastReport >= reportStep ){
 			iomgr->printData(time);
-			
-			// debug info
-			/*iomgr->debug << QString("[%1]: V+ %2 %3 %4 %5")
-			                .arg(time)
-			                .arg(StepList.at(0)->velocityPlus[1])
-			                .arg(StepList.at(0)->velocityPlus[2])
-			                .arg(StepList.at(0)->velocityPlus[3])
-			                .arg(StepList.at(0)->velocityPlus[4])
-			<< endl << QString("\tAr %1 %2 %3 %4")
-					.arg(CpdList.at(0)->rate[1])
-					.arg(CpdList.at(0)->rate[2])
-					.arg(CpdList.at(0)->rate[3])
-					.arg(CpdList.at(0)->rate[4])
-			<< endl << QString("\tAc %1 %2 %3 %4")
-					.arg(CpdList.at(0)->partialConc[1])
-					.arg(CpdList.at(0)->partialConc[2])
-					.arg(CpdList.at(0)->partialConc[3])
-					.arg(CpdList.at(0)->partialConc[4])
-			<< endl;*/
-			
 			lastReport += reportStep;
 		}
 		
@@ -425,19 +402,16 @@ double Mix::hBal(Cpd* cpd)
 	if( cpd->isHomo() ) return 0;
 	
 	// determine the return on heterogeneous cpds based on transition type
-	switch(cpd->transition()){
-	case Cpd::NONE:
+	if( transition == "none" ){
 		return 1;
-		break;
-		
-	case Cpd::LINEAR:
+	}
+	else if( transition == "linear" ){
 		if( cpd->prevConc > cpd->threshold() ) return 1;
 		else if( cpd->prevConc > 0 )
 			return cpd->prevConc / cpd->threshold();
 		else return 0;
-		break;
-		
-	case Cpd::ATAN:
+	}	
+	else if( transition == "atan" ){
 		if( cpd->prevConc > cpd->threshold() ) return 1;
 		else if( cpd->prevConc > 0 )
 		{
@@ -448,9 +422,8 @@ double Mix::hBal(Cpd* cpd)
 			((qAtan(cpd->sharpness() * (-0.5)) * (2 / pi) + 1) / 2));
 		}
 		else return 0;
-		break;
-		
-	default:
+	}
+	else{
 		return 1;
 	};
 }
