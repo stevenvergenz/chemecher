@@ -12,6 +12,7 @@ RunWindow::RunWindow(QWidget *parent) :
     
     // manage the clocks
     timer->setInterval(200);
+    timer->setSingleShot(false);
     connect( timer,             SIGNAL(timeout()), this, SLOT(updateIndicators()) );
     connect( ui->pushCalculate, SIGNAL(clicked()), this, SLOT(startCalculation()) );
     connect( mix,               SIGNAL(finished()),this, SLOT(finishCalculation()) );
@@ -27,7 +28,7 @@ RunWindow::~RunWindow()
 void RunWindow::updateIndicators()
 {
 	// only update if calculation is running
-	if( endTime < startTime ) return;
+	//if( endTime < startTime ) return;
 	
 	int elapsed = startTime.elapsed()/1000;
 
@@ -60,7 +61,8 @@ void RunWindow::startCalculation()
 	ui->pushCalculate->setText("Abort");
 	disconnect(ui->pushCalculate,SIGNAL(clicked()));
 	connect( ui->pushCalculate, SIGNAL(clicked()), this, SLOT(abortCalculation()) );
-	timer->start();
+	updateIndicators();
+	timer->start(200);
 	
 	// begin calculation
 	mix->start();
@@ -78,4 +80,6 @@ void RunWindow::finishCalculation()
 	ui->pushCalculate->setText("Calculate!");
 	timer->stop();
 	endTime = QTime::currentTime();
+	QApplication::beep();
+	mix->cancel = false;
 }
