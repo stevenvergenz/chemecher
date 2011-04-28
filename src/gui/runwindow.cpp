@@ -32,9 +32,9 @@ void RunWindow::updateIndicators()
 	
 	int elapsed = startTime.elapsed()/1000;
 
-	ui->lblStartTime->setText( "Start time:\n"+startTime.toString());
+	ui->lblStartTime->setText( startTime.toString());
 	ui->lblElapsedTime->setText(
-		QString("Elapsed time:\n%1:%2:%3")
+		QString("%1:%2:%3")
 			.arg(elapsed/3600,    2, 10, QChar('0'))
 			.arg(elapsed%3600/60, 2, 10, QChar('0'))
 			.arg(elapsed%60,      2, 10, QChar('0'))
@@ -44,9 +44,9 @@ void RunWindow::updateIndicators()
 	// estimated total length of process in seconds
 	int calcLength = elapsed * (mix->endTime - mix->startTime) / (mix->time - mix->startTime);
 	
-	ui->lblETA->setText( "ETA:\n"+startTime.addSecs(calcLength).toString() );
+	ui->lblETA->setText( startTime.addSecs(calcLength).toString() );
 	ui->lblTimeRemaining->setText(
-		QString("Time remaining:\n%1:%2:%3")
+		QString("%1:%2:%3")
 			.arg((calcLength-elapsed)/3600,    2, 10, QChar('0'))
 			.arg((calcLength-elapsed)%3600/60, 2, 10, QChar('0'))
 			.arg((calcLength-elapsed)%60,      2, 10, QChar('0'))

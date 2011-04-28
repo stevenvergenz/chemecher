@@ -140,8 +140,8 @@ void CpdWindow::updateForm()
 		switch(trans) {
 		case 0:
 			ui.comboTrans ->setCurrentIndex(0);
-			ui.spinThresh ->setValue(0);
-			ui.spinSharp  ->setValue(0);
+			ui.spinThresh ->setValue( baseCpd->threshold() );
+			ui.spinSharp  ->setValue( baseCpd->sharpness() );
 			break;
 		case 2: // show both sharp and thresh
 			ui.lblSharp   ->setEnabled(true);

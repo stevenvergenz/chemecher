@@ -42,12 +42,7 @@ SimParams::SimParams(QWidget *parent) :
 	}
 	
 	// initialize the transition
-	if( mix->transition=="none" )
-		ui->comboTrans->setCurrentIndex(0);
-	else if( mix->transition=="linear" )
-		ui->comboTrans->setCurrentIndex(1);
-	else if( mix->transition=="arctan" )
-		ui->comboTrans->setCurrentIndex(2);
+	ui->comboTrans->setCurrentIndex( mix->transition );
 	
 	ui->groupAutostep ->setChecked( mix->autostep );
 	ui->txtPrecision  ->setText( QString::number( mix->precision  ));
@@ -68,7 +63,7 @@ SimParams::SimParams(QWidget *parent) :
 	// connect slots
 	connect( ui->comboOrder,  SIGNAL(currentIndexChanged(int)), this, SLOT(setOrder(int)) );
 	connect( ui->comboMethod, SIGNAL(currentIndexChanged(QString)), this, SLOT(setMethod(QString)) );
-	connect( ui->comboTrans,  SIGNAL(currentIndexChanged(QString)), this, SLOT(setTransition(QString)) );
+	connect( ui->comboTrans,  SIGNAL(currentIndexChanged(int)), this, SLOT(setTransition(int)) );
 	connect( ui->groupAutostep, SIGNAL(toggled(bool)),        this, SLOT(setAutostep(bool)) );
 	
 	// stores information about the fields in the form
@@ -211,9 +206,9 @@ void SimParams::setMethod(QString value)
 	mix->method = value;
 }
 
-void SimParams::setTransition(QString value)
+void SimParams::setTransition(int value)
 {
-	mix->transition = value.toLower().left(6);
+	mix->transition = value;
 }
 
 void SimParams::browseFile(QString field)

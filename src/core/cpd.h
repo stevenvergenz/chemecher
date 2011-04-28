@@ -9,6 +9,7 @@
 class Cpd;
 
 #include "step.h"
+#include "mix.h"
 
 class Cpd : public QObject
 {
@@ -20,7 +21,6 @@ public:
 	/*struct StepPair{ Step* step; int stoi;
 		StepPair(Step* s, int t) : step(s), stoi(t) {}
 	};*/
-	typedef enum {NONE=0, LINEAR, ATAN} Transition;
 	typedef enum {HOMO=0, HETERO, AQ, S, L, G} State;
 
 	// defined in source file	
@@ -45,7 +45,7 @@ public:
 	State state();
 	double threshold();
 	double sharpness();
-	Transition transition();
+	int transition();
 	double initialConc();
 
 	// calculation intermediates
@@ -61,7 +61,6 @@ public slots:
 	void setState(State s);
 	void setState(int s);
 	bool setState(QString s, bool *ok = 0 );
-	void setTransition(Transition t);
 	void setTransition(int t);
 	bool setTransition(QString t, bool *ok = 0 );
 	void setThreshold(double t);
@@ -83,7 +82,7 @@ private:
 	State cpd_state;
 	double thresh;
 	double sharp;
-	Transition trans;
+	int trans;
 	double init_conc;
 
 	//QList<StepPair*> reactantset;

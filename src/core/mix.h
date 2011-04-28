@@ -14,6 +14,10 @@ class Mix;
 #include "dbhandler.h"
 #include "iomanager.h"
 
+namespace Trans {
+	enum{NONE=0, LINEAR=1, ATAN=2};
+}
+
 class Mix : public QThread
 {
 Q_OBJECT
@@ -78,7 +82,7 @@ public:
 	//legacy parameters
 	int order;
 	QString method;
-	QString transition;
+	int transition;
 	bool autostep;
 	double gateband;
 	int shifttest;

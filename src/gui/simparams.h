@@ -33,7 +33,7 @@ public:
 public slots:
 	void setOrder( int index );
 	void setMethod( QString value );
-	void setTransition( QString value );
+	void setTransition( int value );
 	void setAutostep( bool state );
 	void updateAutostep();
 	void browseFile(QString field);

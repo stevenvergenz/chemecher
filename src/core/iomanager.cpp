@@ -200,8 +200,6 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 		if(pos==-1){
 			return setError( PARSE_ERROR, "Invalid step definition", linecounter, QFileInfo(mech).fileName() );
 		}
-		for(int temp = 0; temp<=regex.captureCount(); temp++)
-			cout << regex.cap(temp).toStdString() << endl;
 		
 		// declare and name the new step
 		Step *step = new Step();
@@ -270,11 +268,11 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 	t.doubleval = &newmix.timeStep;   ents["calcstep"]   = t;
 	t.doubleval = &newmix.reportStep; ents["reportstep"] = t;
 	t.doubleval = &newmix.endTime;    ents["maxtime"]    = t;
-	t.vtype = v_int;
+	t.doubleval = &newmix.stepfactor; ents["stepfactor"] = t;
 	t.doubleval = &newmix.gateband;   ents["gateband"]   = t;
+	t.vtype = v_int;
 	t.intval = &newmix.shifttest;     ents["shifttest"]  = t;
 	t.intval = &newmix.maxreduce;     ents["maxreduce"]  = t;
-	t.doubleval = &newmix.stepfactor; ents["stepfactor"] = t;
 	t.vtype = v_bool;
 	t.boolval = &newmix.autostep;     ents["autostep"]   = t;
 	t.vtype = v_order;
@@ -282,7 +280,7 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 	t.vtype = v_method;
 	t.stringval = &newmix.method;     ents["method"]     = t;
 	t.vtype = v_trans;
-	t.stringval = &newmix.transition; ents["transition"] = t;
+	t.intval = &newmix.transition;    ents["transition"] = t;
 	
 	// get the variables at the beginning
 	for( int i=0; i<ents.count(); i++ ) {
@@ -342,8 +340,11 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 			ok = ( v=="atan" || v=="linear" || v=="none" );
 			if( !ok )
 				return setError( PARSE_ERROR, "Transition must be either \"atan\", \"linear\", or \"none\"", linecounter, QFileInfo(sim).fileName() );
-			else
-				*ents[k].stringval = v;
+			else {
+				QMap<QString,int> tmap;
+				tmap["atan"]=2; tmap["linear"]=1; tmap["none"]=0;
+				*ents[k].intval = tmap[v];
+			}
 			break;
 			
 		// if it's a method
@@ -489,7 +490,7 @@ bool IOManager::saveToCM4(QString filename)
 	stream.writeEmptyElement("Method");
 	stream.writeAttribute("value", mix->method);
 	stream.writeEmptyElement("Transition");
-	stream.writeAttribute("value", mix->transition);
+	stream.writeAttribute("value", QString::number(mix->transition));
 	stream.writeEmptyElement("Autostep");
 	stream.writeAttribute("value", (mix->autostep ? "true" : "false"));
 	stream.writeEmptyElement("Gateband");
@@ -686,7 +687,7 @@ bool IOManager::loadFromCM4(QString filename)
 	param = param.nextSibling();
 	if( param.toElement().tagName() != "Transition" )
 		return setError(PARSE_ERROR, "Expected \"Transition\", got \""+param.toElement().tagName()+"\"", param.lineNumber());
-	newmix.transition = param.toElement().attribute("value");
+	newmix.transition = param.toElement().attribute("value").toInt();
 	param = param.nextSibling();
 	if( param.toElement().tagName() != "Autostep" )
 		return setError(PARSE_ERROR, "Expected \"Autostep\", got \""+param.toElement().tagName()+"\"", param.lineNumber());

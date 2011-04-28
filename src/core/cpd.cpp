@@ -8,7 +8,7 @@ bool Cpd::isHetero(){ return !isHomo(); }
 
 // base constructor calls the other constructor with default parameters
 Cpd::Cpd() : QObject(), shortname(""), longname(""),
-cpd_state(Cpd::HOMO), thresh(0), sharp(0), trans(NONE)
+cpd_state(Cpd::HOMO), thresh(0), sharp(0), trans(Trans::NONE)
 {
 	setInitialConc(0);
 	prevConc = 0;
@@ -25,7 +25,7 @@ cpd_state(Cpd::HOMO), thresh(0), sharp(0), trans(NONE)
 }
 
 Cpd::Cpd(QString n, Cpd::State s) : QObject(), shortname(n), longname(""),
-	cpd_state(s), thresh(0), sharp(0), trans(NONE), init_conc(0)
+	cpd_state(s), thresh(0), sharp(0), trans(Trans::NONE), init_conc(0)
 {
 	setInitialConc(0);
 	prevConc = 0;
@@ -88,13 +88,12 @@ double Cpd::sharpness(){ return sharp; }
 void Cpd::setSharpness(double s){ sharp = s; emit sharpnessChanged(s);}
 
 //transition
-Cpd::Transition Cpd::transition(){ return trans; }
-void Cpd::setTransition(Transition t){ trans = t; emit transitionChanged((int)t);}
-void Cpd::setTransition(int t){ trans = (Transition)t; emit transitionChanged(t);}
+int Cpd::transition(){ return trans; }
+void Cpd::setTransition(int t){ trans = t; emit transitionChanged((int)t);}
 bool Cpd::setTransition(QString s, bool *ok ){
-	if(s=="none") thresh = NONE;
-	else if(s=="linear") thresh = LINEAR;
-	else if(s=="atan") thresh = ATAN;
+	if(s=="none") thresh = Trans::NONE;
+	else if(s=="linear") thresh = Trans::LINEAR;
+	else if(s=="atan") thresh = Trans::ATAN;
 	else {
 		if(ok!=0) (*ok)=false;
 		return false;

@@ -9,6 +9,7 @@
 #include <QtXml>
 #include <QStringList>
 #include <QString>
+#include <QMap>
 
 #include <stdio.h>
 using namespace std;

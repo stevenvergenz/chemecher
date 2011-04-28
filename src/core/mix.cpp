@@ -11,7 +11,7 @@ Mix::Mix()
           time(0), cancel(false),
 	  precision(0.001),
 	  order(1), method("euler"),
-	  transition("none"),
+	  transition(Trans::NONE),
 	  autostep(true), gateband(.1),
 	  shifttest(20), maxreduce(8), stepfactor(2)
 {
@@ -401,17 +401,20 @@ double Mix::hBal(Cpd* cpd)
 	// there need be no diminishing returns on homogeneous cpds
 	if( cpd->isHomo() ) return 0;
 	
+	// set the threshold value
+	int transition = (this->order==5 ? cpd->transition() : this->transition);
+	
 	// determine the return on heterogeneous cpds based on transition type
-	if( transition == "none" ){
+	if( transition == Trans::NONE ){
 		return 1;
 	}
-	else if( transition == "linear" ){
+	else if( transition == Trans::LINEAR ){
 		if( cpd->prevConc > cpd->threshold() ) return 1;
 		else if( cpd->prevConc > 0 )
 			return cpd->prevConc / cpd->threshold();
 		else return 0;
 	}	
-	else if( transition == "atan" ){
+	else if( transition == Trans::ATAN ){
 		if( cpd->prevConc > cpd->threshold() ) return 1;
 		else if( cpd->prevConc > 0 )
 		{
