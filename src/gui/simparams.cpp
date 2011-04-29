@@ -17,8 +17,8 @@ SimParams::SimParams(QWidget *parent) :
 	ui->txtReportStep ->setValidator( DV(0, 1000000  ));
 	ui->txtStartTime  ->setValidator( DV(0, 1000000  ));
 	ui->txtEndTime    ->setValidator( DV(0, 10000000 ));
-	ui->txtDebugStart ->setValidator( IV(0, 1000000  ));
-	ui->txtDebugEnd   ->setValidator( IV(0, 10000000 ));
+	ui->txtDebugStart ->setValidator( DV(0, 1000000  ));
+	ui->txtDebugEnd   ->setValidator( DV(0, 10000000 ));
 	ui->txtGateband   ->setValidator( DV(0, 1000     ));
 	ui->txtShifttest  ->setValidator( IV(0, 100      ));
 	ui->txtMaxreduce  ->setValidator( IV(0, 10       ));

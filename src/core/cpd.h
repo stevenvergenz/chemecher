@@ -53,6 +53,7 @@ public:
 	double prevConc;
 	double finalConc;
 	double rate[5];
+	double heteroBalance;
 	QMap<Step*,int> stoiVals;
 
 public slots:

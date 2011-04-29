@@ -59,12 +59,11 @@ public:
 
 	void printMechSummary(QTextStream& fout);
 	void printData( double curTime );
+	void printDebug( double curTime );
 
 	// public file pointers (just in case)
 	QString outputFile, logFile, debugFile;
 	QTextStream data, log, debug;
-	void setTimeFormat(QTextStream& fp);
-	void setDataFormat(QTextStream& fp);
 	
 public slots:
 	void setOutputFile(QString s){ outputFile = s; }
@@ -74,6 +73,8 @@ public slots:
 private:
 	QString getLine( QTextStream& txt, int &linecounter, bool stripcomments = true );
 	bool setError( Status stat, QString errmsg, int linenum=-1, QString filename="" );
+	void setTimeFormat(QTextStream& fp);
+	void setDataFormat(QTextStream& fp);
 	
 	int outputPrecision, timePrecision;
 

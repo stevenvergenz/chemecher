@@ -937,3 +937,38 @@ void IOManager::printData( double curTime )
 	}
 	data << endl;
 }
+
+// print out all the intermediate files to the debug file (debug.out by default)
+void IOManager::printDebug( double curTime )
+{
+	QList<Cpd*>::iterator acpd;
+	
+	// format the output stream
+	debug << reset;
+	debug << qSetFieldWidth(6+outputPrecision)
+		<< qSetPadChar(' ') 
+		<< qSetRealNumberPrecision(outputPrecision)
+		<< right << fixed << forcepoint;
+	
+	debug << "Time: "+QString::number(curTime) << endl;
+	
+	// print the cpd name headers
+	debug << endl << "Cpd:";
+	for( acpd=mix->CpdList.begin(); acpd!=mix->CpdList.end(); acpd++ ){
+		debug << (*acpd)->toString();
+	}
+	
+	// print the balance coefficient
+	debug << endl << "hBal:";
+	for( acpd=mix->CpdList.begin(); acpd!=mix->CpdList.end(); acpd++ ){
+		debug << (*acpd)->heteroBalance;
+	}
+	
+	// print the final concentration
+	debug << endl << "fConc:";
+	for( acpd=mix->CpdList.begin(); acpd!=mix->CpdList.end(); acpd++ ){
+		debug << (*acpd)->finalConc;
+	}
+	
+	debug << endl;
+}

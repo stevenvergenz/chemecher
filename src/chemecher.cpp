@@ -84,7 +84,7 @@ int mainNoGUI(int argc, char** argv)
 	iomgr->outputFile = output;
 	iomgr->debugFile = "debug.out";
 	iomgr->logFile = "CheMechLog.txt";
-	cout << "Run started" << endl;
+	cout << "Run started: " << output.toStdString() << endl;
 		
 	// begin calculation!
 	return mix->calculateLegacy();

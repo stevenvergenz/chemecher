@@ -72,7 +72,7 @@ public:
 	//time data
 	double timeStep, reportStep;
 	double startTime, endTime;
-	int debugStart, debugEnd;
+	double debugStart, debugEnd;
 	double time;
 	bool cancel;
 	

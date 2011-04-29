@@ -213,7 +213,7 @@ bool Mix::calculateRKF()
 bool Mix::calculateLegacy()
 {
 	// begin true calculation
-	bool overflow       = false;	// is set if a concentration reaches too high
+	bool outOfBounds    = false;	// is set if a concentration reaches too high or too low
 	double timePrev     = 0;		// the timestep before the previous
 	double lastReport   = 0;		// the last time the concentration was printed
 	double dTime        = 0;		// handles the increment amount, adjusted when autostepping
@@ -258,12 +258,18 @@ bool Mix::calculateLegacy()
 	//               MAIN CALCULATION LOOP                 //
 	/////////////////////////////////////////////////////////
 
-	while( time <= endTime && !overflow && !cancel )
+	while( time <= endTime && !outOfBounds && !cancel )
 	{
 		// save the calculated concentrations and time
-		for( QList<Cpd*>::iterator i = CpdList.begin(); i != CpdList.end(); i++ )
+		for( QList<Cpd*>::iterator i = CpdList.begin(); i != CpdList.end(); i++ ){
 			(*i)->prevConc = (*i)->finalConc;
+		}
 		timePrev = time;
+		
+		// calculate the new balance values
+		for( acpd = CpdList.begin(); acpd != CpdList.end(); acpd++ ){
+			(*acpd)->heteroBalance = hBal( *acpd );
+		}
 		
 DownStep:	// autostep reentry point
 
@@ -288,13 +294,12 @@ DownStep:	// autostep reentry point
 				QList<Cpd*> tempList = (*astep)->reactantList();
 				for( acpd = tempList.begin(); acpd != tempList.end(); acpd++ )
 				{
-					double bal = hBal( *acpd );
-					//cout << QString("T=%1 S=%2 H=%3").arg(time).arg((*acpd)->toString()).arg(bal).toStdString() << endl;
+					//double bal = hBal( *acpd );
 					
 					if( order > 1 )
-						ra *= ( bal + (1-bal)*(*acpd)->partialConc[order-1] );
+						ra *= ( (*acpd)->heteroBalance + (1-(*acpd)->heteroBalance)*(*acpd)->partialConc[order-1] );
 					else
-						ra *= ( bal + (1-bal)*(*acpd)->prevConc );
+						ra *= ( (*acpd)->heteroBalance + (1-(*acpd)->heteroBalance)*(*acpd)->prevConc );
 				}
 				// store the calculated velocity in the step
 				(*astep)->velocityPlus[order] = ra;
@@ -304,12 +309,12 @@ DownStep:	// autostep reentry point
 				tempList = (*astep)->productList();
 				for( acpd = tempList.begin(); acpd != tempList.end(); acpd++ )
 				{
-					double bal = hBal( *acpd );
+					//double bal = hBal( *acpd );
 					
 					if( order > 1 )
-						ra *= ( bal + (1-bal)*(*acpd)->partialConc[order-1] );
+						ra *= ( (*acpd)->heteroBalance + (1-(*acpd)->heteroBalance)*(*acpd)->partialConc[order-1] );
 					else
-						ra *= ( bal + (1-bal)*(*acpd)->prevConc );
+						ra *= ( (*acpd)->heteroBalance + (1-(*acpd)->heteroBalance)*(*acpd)->prevConc );
 				}
 				// store the calculated velocity in the step
 				(*astep)->velocityMinus[order] = ra;
@@ -339,7 +344,7 @@ DownStep:	// autostep reentry point
 				}
 				
 				// sum up the final concentration
-				if( ca > 1000000000.0 ) overflow = true;
+				if( ca > 1000000000.0 || ca < -100 ) outOfBounds = true;
 				(*acpd)->finalConc += dTime * b[order] * (*acpd)->rate[order];
 				
 			} // end for each cpd
@@ -366,6 +371,11 @@ DownStep:	// autostep reentry point
 			}
 		}
 		
+		// print debug values to file (if open and in the window)
+		if( iomgr->debug.device()!=NULL && time>=debugStart && time<=debugEnd ){
+			iomgr->printDebug(time);
+		}
+		
 		// print final concentrations to file
 		if( time - lastReport >= reportStep ){
 			iomgr->printData(time);
@@ -378,9 +388,18 @@ DownStep:	// autostep reentry point
 	//                END CALCULATION LOOP                 //
 	/////////////////////////////////////////////////////////
 
+	// print reason for termination
 	if( cancel ){
-		iomgr->log << "Run aborted." << endl;
-		iomgr->data << "Run aborted." << endl;
+		iomgr->log << "Run manually aborted." << endl;
+		iomgr->data << "Run manually aborted." << endl;
+	}
+	else if( outOfBounds ){
+		iomgr->log << "Run aborted, concentration out of bounds." << endl;
+		iomgr->data << "Run aborted, concentration out of bounds." << endl;
+	}
+	else {
+		iomgr->log << "Run completed." << endl;
+		iomgr->data << "Run completed." << endl;
 	}
 	
 	// print the mech summary to the data file
@@ -434,6 +453,7 @@ double Mix::hBal(Cpd* cpd)
 bool Mix::setCalcConstants()
 {
 	QList<QStringList> methods = availableMethods();
+	//cout << order << method.toStdString() << endl;
 	
 	switch(order){
 	case 1:

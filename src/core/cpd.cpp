@@ -22,6 +22,7 @@ cpd_state(Cpd::HOMO), thresh(0), sharp(0), trans(Trans::NONE)
 	rate[2] = 0;
 	rate[3] = 0;
 	rate[4] = 0;
+	heteroBalance = -1;
 }
 
 Cpd::Cpd(QString n, Cpd::State s) : QObject(), shortname(n), longname(""),
@@ -39,6 +40,7 @@ Cpd::Cpd(QString n, Cpd::State s) : QObject(), shortname(n), longname(""),
 	rate[2] = 0;
 	rate[3] = 0;
 	rate[4] = 0;
+	heteroBalance = -1;
 }
 
 const QString Cpd::toString(){
