@@ -93,9 +93,9 @@ void Cpd::setSharpness(double s){ sharp = s; emit sharpnessChanged(s);}
 int Cpd::transition(){ return trans; }
 void Cpd::setTransition(int t){ trans = t; emit transitionChanged((int)t);}
 bool Cpd::setTransition(QString s, bool *ok ){
-	if(s=="none") thresh = Trans::NONE;
-	else if(s=="linear") thresh = Trans::LINEAR;
-	else if(s=="atan") thresh = Trans::ATAN;
+	if(s=="none") trans = Trans::NONE;
+	else if(s=="linear") trans = Trans::LINEAR;
+	else if(s=="atan") trans = Trans::ATAN;
 	else {
 		if(ok!=0) (*ok)=false;
 		return false;

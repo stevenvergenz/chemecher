@@ -7,6 +7,7 @@ IOManager::IOManager() : QObject()
 	outputPrecision = 6;
 	timePrecision = 3;
 	logFile = "CheMechLog.txt";
+	debugFile = "debug.out";
 }
 IOManager::~IOManager()
 {
@@ -162,6 +163,7 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 		if( !ok )
 			return setError( PARSE_ERROR, "Invalid state identifier \"" + parts[1] + "\"", linecounter, QFileInfo(mech).fileName() );
 		cpd->setThreshold( parts[2].toDouble(&ok) );
+		cout << parts[0].toStdString() << " " << parts[2].toStdString() << endl;
 		if( !ok || cpd->threshold()<0 )
 			return setError( PARSE_ERROR, "Positive double expected in 3rd field", linecounter, QFileInfo(mech).fileName() );
 		cpd->setSharpness( parts[3].toDouble(&ok) );
@@ -562,28 +564,42 @@ bool IOManager::loadFromCM4(QString filename)
 		QDomNode child = cpd.firstChild();
 
 		// parse components of a compound
+		// name
 		if(child.toElement().tagName()!="LongName")
 			return setError(PARSE_ERROR, "Expected \"LongName\", got \""+cpd.toElement().tagName()+"\"", child.lineNumber());
 		newcpd->setLongName(child.toElement().attribute("value"));
 		child = child.nextSibling();
+		
+		// concentration
 		if(child.toElement().tagName()!="Concentration")
 			return setError(PARSE_ERROR, "Expected \"Concentration\", got \""+child.toElement().tagName()+"\"", child.lineNumber());
 		newcpd->setInitialConc(child.toElement().attribute("value"));
 		child = child.nextSibling();
+		
+		// threshold
 		if(child.toElement().tagName()!="Threshold")
 			return setError(PARSE_ERROR, "Expected \"Threshold\", got \""+child.toElement().tagName()+"\"", child.lineNumber());
-		newcpd->setThreshold(child.toElement().attribute("value").toDouble());
+		newcpd->setThreshold(child.toElement().attribute("value").toDouble(&ok));
+		if( !ok )
+			return setError(PARSE_ERROR, "Threshold value of "+newcpd->longName()+" must be a number.",child.lineNumber());
 		child = child.nextSibling();
+		
+		// sharpness
 		if(child.toElement().tagName()!="Sharpness")
 			return setError(PARSE_ERROR, "Expected \"Sharpness\", got \""+child.toElement().tagName()+"\"", child.lineNumber());
-		newcpd->setSharpness(child.toElement().attribute("value").toDouble());
+		newcpd->setSharpness(child.toElement().attribute("value").toDouble(&ok));
+		if( !ok )
+			return setError(PARSE_ERROR, "Sharpness value of "+newcpd->longName()+" must be a number.", child.lineNumber());
 		child = child.nextSibling();
+		
+		// transition
 		if(child.toElement().tagName()!="Transition")
 			return setError(PARSE_ERROR, "Expected \"Transition\", got \""+child.toElement().tagName()+"\"", child.lineNumber());
 		newcpd->setTransition(child.toElement().attribute("value"));
 
 		// add the new cpd to the mix
 		newmix.CpdList.append(newcpd);
+		
 	}
 
 	/****************** Read the Step List *********************/
@@ -962,6 +978,12 @@ void IOManager::printDebug( double curTime )
 	debug << endl << "hBal:";
 	for( acpd=mix->CpdList.begin(); acpd!=mix->CpdList.end(); acpd++ ){
 		debug << (*acpd)->heteroBalance;
+	}
+	
+	// print the cpd's threshold
+	debug << endl << "threshold:";
+	for( acpd=mix->CpdList.begin(); acpd!=mix->CpdList.end(); acpd++ ){
+		debug << (*acpd)->threshold();
 	}
 	
 	// print the final concentration

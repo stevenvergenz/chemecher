@@ -355,7 +355,7 @@ DownStep:	// autostep reentry point
 			for( acpd=CpdList.begin(); acpd!=CpdList.end(); acpd++ ){
 				// refine timestep
 				if( ((*acpd)->prevConc < (*acpd)->threshold() || (*acpd)->finalConc < (*acpd)->threshold())
-					&& abs((*acpd)->finalConc - (*acpd)->prevConc) > gateband * (*acpd)->threshold()
+					&& fabs((*acpd)->finalConc - (*acpd)->prevConc) > gateband * (*acpd)->threshold()
 					&& exp < maxreduce
 				){
 					exp++;
@@ -438,10 +438,12 @@ double Mix::hBal(Cpd* cpd)
 		else if( cpd->prevConc > 0 )
 		{
 			double pi = 3.14159265359;
-			return (((qAtan(cpd->sharpness() * (cpd->prevConc / cpd->threshold() - 0.5)) * (2 / pi) + 1) / 2) -
+			double rtn = (((qAtan(cpd->sharpness() * (cpd->prevConc / cpd->threshold() - 0.5)) * (2 / pi) + 1) / 2) -
 			((qAtan(cpd->sharpness() * (-0.5)) * (2 / pi) + 1) / 2)) / 
 			(((qAtan(cpd->sharpness() * (0.5)) * (2 / pi) + 1) / 2) - 
 			((qAtan(cpd->sharpness() * (-0.5)) * (2 / pi) + 1) / 2));
+			
+			return rtn;
 		}
 		else return 0;
 	}
