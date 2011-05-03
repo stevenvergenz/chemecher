@@ -16,6 +16,15 @@ Mix::Mix()
 	  shifttest(20), maxreduce(8), stepfactor(2)
 {
 	connect( this, SIGNAL(cpdListChanged()), this, SIGNAL(stepListChanged()) );
+	
+	// return codes and messages
+	error = 5;
+	errorMsg.append("Run completed successfully."); // code 0
+	errorMsg.append("Could not open output file."); // code 1
+	errorMsg.append("Order/Method mismatch, could not initialize constants."); // code 2
+	errorMsg.append("Concentration out of bounds."); // code 3
+	errorMsg.append("Calculation manually aborted."); // code 4
+	errorMsg.append("Unknown error."); // code 5
 }
 
 QStringList Mix::cpdIdList() {
@@ -205,12 +214,11 @@ void Mix::initialize()
 
 }
 
-bool Mix::calculateRKF()
+void Mix::calculateRKF()
 {
-	return true;
 }
 
-bool Mix::calculateLegacy()
+void Mix::calculateLegacy()
 {
 	// begin true calculation
 	bool outOfBounds    = false;	// is set if a concentration reaches too high or too low
@@ -232,13 +240,15 @@ bool Mix::calculateLegacy()
 
 	// open the appropriate files: log, output, and debug
 	if( !iomgr->openLogFile() ){
-		cout << iomgr->getMessage().toStdString() << endl;
-		return false;
+		errorString = iomgr->getMessage();
+		error = 1;
+		return;
 	}
 	iomgr->printMechSummary( iomgr->log );
 	if( !iomgr->openRunOutputFile() ){
-		cout << iomgr->getMessage().toStdString() << endl;
-		return false;
+		errorString = iomgr->getMessage();
+		error = 1;
+		return;
 	}
 	
 	if( !iomgr->openDebugOutputFile() ){
@@ -247,8 +257,8 @@ bool Mix::calculateLegacy()
 
 	// set constants based on order and method
 	if( !setCalcConstants() ){
-		cout << "Could not initialize constants, exiting!" << endl;
-		return false;
+		error = 2;
+		return;
 	}
 	
 	// print the column headers and initial concentrations
@@ -390,14 +400,17 @@ DownStep:	// autostep reentry point
 
 	// print reason for termination
 	if( cancel ){
+		error = 4;
 		iomgr->log << "Run manually aborted." << endl;
 		iomgr->data << "Run manually aborted." << endl;
 	}
 	else if( outOfBounds ){
+		error = 3;
 		iomgr->log << "Run aborted, concentration out of bounds." << endl;
 		iomgr->data << "Run aborted, concentration out of bounds." << endl;
 	}
 	else {
+		error = 0;
 		iomgr->log << "Run completed." << endl;
 		iomgr->data << "Run completed." << endl;
 	}
@@ -412,7 +425,6 @@ DownStep:	// autostep reentry point
 	if( iomgr->debug.device() != NULL )
 		iomgr->debug.device()->close();
 	
-	return true;
 }
 
 double Mix::hBal(Cpd* cpd)
@@ -526,9 +538,9 @@ bool Mix::setCalcConstants()
 void Mix::run()
 {
 	if( order<5 ){
-		calcSuccess = calculateLegacy();
+		calculateLegacy();
 	}
 	else{
-		calcSuccess = calculateRKF();
+		calculateRKF();
 	}
 }

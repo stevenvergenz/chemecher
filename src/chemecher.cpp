@@ -86,6 +86,12 @@ int mainNoGUI(int argc, char** argv)
 	
 	// begin calculation!
 	mix->run();
+	if( mix->error != 0 ){
+		cout << QString("Error %1: %2").arg(mix->error).arg(mix->errorMsg[mix->error]).toStdString() << endl;
+		if(mix->error == 1)
+			cout << mix->errorString.toStdString() << endl;
+	} else
+		cout << "Run completed successfully." << endl;
 	
 	return 0;
 }

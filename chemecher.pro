@@ -13,6 +13,10 @@ INCLUDEPATH += . \
 QT += sql \
     xml
 
+win32 {
+    CONFIG += console
+}
+
 # Input
 HEADERS += src/core/cpd.h \
     src/core/mix.h \

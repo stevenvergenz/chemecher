@@ -9,6 +9,7 @@ RunWindow::RunWindow(QWidget *parent) :
     ui->setupUi(this);
     ui->progressBar->setMinimum(mix->startTime);
     ui->progressBar->setMaximum(mix->endTime);
+    ui->progressBar->setEnabled(false);
     
     // manage the clocks
     timer->setInterval(200);
@@ -59,6 +60,7 @@ void RunWindow::startCalculation()
 {
 	startTime = QTime::currentTime();
 	ui->pushCalculate->setText("Abort");
+	ui->progressBar->setEnabled(true);
 	disconnect(ui->pushCalculate,SIGNAL(clicked()));
 	connect( ui->pushCalculate, SIGNAL(clicked()), this, SLOT(abortCalculation()) );
 	updateIndicators();
@@ -78,8 +80,18 @@ void RunWindow::finishCalculation()
 	disconnect( ui->pushCalculate, SIGNAL(clicked()) );
 	connect( ui->pushCalculate, SIGNAL(clicked()), this, SLOT(startCalculation()) );
 	ui->pushCalculate->setText("Calculate!");
+	ui->progressBar->setEnabled(false);
+	ui->progressBar->setValue(mix->startTime);
 	timer->stop();
 	endTime = QTime::currentTime();
 	QApplication::beep();
 	mix->cancel = false;
+	
+	// show error message, if thrown
+	QString message = QString("Error %1: %2\n%3")
+		                .arg(mix->error)
+		                .arg(mix->errorMsg[mix->error])
+		                .arg( mix->error==1 ? mix->errorString : "" );
+	QMessageBox::critical(this,"Error",message);
+	
 }

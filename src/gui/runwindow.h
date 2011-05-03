@@ -4,6 +4,7 @@
 #include <QFrame>
 #include <QTimer>
 #include <QTime>
+#include <QMessageBox>
 
 #include "mix.h"
 

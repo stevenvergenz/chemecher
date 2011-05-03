@@ -57,8 +57,12 @@ public:
 	void clone(Mix* newmix);
 	void initialize();
 
-	bool calculateRKF();
-	bool calculateLegacy();
+	// calculation functions and error flags
+	void calculateRKF();
+	void calculateLegacy();
+	int error;
+	QStringList errorMsg;
+	QString errorString;
 	
 	/*************************
 	 * Simulation parameters *
