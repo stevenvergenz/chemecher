@@ -304,8 +304,6 @@ DownStep:	// autostep reentry point
 				QList<Cpd*> tempList = (*astep)->reactantList();
 				for( acpd = tempList.begin(); acpd != tempList.end(); acpd++ )
 				{
-					//double bal = hBal( *acpd );
-					
 					if( order > 1 )
 						ra *= ( (*acpd)->heteroBalance + (1-(*acpd)->heteroBalance)*(*acpd)->partialConc[order-1] );
 					else
@@ -319,8 +317,6 @@ DownStep:	// autostep reentry point
 				tempList = (*astep)->productList();
 				for( acpd = tempList.begin(); acpd != tempList.end(); acpd++ )
 				{
-					//double bal = hBal( *acpd );
-					
 					if( order > 1 )
 						ra *= ( (*acpd)->heteroBalance + (1-(*acpd)->heteroBalance)*(*acpd)->partialConc[order-1] );
 					else

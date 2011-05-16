@@ -974,22 +974,32 @@ void IOManager::printDebug( double curTime )
 		debug << (*acpd)->toString();
 	}
 	
-	// print the balance coefficient
-	debug << endl << "hBal:";
-	for( acpd=mix->CpdList.begin(); acpd!=mix->CpdList.end(); acpd++ ){
-		debug << (*acpd)->heteroBalance;
+	// print the partial rates
+	for( int i=1; i<=mix->order; i++ ){
+		debug << endl << QString("Rate[$1]:").arg(i);
+		for( acpd=mix->CpdList.begin(); acpd!=mix->CpdList.end(); acpd++ ){
+			debug << (*acpd)->rate[i];
+		}
 	}
 	
-	// print the cpd's threshold
-	debug << endl << "threshold:";
-	for( acpd=mix->CpdList.begin(); acpd!=mix->CpdList.end(); acpd++ ){
-		debug << (*acpd)->threshold();
+	// print the partial concentrations
+	for( int i=1; i<mix->order; i++ ){
+		debug << endl << QString("Conc[$1]:").arg(i);
+		for( acpd=mix->CpdList.begin(); acpd!=mix->CpdList.end(); acpd++ ){
+			debug << (*acpd)->partialConc[i];
+		}
 	}
 	
 	// print the final concentration
 	debug << endl << "fConc:";
 	for( acpd=mix->CpdList.begin(); acpd!=mix->CpdList.end(); acpd++ ){
 		debug << (*acpd)->finalConc;
+	}
+	
+	// print the balance coefficient
+	debug << endl << "hBal:";
+	for( acpd=mix->CpdList.begin(); acpd!=mix->CpdList.end(); acpd++ ){
+		debug << (*acpd)->heteroBalance;
 	}
 	
 	debug << endl;
