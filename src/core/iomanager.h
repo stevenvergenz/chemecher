@@ -71,8 +71,15 @@ public slots:
 	void setDebugFile(QString s) { debugFile = s;  }
 
 private:
-	QString getLine( QTextStream& txt, int &linecounter, bool stripcomments = true );
-	bool setError( Status stat, QString errmsg, int linenum=-1, QString filename="" );
+	QString getLine( QTextStream& txt, int &linecounter, QString *commentString = 0 );
+	QString getLineNonEmpty( QTextStream& txt, int &linecounter, QString *commentString = 0 );
+
+	int *errorLineNum;
+	QString errorFilename;
+	bool setError( Status stat, QString errmsg, int linenum=-1, QString errorFilename="" );
+	void setErrorLineNum( int *var );
+	void setErrorFilename( QString var );
+
 	void setTimeFormat(QTextStream& fp);
 	void setDataFormat(QTextStream& fp);
 	

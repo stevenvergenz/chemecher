@@ -123,126 +123,126 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 	QTextStream min(&mfile);
 	int linecounter = 0;
 	QString buffer;
+	QString comment;
 	bool ok = true;
 
+	QString specieNameFormat  = "([A-Za-z][A-Za-z0-9\\-\\+]*)";
+	QString specieStateFormat = "(\\((?:\\.|\\*|s|l|g|aq)\\))";
+
+	setErrorFilename( QFileInfo(mech).fileName() );
+	setErrorLineNum( &linecounter );
+
 	// try to parse the name and description from the file
-	buffer = min.readLine();
-	linecounter++;
-	while( buffer.left( buffer.indexOf("'") ).simplified() == "" ) {
-		if( buffer.left(6).toLower() == "'name:" ) {
-			newmix.mechName = buffer.mid(6).trimmed();
-		}
-		if( buffer.left(6).toLower() == "'desc:" ) {
-			newmix.mechDesc = buffer.mid(6).trimmed();
-		}
-		buffer = min.readLine();
-		linecounter++;
+	buffer = getLine(min, linecounter, &comment);
+	while( buffer == "" ) {
+		if( comment.left(5).toLower()=="name:" )
+			newmix.mechName = comment.mid(5).trimmed();
+		else if( comment.left(5).toLower()=="desc:" )
+			newmix.mechDesc = comment.mid(5).trimmed();
+		buffer = getLine(min, linecounter, &comment);
 	}
 	
-	buffer = buffer.left( buffer.indexOf("'") ).simplified();
-	
 	//read the number of species
-	//buffer = getLine( min, linecounter ); // this is already done above
+	// buffer already = next line (above)
 	int numcpds = buffer.toInt(&ok);
 	if( !ok || numcpds<1)
-		return setError( PARSE_ERROR, "Positive integer expected", linecounter, QFileInfo(mech).fileName() );
+		return setError( PARSE_ERROR, "Positive integer expected" );
 	
 	//read the species
 	QStringList parts;
 	for(int i=0; i<numcpds; i++)
 	{
-		parts = getLine( min, linecounter ).split(' ');
+		buffer = getLineNonEmpty( min, linecounter );
+		parts = buffer.split(' ');
 		if( parts.length()!=4 )
-			return setError( PARSE_ERROR, "Wrong number of elements", linecounter, QFileInfo(mech).fileName() );
+			return setError( PARSE_ERROR, "Wrong number of elements" );
+
 		Cpd *cpd = new Cpd();
 		
 		if( parts[0].length()>6 )
-			return setError( PARSE_ERROR, "Short name too long (must be no more than 7 characters)", linecounter, QFileInfo(mech).fileName() );
+			return setError( PARSE_ERROR, "Short name too long (must be no more than 7 characters)" );
+		if( !QRegExp(specieNameFormat).exactMatch(parts[0]) )
+			return setError( PARSE_ERROR, "Invalid compound name" );
 		cpd->setShortName( parts[0] );
 		cpd->setState( parts[1], &ok );
 		if( !ok )
-			return setError( PARSE_ERROR, "Invalid state identifier \"" + parts[1] + "\"", linecounter, QFileInfo(mech).fileName() );
+			return setError( PARSE_ERROR, "Invalid state identifier \"" + parts[1] + "\"" );
 		cpd->setThreshold( parts[2].toDouble(&ok) );
 		cout << parts[0].toStdString() << " " << parts[2].toStdString() << endl;
 		if( !ok || cpd->threshold()<0 )
-			return setError( PARSE_ERROR, "Positive double expected in 3rd field", linecounter, QFileInfo(mech).fileName() );
+			return setError( PARSE_ERROR, "Positive double expected in 3rd field" );
 		cpd->setSharpness( parts[3].toDouble(&ok) );
 		if( !ok || cpd->sharpness()<0 )
-			return setError( PARSE_ERROR, "Positive double expected in 4th field", linecounter, QFileInfo(mech).fileName() );
+			return setError( PARSE_ERROR, "Positive double expected in 4th field" );
 		
+		cout << cpd->toString().toStdString() << endl;
 		newmix.addCpd( cpd );
 	}
 	
+	for(int i=0; i<mix->cpdIdList().length(); i++)
+		cout << mix->cpdIdList()[i].toStdString() << endl;
+
 	// read the number of steps
-	buffer = getLine( min, linecounter );
+	buffer = getLineNonEmpty( min, linecounter );
 	int numsteps = buffer.toInt(&ok);
 	if( !ok || numsteps<1)
-		return setError( PARSE_ERROR, "Positive integer expected", linecounter, QFileInfo(mech).fileName() );
-	
-	// set up the valid regular expression
-	QRegExp regex( "^([A-Za-z][A-Za-z0-9\\-\\+]*\\((?:\\.|\\*|s|l|g|aq)\\))\\s*"
-	              "(?:\\+\\s*([A-Za-z][A-Za-z0-9\\-\\+]*\\((?:\\.|\\*|s|l|g|aq)\\))\\s*)?"
-	              "(?:\\+\\s*([A-Za-z][A-Za-z0-9\\-\\+]*\\((?:\\.|\\*|s|l|g|aq)\\))\\s*)?"
-	              "(\\>)\\s*"
-	              "([A-Za-z][A-Za-z0-9\\-\\+]*\\((?:\\.|\\*|s|l|g|aq)\\))\\s*"
-	              "(?:\\+\\s*([A-Za-z][A-Za-z0-9\\-\\+]*\\((?:\\.|\\*|s|l|g|aq)\\))\\s*)?"
-	              "(?:\\+\\s*([A-Za-z][A-Za-z0-9\\-\\+]*\\((?:\\.|\\*|s|l|g|aq)\\))\\s*)?"
-	              "\\s(\\S+)\\s+(\\S+)\\s"
-	);
-	
+		return setError( PARSE_ERROR, "Positive integer expected" );
+
+	QRegExp specieFormat(specieNameFormat + specieStateFormat);
+
 	// read the steps
 	for(int i=0; i<numsteps; i++)
 	{
 		// get the line
-		buffer = getLine( min, linecounter, false );			
-		int pos = regex.indexIn(buffer);
-		QStringList contents = regex.capturedTexts();
-		contents.removeAll("");
-		
-		if(pos==-1){
-			return setError( PARSE_ERROR, "Invalid step definition", linecounter, QFileInfo(mech).fileName() );
-		}
-		
+		buffer = getLineNonEmpty( min, linecounter, &comment );
+		parts = buffer.split(' ');
+		if( parts.length()<3 )
+			return setError( PARSE_ERROR, "Too few fields" );
+
 		// declare and name the new step
 		Step *step = new Step();
-		if( buffer.mid( buffer.indexOf("'"), 6 ) == "'name:" )
-			step->setName( buffer.mid(buffer.indexOf("'")+6).trimmed() );
+		if( comment.left(5) == "name:" )
+			step->setName( comment.mid(5).trimmed() );
 		else
 			step->setName( QString("Step %1").arg(i+1) );
-		
-		// add the reactants and products
-		bool prodFlag = false; int matchIdx = 1;
-		for(matchIdx=1; matchIdx<contents.size()-2; matchIdx++)
-		{
-			// change from adding reactants to adding products
-			if( contents.at(matchIdx) == ">" ){
-				prodFlag = true;
-				continue;
-			}
-			
-			// add reactants
-			if( !prodFlag ){
-				if( !step->addReactant( newmix.getCpdById(contents.at(matchIdx)) ) ){
-					return setError( PARSE_ERROR, QString("Undefined species \"%1\" at col %2")
-					.arg(contents.at(matchIdx)).arg(matchIdx), linecounter, QFileInfo(mech).fileName() );
-				}
-			}
-			// add products
-			else{
-				if( !step->addProduct( newmix.getCpdById(contents.at(matchIdx)) ) ){
-					return setError( PARSE_ERROR, QString("Undefined species \"%1\" at col %2")
-					.arg(contents.at(matchIdx)).arg(matchIdx), linecounter, QFileInfo(mech).fileName() );
-				}
-			}
-		} // step parsing loop
-		
-		// get the k+ and k- values
-		step->setKPlus( contents.at(matchIdx++).toDouble(&ok) );
+
+		// get the k+ and k- values from the end
+		step->setKPlus( parts.takeAt(parts.length()-2).toDouble(&ok) );
 		if( !ok || step->kPlus()<0 )
-			return setError( PARSE_ERROR, "Positive double expected in positive rate field", linecounter, QFileInfo(mech).fileName() );
-		step->setKMinus( contents.at(matchIdx++).toDouble(&ok) );
+			return setError( PARSE_ERROR, "Positive double expected in positive rate field" );
+		step->setKMinus( parts.takeLast().toDouble(&ok) );
 		if( !ok || step->kPlus()<0 )
-			return setError( PARSE_ERROR, "Positive double expected in negative rate field", linecounter, QFileInfo(mech).fileName() );
+			return setError( PARSE_ERROR, "Positive double expected in negative rate field" );
+
+		// split the equation portion by the arrow
+		parts = parts.join("").split(">");
+		if( parts.length() != 2 )
+			return setError( PARSE_ERROR, "Invalid step definition" );
+		QStringList reacList = parts[0].split("+");
+		QStringList prodList = parts[1].split("+");
+
+		// "(\\((?:\\.|\\*|s|l|g|aq)\\))"
+		// "TB(*)"
+
+		// add the reactants
+		if( reacList.length()>3 )
+			return setError( PARSE_ERROR, "Too many reactants" );
+		for( int i=0; i<reacList.length(); i++ ) {
+			if( !specieFormat.exactMatch( reacList[i] ) )
+				return setError( PARSE_ERROR, QString("Invalid specie reference \"%1\"").arg(reacList[i]) );
+			if( !step->addReactant( newmix.getCpdById(reacList[i]) ) )
+				return setError( PARSE_ERROR, QString("Undefined specie \"%1\"").arg(reacList[i]) );
+		}
+
+		// add the products
+		if( prodList.length()>3 )
+			return setError( PARSE_ERROR, "Too many products" );
+		for( int i=0; i<prodList.length(); i++ ) {
+			if( !specieFormat.exactMatch( prodList[i] ) )
+				return setError( PARSE_ERROR, QString("Invalid specie reference \"%1\"").arg(prodList[i]) );
+			if( !step->addProduct( newmix.getCpdById(prodList[i]) ) )
+				return setError( PARSE_ERROR, QString("Undefined specie \"%1\"").arg(prodList[i]) );
+		}
 		
 		// add the newly populated step to the list
 		newmix.addStep( step );
@@ -260,6 +260,9 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 	buffer = "";
 	ok = true;
 	
+	setErrorFilename( QFileInfo(sim).fileName() );
+	setErrorLineNum( &linecounter );
+
 	// stores information about the various fields available in the simulation file
 	QMap<QString,SimEntry> ents;
 	SimEntry t;
@@ -288,9 +291,9 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 	for( int i=0; i<ents.count(); i++ ) {
 		
 		// get the key/value pair
-		QList<QString> parts = getLine( sin, linecounter ).split("=");
+		QList<QString> parts = getLineNonEmpty( sin, linecounter ).split("=");
 		if( parts.length()!=2 )
-			return setError( PARSE_ERROR, "Invalid format, expected key=value", linecounter, QFileInfo(sim).fileName() );
+			return setError( PARSE_ERROR, "Invalid format, expected key=value" );
 		
 		// declare variables
 		QString k = parts[0].toLower().trimmed();
@@ -299,9 +302,9 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 		
 		// check that identifier exists and has not been encountered
 		if( !ents.contains(k) )
-			return setError( PARSE_ERROR, "Unrecognized identifier \"" + k + "\"", linecounter, QFileInfo(sim).fileName() );
+			return setError( PARSE_ERROR, "Unrecognized identifier \"" + k + "\"" );
 		if( ents[k].entered )
-			return setError( PARSE_ERROR, "Duplicate identifier \"" + k + "\"", linecounter, QFileInfo(sim).fileName() );
+			return setError( PARSE_ERROR, "Duplicate identifier \"" + k + "\"" );
 		
 		// switch( variable type )
 		switch( ents[k].vtype ) {
@@ -310,7 +313,7 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 		case v_double:
 			vd = v.toDouble(&ok);
 			if( !ok || vd<0 )
-				return setError( PARSE_ERROR, "Expected positive double", linecounter, QFileInfo(sim).fileName() );
+				return setError( PARSE_ERROR, "Expected positive double" );
 			*ents[k].doubleval = vd;
 			break;
 		
@@ -321,9 +324,9 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 			
 			// if it's an order and it's out of range, report an error
 			if( ents[k].vtype==v_order && (vi<1 || vi>4) )
-				return setError( PARSE_ERROR, "Expected integer between 1 and 4", linecounter, QFileInfo(sim).fileName() );
+				return setError( PARSE_ERROR, "Expected integer between 1 and 4" );
 			if( vi<0 )
-				return setError( PARSE_ERROR, "Expected positive integer", linecounter, QFileInfo(sim).fileName() );
+				return setError( PARSE_ERROR, "Expected positive integer" );
 			
 			if(ok) *ents[k].intval = vi;
 			break;
@@ -333,7 +336,7 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 			if( v=="yes" || v=="no" )
 				vb = (v=="yes");
 			else
-				return setError( PARSE_ERROR, "Expected either \"yes\" or \"no\"", linecounter, QFileInfo(sim).fileName() );
+				return setError( PARSE_ERROR, "Expected either \"yes\" or \"no\"" );
 			*ents[k].boolval = vb;
 			break;
 		
@@ -341,7 +344,7 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 		case v_trans:
 			ok = ( v=="atan" || v=="linear" || v=="none" );
 			if( !ok )
-				return setError( PARSE_ERROR, "Transition must be either \"atan\", \"linear\", or \"none\"", linecounter, QFileInfo(sim).fileName() );
+				return setError( PARSE_ERROR, "Transition must be either \"atan\", \"linear\", or \"none\"" );
 			else {
 				QMap<QString,int> tmap;
 				tmap["atan"]=2; tmap["linear"]=1; tmap["none"]=0;
@@ -352,43 +355,43 @@ bool IOManager::loadFromCM3(QString mech, QString sim)
 		// if it's a method
 		case v_method:
 			if( !ents["order"].entered )
-				return setError( PARSE_ERROR, "Method must be listed after order", linecounter, QFileInfo(sim).fileName() );
+				return setError( PARSE_ERROR, "Method must be listed after order" );
 			ok = newmix.availableMethods()[newmix.order-1].contains(v);
 			if( !ok )
-				return setError( PARSE_ERROR, "For order=" + QString::number(newmix.order) + ", method must be one of the following: \""+newmix.availableMethods()[newmix.order-1].join("\", \"")+"\"", linecounter, QFileInfo(sim).fileName() );
+				return setError( PARSE_ERROR, "For order=" + QString::number(newmix.order) + ", method must be one of the following: \""+newmix.availableMethods()[newmix.order-1].join("\", \"")+"\"" );
 			else
 				*ents[k].stringval = v;
 			break;
 		}
 		if( !ok )
-			return setError( PARSE_ERROR, "Failed to parse value in key=value pair", linecounter, QFileInfo(sim).fileName() );
+			return setError( PARSE_ERROR, "Failed to parse value in key=value pair" );
 		
 		// tell the program that this variable has been read
 		ents[k].entered = true;
 	}
 	
 	// get the initial concentrations
-	buffer = getLine(sin, linecounter);
+	buffer = getLineNonEmpty(sin, linecounter);
 	while( buffer!="" ) {
 		
 		// split the line into its parts
 		QList<QString> parts = buffer.split(" ");
 		if( parts.count()!=2 )
-			return setError( PARSE_ERROR, "Expected two elements", linecounter, QFileInfo(sim).fileName() );
+			return setError( PARSE_ERROR, "Expected two elements" );
 		
 		// search for the compound
 		Cpd *cpd = newmix.getCpdById(parts[0]);
 		if( cpd==0 )
-			return setError( PARSE_ERROR, "Unrecognized species \"" + parts[0] + "\"", linecounter, QFileInfo(sim).fileName() );
+			return setError( PARSE_ERROR, "Unrecognized species \"" + parts[0] + "\"" );
 		
 		// set the concentration
 		double conc = parts[1].toDouble(&ok);
 		if( !ok || conc<0 )
-			return setError( PARSE_ERROR, "Expected positive double", linecounter, QFileInfo(sim).fileName() );
+			return setError( PARSE_ERROR, "Expected positive double" );
 		cpd->setInitialConc(conc);
 		
 		// get the next line
-		buffer = getLine(sin, linecounter);
+		buffer = getLineNonEmpty(sin, linecounter);
 	}
 	
 	mix->clone( &newmix );
@@ -733,18 +736,38 @@ bool IOManager::loadFromCM4(QString filename)
 	return true;
 }
 
-// gets the next line of valid input
-QString IOManager::getLine(QTextStream& txt, int &linecounter, bool stripcomments)
+/** getLine
+	Returns the next line of valid input
+	Puts the comment, if any, into *commentString (without the ')
+ */
+QString IOManager::getLine(QTextStream &txt, int &linecounter, QString *commentString) {
+	QString ret = "";
+	int index = 0;
+	if( commentString!=0 ) *commentString = "";
+
+	// until a non-empty non-comment line has been found
+	if( !txt.atEnd() ) {
+		ret = txt.readLine();
+		linecounter++;
+
+		// extract and strip the comment
+		index = ret.indexOf("'");
+		if( commentString!=0 ) *commentString = ret.mid(index+1).trimmed();
+		ret = ret.left(index);
+		ret = ret.simplified();
+	}
+
+	return ret;
+}
+
+/** getLineNonEmpty
+	Returns the next non-empty line of valid input
+	Puts the comment, if any, into *commentString (without the ')
+ */
+QString IOManager::getLineNonEmpty(QTextStream& txt, int &linecounter, QString *commentString)
 {
 	QString ret = "";
-	while( ret.left(ret.indexOf("'"))=="" && !txt.atEnd() ) {
-		ret = txt.readLine();
-		// removes comments and simplifies whitespace
-		ret = ret.simplified();
-		if( stripcomments )
-			ret = ret.left( ret.indexOf("'") );
-		linecounter++;
-	}
+	while( ret=="" && !txt.atEnd() ) ret = getLine(txt,linecounter,commentString);
 	return ret;
 }
 
@@ -754,18 +777,35 @@ bool IOManager::setError( Status stat, QString errmsg, int linenum, QString file
 {
 	status = stat;
 	message = "Error";
-	if( linenum>=0 || filename!="" )
+
+	if( stat == PARSE_ERROR ) {
+		// use previously set variables if available
+		if( linenum<0 && errorLineNum!=0 && *errorLineNum>=0 )
+			linenum = *errorLineNum;
+		if( filename=="" && errorFilename!="" )
+			filename = errorFilename;
+	}
+
+	if( linenum>=0 || filename!="" ) {
 		message += " (";
-	if( filename!="" )
-		message += filename;
-	if( filename!="" && linenum>=0 )
-		message += ", ";
-	if( linenum>=0 )
-		message += "line " + QString::number(linenum);
-	if( linenum>=0 || filename!="" )
+		if( filename!="" )
+			message += filename;
+		if( filename!="" && linenum>=0 )
+			message += ", ";
+		if( linenum>=0 )
+			message += "line " + QString::number(linenum);
 		message += ")";
+	}
 	message += ": " + errmsg;
 	return false;
+}
+
+void IOManager::setErrorLineNum( int *var ) {
+	errorLineNum = var;
+}
+
+void IOManager::setErrorFilename( QString var ) {
+	errorFilename = var;
 }
 
 /** lineUpWhitespace
