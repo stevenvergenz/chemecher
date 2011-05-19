@@ -32,8 +32,7 @@ HEADERS += src/core/cpd.h \
     src/gui/about.h \
     src/gui/formatwizard.h \
     src/gui/runwindow.h \
-    src/gui/mechproperties.h \
-    src/core/exceptions.h
+    src/gui/mechproperties.h
 FORMS += src/gui/cpdwindow.ui \
     src/gui/mainwindow.ui \
     src/gui/stepwindow.ui \
@@ -59,5 +58,4 @@ SOURCES += src/chemecher.cpp \
     src/gui/about.cpp \
     src/gui/formatwizard.cpp \
     src/gui/runwindow.cpp \
-    src/gui/mechproperties.cpp \
-    src/core/exceptions.cpp
+    src/gui/mechproperties.cpp
