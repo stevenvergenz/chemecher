@@ -533,6 +533,9 @@ bool IOManager::loadFromCM4(QString filename)
 	if( !sfile.open( QFile::ReadOnly ) )
 		return setError( FS_ERROR, "Error opening file "+filename );
 
+	// sets the filename for use in future errors
+	setErrorFilename(filename);
+
 	/*
 	  The doc.setContent() function actually loads the file into a tree structure composed of QDomNodes.
 	*/

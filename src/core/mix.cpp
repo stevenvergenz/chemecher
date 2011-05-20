@@ -143,9 +143,6 @@ void Mix::clone(Mix* newmix)
 	// sql data
 	db = newmix->db;
 
-	//accuracy data
-	precision = newmix->precision;
-
 	emit stepListChanged();
 	emit cpdListChanged();
 }
